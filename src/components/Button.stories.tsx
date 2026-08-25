@@ -58,8 +58,8 @@ export const CssCheck: Story = {
     const background = getComputedStyle(button).backgroundColor
     // --accent-bg from index.css (light and dark)
     await expect([
-      'rgba(170, 59, 255, 0.1)',
-      'rgba(192, 132, 252, 0.15)',
+      'rgba(46, 110, 91, 0.1)',
+      'rgba(111, 195, 170, 0.12)',
     ]).toContain(background)
   },
 }

@@ -22,6 +22,6 @@ export const CssCheck: Story = {
   play: async ({ canvas }) => {
     const counter = canvas.getByRole('button', { name: /count is 0/i });
     // .counter background comes from --accent-bg in App.css — fails if global CSS didn't load.
-    await expect(getComputedStyle(counter).backgroundColor).toBe('rgba(170, 59, 255, 0.1)');
+    await expect(getComputedStyle(counter).backgroundColor).toBe('rgba(46, 110, 91, 0.1)');
   },
 };
