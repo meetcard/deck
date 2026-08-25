@@ -12,6 +12,7 @@ const meta = {
   component: Select,
   tags: ['ai-generated'],
   args: {
+    label: 'Favorite fruit',
     options,
     onChange: fn(),
   },
