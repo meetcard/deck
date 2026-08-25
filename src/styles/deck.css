@@ -1,0 +1,51 @@
+/**
+ * Deck — stylesheet entry point.
+ *
+ * Import once at the root of a consuming app:
+ *   import '@meetcard/deck/styles.css'
+ *
+ * Provides the token layers plus a minimal base. Deck deliberately does not
+ * ship a global CSS reset — it styles only its own components and the small
+ * set of base rules below, so it can drop into an existing app without
+ * fighting the host's styles.
+ */
+
+@import '../foundations/tokens/primitives.css';
+@import '../foundations/tokens/semantic.css';
+@import '../foundations/tokens/scales.css';
+
+.deck-root,
+:root {
+  color-scheme: light dark;
+}
+
+/* Opt-in surface. Apply to the app shell to adopt Deck's page colors. */
+.deck-root {
+  font-family: var(--deck-font-sans);
+  font-size: var(--deck-font-size-body-md);
+  line-height: var(--deck-line-height-body-md);
+  color: var(--deck-color-text-default);
+  background-color: var(--deck-color-background-default);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Shared focus treatment for every interactive Deck component. */
+.deck-focus-ring:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+/* Visually hidden, still announced by assistive tech. */
+.deck-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

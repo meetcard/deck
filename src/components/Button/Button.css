@@ -1,0 +1,129 @@
+.deck-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--deck-space-8);
+  box-sizing: border-box;
+  font-family: var(--deck-font-sans);
+  font-weight: var(--deck-font-weight-medium);
+  letter-spacing: var(--deck-tracking-label);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: var(--deck-radius-lg);
+  transition:
+    background-color var(--deck-duration-fast) var(--deck-ease-standard),
+    border-color var(--deck-duration-fast) var(--deck-ease-standard),
+    color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-button:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-button:disabled {
+  cursor: not-allowed;
+}
+
+.deck-button--full-width {
+  width: 100%;
+}
+
+.deck-button__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.deck-button__icon > svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+/* ---- Sizes (Label type scale) ------------------------------------- */
+.deck-button--sm {
+  min-height: 32px;
+  padding: 0 var(--deck-space-12);
+  font-size: var(--deck-font-size-label-sm);
+  line-height: var(--deck-line-height-label-sm);
+}
+
+.deck-button--md {
+  min-height: 40px;
+  padding: 0 var(--deck-space-16);
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
+}
+
+.deck-button--lg {
+  min-height: 48px;
+  padding: 0 var(--deck-space-24);
+  font-size: var(--deck-font-size-label-lg);
+  line-height: var(--deck-line-height-label-lg);
+}
+
+/* ---- Primary ------------------------------------------------------- */
+.deck-button--primary {
+  background-color: var(--deck-color-action-primary);
+  color: var(--deck-color-action-primary-text);
+}
+.deck-button--primary:hover:not(:disabled) {
+  background-color: var(--deck-color-action-primary-hover);
+}
+.deck-button--primary:active:not(:disabled) {
+  background-color: var(--deck-color-action-primary-pressed);
+}
+.deck-button--primary:disabled {
+  background-color: var(--deck-color-action-primary-disabled);
+  color: var(--deck-color-text-inverse);
+}
+
+/* ---- Secondary ----------------------------------------------------- */
+.deck-button--secondary {
+  background-color: var(--deck-color-action-secondary);
+  border-color: var(--deck-color-action-secondary-border);
+  color: var(--deck-color-action-secondary-text);
+}
+.deck-button--secondary:hover:not(:disabled) {
+  border-color: var(--deck-color-border-strong);
+  background-color: var(--deck-color-background-subtle);
+}
+.deck-button--secondary:active:not(:disabled) {
+  background-color: var(--deck-color-background-overlay);
+}
+.deck-button--secondary:disabled {
+  color: var(--deck-color-text-disabled);
+  border-color: var(--deck-color-border-default);
+}
+
+/* ---- Ghost --------------------------------------------------------- */
+.deck-button--ghost {
+  background-color: transparent;
+  color: var(--deck-color-action-secondary-text);
+}
+.deck-button--ghost:hover:not(:disabled) {
+  background-color: var(--deck-color-background-subtle);
+}
+.deck-button--ghost:active:not(:disabled) {
+  background-color: var(--deck-color-background-overlay);
+}
+.deck-button--ghost:disabled {
+  color: var(--deck-color-text-disabled);
+}
+
+/* ---- Destructive --------------------------------------------------- */
+.deck-button--destructive {
+  background-color: var(--deck-color-action-destructive);
+  color: var(--deck-color-action-destructive-text);
+}
+.deck-button--destructive:hover:not(:disabled) {
+  background-color: var(--deck-color-action-destructive-hover);
+}
+.deck-button--destructive:disabled {
+  background-color: var(--deck-color-action-primary-disabled);
+  color: var(--deck-color-text-inverse);
+}

@@ -1,0 +1,39 @@
+.deck-link {
+  font-family: var(--deck-font-sans);
+  color: var(--deck-color-text-brand);
+  border-radius: var(--deck-radius-sm);
+  cursor: pointer;
+  transition: color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-link:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-link--tone-brand {
+  color: var(--deck-color-text-brand);
+}
+.deck-link--tone-default {
+  color: var(--deck-color-text-default);
+}
+.deck-link--tone-muted {
+  color: var(--deck-color-text-muted);
+}
+.deck-link--tone-inverse {
+  color: var(--deck-color-text-inverse);
+}
+
+.deck-link--underline-always {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.deck-link--underline-hover {
+  text-decoration: none;
+}
+
+.deck-link--underline-hover:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

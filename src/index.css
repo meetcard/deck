@@ -1,52 +1,49 @@
-:root {
-  --text: #565c5a;
-  --text-h: #1a1a1a;
-  --bg: #faf8f4;
-  --border: #d9d2c7;
-  --code-bg: #ede7dd;
-  --accent: #2e6e5b;
-  --accent-bg: rgba(46, 110, 91, 0.1);
-  --accent-border: rgba(46, 110, 91, 0.5);
-  --social-bg: rgba(237, 231, 221, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+/**
+ * Local dev entry for the Vite playground app.
+ *
+ * Deck itself ships `src/styles/deck.css` — this file only exists so the
+ * demo app in `src/App.tsx` renders, and to keep the pre-Deck demo
+ * components (Header, Page, Autocomplete) working while they are folded
+ * into the system.
+ */
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+@import './styles/deck.css';
+
+:root {
+  /**
+   * Legacy aliases. The demo app and the three pre-Deck components still
+   * read these names; pointing them at Deck tokens means they inherit the
+   * MeetCard brand (and dark mode) without touching their CSS.
+   * Remove these once those components move into `components/`.
+   */
+  --text: var(--deck-color-text-muted);
+  --text-h: var(--deck-color-text-default);
+  --bg: var(--deck-color-background-default);
+  --border: var(--deck-color-border-default);
+  --code-bg: var(--deck-color-background-subtle);
+  --accent: var(--deck-color-text-brand);
+  --accent-bg: var(--deck-color-background-brand-subtle);
+  --accent-border: var(--deck-color-border-brand);
+  --social-bg: var(--deck-color-background-subtle);
+  --shadow: var(--deck-shadow-md);
+
+  --sans: var(--deck-font-sans);
+  --heading: var(--deck-font-sans);
+  --mono: var(--deck-font-mono);
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
 }
 
-@media (prefers-color-scheme: dark) {
+@media (max-width: 1024px) {
   :root {
-    --text: #a9a8a2;
-    --text-h: #faf8f4;
-    --bg: #2d3a3a;
-    --border: #6b7372;
-    --code-bg: #465150;
-    --accent: #6fc3aa;
-    --accent-bg: rgba(111, 195, 170, 0.12);
-    --accent-border: rgba(111, 195, 170, 0.5);
-    --social-bg: rgba(86, 92, 90, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+    font-size: 16px;
   }
 }
 
@@ -77,20 +74,25 @@ h1 {
   font-size: 56px;
   letter-spacing: -1.68px;
   margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
 }
+
 h2 {
   font-size: 24px;
   line-height: 118%;
   letter-spacing: -0.24px;
   margin: 0 0 8px;
-  @media (max-width: 1024px) {
+}
+
+@media (max-width: 1024px) {
+  h1 {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+  h2 {
     font-size: 20px;
   }
 }
+
 p {
   margin: 0;
 }

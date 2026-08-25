@@ -1,0 +1,27 @@
+.deck-input__wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.deck-input__icon {
+  position: absolute;
+  top: 50%;
+  left: var(--deck-space-12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  color: var(--deck-color-text-muted);
+  pointer-events: none;
+}
+
+.deck-input__icon > svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.deck-input--with-icon {
+  padding-left: var(--deck-space-40);
+}

@@ -21,7 +21,10 @@ export const Default: Story = {
 export const CssCheck: Story = {
   play: async ({ canvas }) => {
     const counter = canvas.getByRole('button', { name: /count is 0/i });
-    // .counter background comes from --accent-bg in App.css — fails if global CSS didn't load.
-    await expect(getComputedStyle(counter).backgroundColor).toBe('rgba(46, 110, 91, 0.1)');
+    // .counter uses --accent-bg, now aliased to the Deck brand-subtle token.
+    // Fails if the Deck token stylesheet didn't load.
+    const background = getComputedStyle(counter).backgroundColor;
+    // --deck-color-background-brand-subtle: #eaf3ef light / #2b443e dark
+    await expect(['rgb(234, 243, 239)', 'rgb(43, 68, 62)']).toContain(background);
   },
 };

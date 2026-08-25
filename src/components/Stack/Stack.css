@@ -1,0 +1,60 @@
+.deck-stack {
+  display: flex;
+  gap: var(--deck-stack-gap, var(--deck-space-16));
+  min-width: 0;
+}
+
+.deck-stack--inline {
+  display: inline-flex;
+}
+
+.deck-stack--row {
+  flex-direction: row;
+}
+.deck-stack--column {
+  flex-direction: column;
+}
+
+.deck-stack--wrap {
+  flex-wrap: wrap;
+}
+
+.deck-stack--align-start {
+  align-items: flex-start;
+}
+.deck-stack--align-center {
+  align-items: center;
+}
+.deck-stack--align-end {
+  align-items: flex-end;
+}
+.deck-stack--align-stretch {
+  align-items: stretch;
+}
+.deck-stack--align-baseline {
+  align-items: baseline;
+}
+
+.deck-stack--justify-start {
+  justify-content: flex-start;
+}
+.deck-stack--justify-center {
+  justify-content: center;
+}
+.deck-stack--justify-end {
+  justify-content: flex-end;
+}
+.deck-stack--justify-between {
+  justify-content: space-between;
+}
+.deck-stack--justify-around {
+  justify-content: space-around;
+}
+
+/* Reset list semantics when Stack is used as ul/ol. */
+ul.deck-stack,
+ol.deck-stack {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

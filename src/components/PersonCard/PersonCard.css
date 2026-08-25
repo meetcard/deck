@@ -1,0 +1,28 @@
+.deck-person-card__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--deck-space-12);
+  min-width: 0;
+}
+
+.deck-person-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-2);
+  min-width: 0;
+  flex: 1;
+}
+
+.deck-person-card__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-8);
+  min-width: 0;
+}
+
+.deck-person-card__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-4);
+  flex-shrink: 0;
+}

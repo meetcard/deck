@@ -1,40 +1,71 @@
 {
-  "name": "deck",
+  "name": "@meetcard/deck",
+  "description": "Deck is MeetCard's flagship React design system — a composable foundation of accessible, production-ready components for building card-centric experiences.",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
+  "license": "UNLICENSED",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "./dist/deck.js",
+  "module": "./dist/deck.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/deck.js"
+    },
+    "./styles.css": "./dist/deck.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "oxlint",
+    "build": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json",
+    "build:app": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "vitest --project storybook run",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:storybook": "vitest run --project storybook",
+    "test:unit": "vitest run --project unit",
+    "lint": "oxlint",
+    "typecheck": "tsc -b",
+    "chromatic": "chromatic --exit-zero-on-changes"
   },
-  "dependencies": {
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "5.3.0",
+    "@storybook/addon-a11y": "^10.5.10",
+    "@storybook/addon-docs": "^10.5.10",
+    "@storybook/addon-mcp": "^0.7.0",
+    "@storybook/addon-vitest": "^10.5.10",
+    "@storybook/react-vite": "^10.5.10",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.6",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",
+    "@vitest/browser-playwright": "latest",
+    "@vitest/coverage-v8": "latest",
     "chromatic": "^18.5.0",
+    "jsdom": "^30.0.1",
     "oxlint": "^1.79.0",
+    "playwright": "latest",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "storybook": "^10.5.10",
     "typescript": "~6.0.2",
     "vite": "^8.2.2",
-    "storybook": "^10.5.10",
-    "@storybook/react-vite": "^10.5.10",
-    "@chromatic-com/storybook": "5.3.0",
-    "@storybook/addon-vitest": "^10.5.10",
-    "@storybook/addon-a11y": "^10.5.10",
-    "@storybook/addon-docs": "^10.5.10",
-    "@storybook/addon-mcp": "^0.7.0",
-    "vitest": "latest",
-    "playwright": "latest",
-    "@vitest/browser-playwright": "latest",
-    "@vitest/coverage-v8": "latest"
+    "vitest": "latest"
   }
 }

@@ -1,0 +1,82 @@
+.deck-checkbox__control {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+}
+
+.deck-checkbox {
+  appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+  background-color: var(--deck-color-background-elevated);
+  border: 1px solid var(--deck-color-border-strong);
+  border-radius: var(--deck-radius-sm);
+  transition:
+    background-color var(--deck-duration-fast) var(--deck-ease-standard),
+    border-color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-checkbox:hover:not(:disabled) {
+  border-color: var(--deck-color-border-brand);
+}
+
+.deck-checkbox:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-checkbox:checked,
+.deck-checkbox:indeterminate {
+  background-color: var(--deck-color-action-primary);
+  border-color: var(--deck-color-action-primary);
+}
+
+.deck-checkbox:disabled {
+  cursor: not-allowed;
+  background-color: var(--deck-color-background-subtle);
+  border-color: var(--deck-color-border-default);
+}
+
+.deck-checkbox:disabled:checked,
+.deck-checkbox:disabled:indeterminate {
+  background-color: var(--deck-color-action-primary-disabled);
+  border-color: var(--deck-color-action-primary-disabled);
+}
+
+.deck-checkbox[aria-invalid='true'] {
+  border-color: var(--deck-color-border-error);
+}
+
+/* Overlaid mark — inherits the on-color token in both themes. */
+.deck-checkbox__mark {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--deck-color-action-primary-text);
+  pointer-events: none;
+}
+
+.deck-checkbox__tick,
+.deck-checkbox__dash {
+  opacity: 0;
+}
+
+.deck-checkbox:checked + .deck-checkbox__mark .deck-checkbox__tick {
+  opacity: 1;
+}
+
+.deck-checkbox:indeterminate + .deck-checkbox__mark .deck-checkbox__dash {
+  opacity: 1;
+}
+
+/* Indeterminate wins: never show both marks at once. */
+.deck-checkbox:indeterminate + .deck-checkbox__mark .deck-checkbox__tick {
+  opacity: 0;
+}

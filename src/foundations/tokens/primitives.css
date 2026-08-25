@@ -1,0 +1,32 @@
+/**
+ * Deck — Primitive tokens
+ *
+ * Raw brand values. Source of truth: Figma "Deck Design System" →
+ * Brand guidelines → MeetCard - Brand Colors (July 2026).
+ *
+ * Never reference these directly from a component. Components consume the
+ * semantic layer in `semantic.css`, which is what makes light/dark work.
+ */
+
+:root {
+  /* Core brand palette — the 10 colors published in the brand sheet. */
+  --deck-primitive-paper: #faf8f4;
+  --deck-primitive-sand: #ede7dd;
+  --deck-primitive-hairline: #d9d2c7;
+  --deck-primitive-ink: #1a1a1a;
+  --deck-primitive-slate: #2d3a3a;
+  --deck-primitive-mist-deep: #565c5a;
+  --deck-primitive-signal-green: #2e6e5b;
+  --deck-primitive-clay-display: #c66a4a;
+  --deck-primitive-clay-text: #a84b2c;
+  --deck-primitive-brick-deep: #9e3b27;
+
+  /* Extended primitives — additional stops the semantic layer resolves to. */
+  --deck-primitive-white: #ffffff;
+  --deck-primitive-green-deep: #1d4a3c;
+  --deck-primitive-green-mid: #3d8b72;
+  --deck-primitive-green-light: #6fc3aa;
+  --deck-primitive-green-tint: #eaf3ef;
+  --deck-primitive-clay-tint: #faf0eb;
+  --deck-primitive-hairline-strong: #d6cdbe;
+}

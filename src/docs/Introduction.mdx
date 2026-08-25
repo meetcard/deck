@@ -1,0 +1,99 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Deck/Introduction" />
+
+# Deck Design System
+
+**Deck is MeetCard's flagship React design system — a composable foundation of
+accessible, production-ready components for building card-centric experiences.**
+
+MeetCard is a digital business-card and networking platform. The product
+metaphor is a deck of cards: people, companies, and contacts are cards you
+view, share, exchange, and organize. Deck exists to make building those
+surfaces fast, consistent, and accessible by default.
+
+## Installation
+
+```bash
+npm install @meetcard/deck
+```
+
+Import the stylesheet once at your app root, then use components anywhere:
+
+```tsx
+import '@meetcard/deck/styles.css'
+import { Button, Card, PersonCard } from '@meetcard/deck'
+```
+
+Deck ships the token layer in that stylesheet. Add the `deck-root` class to
+your app shell to adopt Deck's page background, text color, and font stack:
+
+```tsx
+export function App() {
+  return <div className="deck-root">{/* … */}</div>
+}
+```
+
+Deck expects **Inter**. It deliberately does not bundle or fetch the font —
+load it however your app loads fonts. The stack degrades to system UI.
+
+## What's in the box
+
+| Layer | Components |
+| --- | --- |
+| **Typography** | `Text`, `Heading` |
+| **Layout** | `Stack`, `Divider`, `Card` (+ `CardHeader`, `CardBody`, `CardFooter`) |
+| **Actions** | `Button`, `IconButton`, `Link` |
+| **Data display** | `Badge`, `Avatar` |
+| **Forms** | `Field`, `Input`, `Textarea`, `Select`, `Checkbox`, `Radio` (+ `RadioGroup`), `Switch` |
+| **MeetCard patterns** | `MeetCard`, `PersonCard`, `CompanyCard`, `ContactCard` |
+
+## Usage
+
+Deck favours small primitives that compose, rather than large components with
+many options:
+
+```tsx
+<Card as="article" interactive>
+  <CardHeader divided>
+    <Heading level={3} size="sm">Ada Lovelace</Heading>
+    <Badge tone="success" dot>Connected</Badge>
+  </CardHeader>
+  <CardBody>
+    <Text size="sm" tone="muted">Head of Partnerships · MeetCard</Text>
+  </CardBody>
+  <CardFooter divided>
+    <Button size="sm">Share card</Button>
+  </CardFooter>
+</Card>
+```
+
+For common MeetCard surfaces, the pattern components already compose those
+primitives for you:
+
+```tsx
+<PersonCard
+  name="Ada Lovelace"
+  title="Head of Partnerships"
+  company="MeetCard"
+  href="/people/ada"
+  status={{ label: 'Connected', tone: 'success' }}
+/>
+```
+
+## Dark mode
+
+Every component reads semantic tokens, so dark mode needs no per-component
+work. It follows `prefers-color-scheme` automatically, and a host app can
+force a theme:
+
+```html
+<html data-deck-theme="dark">
+```
+
+## Theme source
+
+Color comes from the Figma **Deck Design System → Brand guidelines →
+MeetCard - Brand Colors** frame (July 2026); type, spacing, radius, and
+elevation come from the **Foundations** page. See **Deck/Foundations** for the
+resolved values.

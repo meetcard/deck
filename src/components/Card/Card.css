@@ -1,0 +1,122 @@
+.deck-card {
+  --deck-card-padding: var(--deck-space-20);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--deck-card-padding);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-lg);
+  transition:
+    box-shadow var(--deck-duration-base) var(--deck-ease-standard),
+    transform var(--deck-duration-base) var(--deck-ease-standard),
+    border-color var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+/* Surfaces */
+.deck-card--surface-default {
+  background-color: var(--deck-color-background-default);
+  color: var(--deck-color-text-default);
+}
+.deck-card--surface-subtle {
+  background-color: var(--deck-color-background-subtle);
+  color: var(--deck-color-text-default);
+}
+.deck-card--surface-elevated {
+  background-color: var(--deck-color-background-elevated);
+  color: var(--deck-color-text-default);
+}
+.deck-card--surface-brand {
+  background-color: var(--deck-color-background-brand);
+  border-color: var(--deck-color-border-brand);
+  color: var(--deck-color-text-inverse);
+}
+
+/* Elevation */
+.deck-card--elevation-xs {
+  box-shadow: var(--deck-shadow-xs);
+}
+.deck-card--elevation-sm {
+  box-shadow: var(--deck-shadow-sm);
+}
+.deck-card--elevation-md {
+  box-shadow: var(--deck-shadow-md);
+}
+.deck-card--elevation-lg {
+  box-shadow: var(--deck-shadow-lg);
+}
+.deck-card--elevation-xl {
+  box-shadow: var(--deck-shadow-xl);
+}
+.deck-card--elevation-2xl {
+  box-shadow: var(--deck-shadow-2xl);
+}
+
+/* Tactile lift — the "deck of cards" affordance. */
+.deck-card--interactive:hover {
+  box-shadow: var(--deck-shadow-md);
+  border-color: var(--deck-color-border-strong);
+  transform: translateY(-2px);
+}
+
+.deck-card--interactive:active {
+  box-shadow: var(--deck-shadow-xs);
+  transform: translateY(0);
+}
+
+/* Keyboard focus lands on a child link/button; surface the whole card. */
+.deck-card--interactive:focus-within {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-card--interactive:hover {
+    transform: none;
+  }
+}
+
+/* Sections */
+.deck-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--deck-space-12);
+  min-width: 0;
+}
+
+.deck-card__body {
+  min-width: 0;
+}
+
+.deck-card__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-8);
+  min-width: 0;
+}
+
+.deck-card > * + * {
+  margin-top: var(--deck-space-16);
+}
+
+/* Full-bleed rules: cancel the card's inline padding, then re-add it. */
+.deck-card__header--divided,
+.deck-card__body--divided,
+.deck-card__footer--divided {
+  margin-inline: calc(var(--deck-card-padding) * -1);
+  padding-inline: var(--deck-card-padding);
+}
+
+.deck-card__header--divided,
+.deck-card__body--divided {
+  padding-bottom: var(--deck-space-16);
+  border-bottom: 1px solid var(--deck-color-border-default);
+}
+
+.deck-card__footer--divided {
+  padding-top: var(--deck-space-16);
+  border-top: 1px solid var(--deck-color-border-default);
+}

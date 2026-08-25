@@ -1,0 +1,76 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Deck/Design principles" />
+
+# Design principles
+
+These are the rules Deck is built on. When a decision is ambiguous, the
+principle that applies wins.
+
+## 1. Cards are first-class objects
+
+Deck makes it easy to build interfaces around cards, collections of cards, and
+relationships between them. `Card` is a real primitive with surfaces,
+elevation, and composable sections — not a `div` with a border. The MeetCard
+pattern components (`MeetCard`, `PersonCard`, `CompanyCard`, `ContactCard`)
+show how that primitive scales into product surfaces.
+
+## 2. Composition over complexity
+
+Prefer small primitives that compose over large components with many options.
+`Card` does not take `title`, `subtitle`, `badge`, and `footerActions` props —
+it takes children, and `CardHeader`/`CardBody`/`CardFooter` handle structure.
+
+The test: if adding a feature means adding a fifth boolean prop, it probably
+wants to be a child instead.
+
+## 3. Accessible by default
+
+Accessibility is designed into the API, not left to the caller's memory:
+
+- `Input`, `Select`, `Textarea`, `Checkbox`, `Radio`, and `Switch` **require**
+  a `label`. An unlabelled control is unrepresentable.
+- `IconButton` **requires** a `label`, because an icon alone announces as an
+  unnamed "button".
+- `error` sets `aria-invalid` and announces via `role="alert"` — you cannot
+  render an error that only sighted users receive.
+- `Link` with `external` gets safe `rel` and an announced "opens in a new tab".
+- Semantic HTML first: `<hr>` for `Divider`, `<fieldset>`/`<legend>` for
+  `RadioGroup`, `<dl>` for contact details, native `<select>` for `Select`.
+
+## 4. Strong defaults
+
+The easiest implementation is the recommended one. `Button` defaults to
+`type="button"` so it can't accidentally submit a form. `Card` defaults to the
+elevation Figma specifies for cards. `Text` defaults to the body size meant
+for reading.
+
+## 5. Tokens before hardcoded values
+
+No component contains a raw color, spacing value, radius, or shadow. Every one
+resolves through the semantic layer:
+
+```text
+primitive          semantic                    component
+#2e6e5b     →      action/primary        →     Button (primary)
+```
+
+Components reference **semantic** tokens only. That indirection is what makes
+dark mode, rebrands, and contrast fixes single-file changes — the palette
+shift from the June Blue system to the July Signal Green one touched exactly
+one file.
+
+## 6. Visual consistency
+
+States behave predictably across components. Every interactive control shares
+one focus treatment (`--deck-color-border-focus`, 2px, 2px offset). Sizes line
+up: `Button`, `IconButton`, and the form controls are all 32/40/48px at
+`sm`/`md`/`lg`, so they align in a row without adjustment.
+
+## 7. Designed for AI-assisted development
+
+APIs, names, and docs are explicit enough for a coding agent to use correctly
+from the type signature alone. Props are named for intent (`tone`, `variant`,
+`surface`, `elevation`), unions are closed rather than `string`, and every
+component carries a JSDoc example. Required props encode the rules that matter
+— which is why `label` is required rather than merely documented.

@@ -1,0 +1,28 @@
+.deck-select__wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.deck-select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: var(--deck-space-32);
+}
+
+/* A real element, not a background-image: keeps the control's background
+   colour resolvable by automated contrast tooling. */
+.deck-select__chevron {
+  position: absolute;
+  top: 50%;
+  right: var(--deck-space-12);
+  width: 12px;
+  height: 12px;
+  transform: translateY(-50%);
+  color: var(--deck-color-text-muted);
+  pointer-events: none;
+}
+
+.deck-select:disabled + .deck-select__chevron {
+  color: var(--deck-color-text-disabled);
+}

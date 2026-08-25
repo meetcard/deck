@@ -1,0 +1,155 @@
+/**
+ * Deck — Scale tokens
+ *
+ * Typography, spacing, radius and elevation are transcribed from the Figma
+ * "Deck Design System" → Foundations page (Typography, Spacing & Radius,
+ * Elevation).
+ *
+ * Motion and breakpoints are NOT specified in the Figma kit. The values below
+ * are Deck defaults, aligned to the same Tailwind-derived scale the spacing
+ * ramp uses. Replace them if design publishes a Motion frame.
+ */
+
+:root {
+  /* ---- Font families ------------------------------------------------ */
+  /* Inter is the brand typeface. Deck does not bundle or fetch it — the host
+     app is responsible for loading Inter; the stack degrades to system UI. */
+  --deck-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+  --deck-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* ---- Font weights ------------------------------------------------- */
+  --deck-font-weight-regular: 400;
+  --deck-font-weight-medium: 500;
+  --deck-font-weight-semibold: 600;
+  --deck-font-weight-bold: 700;
+
+  /* ---- Display — marketing headlines, hero statements ---------------- */
+  --deck-font-size-display-2xl: 72px;
+  --deck-line-height-display-2xl: 80px;
+  --deck-font-size-display-xl: 60px;
+  --deck-line-height-display-xl: 68px;
+  --deck-font-size-display-lg: 48px;
+  --deck-line-height-display-lg: 56px;
+  --deck-font-size-display-md: 36px;
+  --deck-line-height-display-md: 44px;
+  --deck-font-size-display-sm: 30px;
+  --deck-line-height-display-sm: 38px;
+
+  /* ---- Heading — section titles, card headers, modal titles ---------- */
+  --deck-font-size-heading-xl: 24px;
+  --deck-line-height-heading-xl: 32px;
+  --deck-font-size-heading-lg: 20px;
+  --deck-line-height-heading-lg: 28px;
+  --deck-font-size-heading-md: 18px;
+  --deck-line-height-heading-md: 28px;
+  --deck-font-size-heading-sm: 16px;
+  --deck-line-height-heading-sm: 24px;
+  --deck-font-size-heading-xs: 14px;
+  --deck-line-height-heading-xs: 20px;
+
+  /* ---- Body — paragraphs, descriptions, instructional copy ----------- */
+  --deck-font-size-body-xl: 20px;
+  --deck-line-height-body-xl: 30px;
+  --deck-font-size-body-lg: 18px;
+  --deck-line-height-body-lg: 28px;
+  --deck-font-size-body-md: 16px;
+  --deck-line-height-body-md: 24px;
+  --deck-font-size-body-sm: 14px;
+  --deck-line-height-body-sm: 20px;
+  --deck-font-size-body-xs: 12px;
+  --deck-line-height-body-xs: 18px;
+
+  /* ---- Label — buttons, tags, badges, form labels, nav --------------- */
+  --deck-font-size-label-lg: 16px;
+  --deck-line-height-label-lg: 24px;
+  --deck-font-size-label-md: 14px;
+  --deck-line-height-label-md: 20px;
+  --deck-font-size-label-sm: 12px;
+  --deck-line-height-label-sm: 18px;
+  --deck-font-size-label-xs: 11px;
+  --deck-line-height-label-xs: 16px;
+
+  /* ---- Letter spacing ----------------------------------------------- */
+  --deck-tracking-display: -0.02em;
+  --deck-tracking-heading: -0.01em;
+  --deck-tracking-body: 0;
+  --deck-tracking-label: 0.01em;
+  --deck-tracking-caps: 0.08em;
+
+  /* ---- Spacing — base 4px, Tailwind-aligned -------------------------- */
+  --deck-space-0: 0px;
+  --deck-space-1: 1px;
+  --deck-space-2: 2px;
+  --deck-space-4: 4px;
+  --deck-space-6: 6px;
+  --deck-space-8: 8px;
+  --deck-space-10: 10px;
+  --deck-space-12: 12px;
+  --deck-space-16: 16px;
+  --deck-space-20: 20px;
+  --deck-space-24: 24px;
+  --deck-space-28: 28px;
+  --deck-space-32: 32px;
+  --deck-space-40: 40px;
+  --deck-space-48: 48px;
+  --deck-space-64: 64px;
+  --deck-space-80: 80px;
+  --deck-space-96: 96px;
+
+  /* ---- Radius — lg (8px) is the default for cards, buttons, inputs --- */
+  --deck-radius-none: 0px;
+  --deck-radius-sm: 2px;
+  --deck-radius-md: 6px;
+  --deck-radius-lg: 8px;
+  --deck-radius-xl: 12px;
+  --deck-radius-2xl: 16px;
+  --deck-radius-3xl: 24px;
+  --deck-radius-full: 9999px;
+
+  /* ---- Elevation — applied per component, never page-level ----------- */
+  /* xs — focus rings, text inputs */
+  --deck-shadow-xs: 0 1px 2px 0 rgb(var(--deck-shadow-color) / 0.05);
+  /* sm — cards, dropdown menus */
+  --deck-shadow-sm: 0 1px 3px 0 rgb(var(--deck-shadow-color) / 0.1);
+  /* md — floating panels, popovers */
+  --deck-shadow-md: 0 4px 8px 0 rgb(var(--deck-shadow-color) / 0.1);
+  /* lg — modals, side drawers */
+  --deck-shadow-lg: 0 8px 16px 0 rgb(var(--deck-shadow-color) / 0.12);
+  /* xl — command palette, dialogs */
+  --deck-shadow-xl: 0 16px 32px 0 rgb(var(--deck-shadow-color) / 0.15);
+  /* 2xl — sheets, full-screen overlays */
+  --deck-shadow-2xl: 0 24px 48px 0 rgb(var(--deck-shadow-color) / 0.18);
+
+  /* ---- Motion (Deck default — not yet specified in Figma) ------------ */
+  --deck-duration-instant: 80ms;
+  --deck-duration-fast: 120ms;
+  --deck-duration-base: 200ms;
+  --deck-duration-slow: 320ms;
+  --deck-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --deck-ease-entrance: cubic-bezier(0, 0, 0, 1);
+  --deck-ease-exit: cubic-bezier(0.3, 0, 1, 1);
+
+  /* ---- Breakpoints (Deck default — not yet specified in Figma) -------
+     Exposed as custom properties for documentation only. CSS cannot use
+     var() inside a media query; the same values live in `tokens.ts` for
+     JS consumers and are hardcoded in component media queries. */
+  --deck-breakpoint-sm: 640px;
+  --deck-breakpoint-md: 768px;
+  --deck-breakpoint-lg: 1024px;
+  --deck-breakpoint-xl: 1280px;
+  --deck-breakpoint-2xl: 1536px;
+
+  /* ---- Focus ring ---------------------------------------------------- */
+  --deck-focus-ring-width: 2px;
+  --deck-focus-ring-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --deck-duration-instant: 0ms;
+    --deck-duration-fast: 0ms;
+    --deck-duration-base: 0ms;
+    --deck-duration-slow: 0ms;
+  }
+}

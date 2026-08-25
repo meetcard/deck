@@ -1,0 +1,12 @@
+.deck-textarea {
+  display: block;
+  min-height: 80px;
+}
+
+.deck-textarea--resize-none {
+  resize: none;
+}
+
+.deck-textarea--resize-vertical {
+  resize: vertical;
+}

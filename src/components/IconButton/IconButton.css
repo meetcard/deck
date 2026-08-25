@@ -1,0 +1,105 @@
+.deck-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: var(--deck-radius-lg);
+  transition:
+    background-color var(--deck-duration-fast) var(--deck-ease-standard),
+    border-color var(--deck-duration-fast) var(--deck-ease-standard),
+    color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-icon-button:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-icon-button:disabled {
+  cursor: not-allowed;
+}
+
+.deck-icon-button--round {
+  border-radius: var(--deck-radius-full);
+}
+
+.deck-icon-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deck-icon-button__icon > svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+/* Sizes match Button heights so they line up in a row. */
+.deck-icon-button--sm {
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+}
+.deck-icon-button--md {
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+}
+.deck-icon-button--lg {
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+}
+
+.deck-icon-button--primary {
+  background-color: var(--deck-color-action-primary);
+  color: var(--deck-color-action-primary-text);
+}
+.deck-icon-button--primary:hover:not(:disabled) {
+  background-color: var(--deck-color-action-primary-hover);
+}
+.deck-icon-button--primary:disabled {
+  background-color: var(--deck-color-action-primary-disabled);
+  color: var(--deck-color-text-inverse);
+}
+
+.deck-icon-button--secondary {
+  background-color: var(--deck-color-action-secondary);
+  border-color: var(--deck-color-action-secondary-border);
+  color: var(--deck-color-action-secondary-text);
+}
+.deck-icon-button--secondary:hover:not(:disabled) {
+  border-color: var(--deck-color-border-strong);
+  background-color: var(--deck-color-background-subtle);
+}
+.deck-icon-button--secondary:disabled {
+  color: var(--deck-color-text-disabled);
+  border-color: var(--deck-color-border-default);
+}
+
+.deck-icon-button--ghost {
+  background-color: transparent;
+  color: var(--deck-color-action-secondary-text);
+}
+.deck-icon-button--ghost:hover:not(:disabled) {
+  background-color: var(--deck-color-background-subtle);
+}
+.deck-icon-button--ghost:disabled {
+  color: var(--deck-color-text-disabled);
+}
+
+.deck-icon-button--destructive {
+  background-color: var(--deck-color-action-destructive);
+  color: var(--deck-color-action-destructive-text);
+}
+.deck-icon-button--destructive:hover:not(:disabled) {
+  background-color: var(--deck-color-action-destructive-hover);
+}
+.deck-icon-button--destructive:disabled {
+  background-color: var(--deck-color-action-primary-disabled);
+  color: var(--deck-color-text-inverse);
+}

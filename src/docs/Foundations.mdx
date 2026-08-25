@@ -1,0 +1,83 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { ColorTokens, TypeScale, SpaceScale, RadiusScale, ShadowScale } from './FoundationsSpecimens'
+
+<Meta title="Deck/Foundations" />
+
+# Foundations
+
+Deck's token architecture has three layers. Components only ever reference the
+middle one.
+
+```text
+Primitive tokens        Semantic tokens             Component usage
+--deck-primitive-*  →   --deck-color-action-*   →   .deck-button--primary
+#2e6e5b                 action/primary              background-color
+```
+
+**Never reference a primitive from a component.** Semantic tokens are what
+resolve differently between light and dark mode; a primitive is a fixed value.
+
+## Color
+
+Sourced from Figma → Brand guidelines → *MeetCard - Brand Colors* (July 2026).
+Light values are exact; dark values are derived and verified to clear WCAG AA
+(4.5:1 body text, 3:1 UI boundaries) against their own surface.
+
+<ColorTokens />
+
+### Two deliberate dark-mode inversions
+
+- **Slate becomes the elevated surface.** The page sits deeper than Slate, so
+  cards read as raised rather than flush.
+- **Solid fills flip their on-color.** In dark mode `action/primary` and
+  `action/destructive` are bright with **Ink** text, because white on a
+  usable-lightness green cannot reach 4.5:1.
+
+## Typography
+
+Inter, across four semantic scales. All sizes in px, aligned to a 4px baseline.
+
+<TypeScale />
+
+## Spacing
+
+Base 4px, Tailwind-aligned. Use via `Stack`'s `gap`, or `var(--deck-space-N)`.
+
+<SpaceScale />
+
+## Radius
+
+`lg` (8px) is the default for cards, buttons, and inputs. `full` is for
+avatars, badges, and pill buttons.
+
+<RadiusScale />
+
+## Elevation
+
+Applied per component, never page-level.
+
+<ShadowScale />
+
+## Motion & breakpoints
+
+Motion and breakpoints are **not yet specified in the Figma kit** — the values
+below are Deck defaults and should be replaced when design publishes them.
+
+| Token | Value | Use |
+| --- | --- | --- |
+| `--deck-duration-fast` | 120ms | Hover, color changes |
+| `--deck-duration-base` | 200ms | Elevation, transforms |
+| `--deck-duration-slow` | 320ms | Entrances, overlays |
+| `--deck-ease-standard` | `cubic-bezier(0.2, 0, 0, 1)` | Default |
+
+All durations collapse to `0ms` under `prefers-reduced-motion: reduce`.
+
+Breakpoints are `sm` 640, `md` 768, `lg` 1024, `xl` 1280, `2xl` 1536. CSS
+cannot read a custom property inside a media query, so JS consumers should use
+the `mediaQuery` helper:
+
+```ts
+import { mediaQuery } from '@meetcard/deck'
+
+window.matchMedia(mediaQuery('md')) // "(min-width: 768px)"
+```

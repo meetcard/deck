@@ -1,0 +1,22 @@
+.deck-divider {
+  flex-shrink: 0;
+  margin: 0;
+  border: 0;
+  background-color: var(--deck-color-border-default);
+}
+
+.deck-divider--strong {
+  background-color: var(--deck-color-border-strong);
+}
+
+.deck-divider--horizontal {
+  width: 100%;
+  height: 1px;
+}
+
+.deck-divider--vertical {
+  width: 1px;
+  height: auto;
+  min-height: var(--deck-space-16);
+  align-self: stretch;
+}
