@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
+    "test": "vitest --project storybook run",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
