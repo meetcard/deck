@@ -71,41 +71,120 @@ const ICONS: Record<AtomicKind, () => React.ReactElement> = {
   organism: OrganismIcon,
 }
 
+/**
+ * Icons for the top-level Deck docs pages, keyed by sidebar item id. Unlike
+ * the atomic icons above (filled shapes), these are outline strokes — the
+ * docs pages aren't part of the atom/molecule/organism taxonomy, so keeping
+ * a visually distinct icon style avoids implying they are.
+ */
+const docIconProps = {
+  width: 14,
+  height: 14,
+  viewBox: '0 0 14 14',
+  'aria-hidden': true,
+  focusable: false,
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.3,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  style: { flexShrink: 0 },
+}
+
+function FoundationsIcon() {
+  return React.createElement(
+    'svg',
+    docIconProps,
+    React.createElement('rect', { x: 1, y: 1, width: 5, height: 5, rx: 1 }),
+    React.createElement('rect', { x: 8, y: 1, width: 5, height: 5, rx: 1 }),
+    React.createElement('rect', { x: 1, y: 8, width: 5, height: 5, rx: 1 }),
+    React.createElement('rect', { x: 8, y: 8, width: 5, height: 5, rx: 1 }),
+  )
+}
+
+function IntroductionIcon() {
+  return React.createElement(
+    'svg',
+    docIconProps,
+    React.createElement('circle', { cx: 7, cy: 7, r: 5.5 }),
+    React.createElement('line', { x1: 7, y1: 6.3, x2: 7, y2: 10 }),
+    React.createElement('circle', {
+      cx: 7,
+      cy: 4.2,
+      r: 0.15,
+      fill: 'currentColor',
+      stroke: 'none',
+    }),
+  )
+}
+
+function DesignPrinciplesIcon() {
+  return React.createElement(
+    'svg',
+    docIconProps,
+    React.createElement('circle', { cx: 7, cy: 7, r: 5.5 }),
+    React.createElement('path', {
+      d: 'M9.2 4.8 6.4 6.4 4.8 9.2 7.6 7.6 9.2 4.8Z',
+      strokeLinejoin: 'round' as const,
+    }),
+  )
+}
+
+const DOC_ICONS: Record<string, () => React.ReactElement> = {
+  'deck-foundations--docs': FoundationsIcon,
+  'deck-introduction--docs': IntroductionIcon,
+  'deck-design-principles--docs': DesignPrinciplesIcon,
+}
+
 addons.setConfig({
   theme: deckTheme,
   sidebar: {
     showRoots: true,
     renderLabel: (item) => {
-      const kind =
-        item.type === 'component' ? atomicKindFromTags(item.tags) : null
-      if (!kind) return item.name
-
-      const Icon = ICONS[kind]
-      return React.createElement(
-        'span',
-        { style: { display: 'flex', alignItems: 'center', gap: 6 } },
+      const iconSpan = (icon: React.ReactElement) =>
         React.createElement(
           'span',
-          { style: { display: 'inline-flex', color: '#2e6e5b' } },
-          React.createElement(Icon),
-        ),
-        item.name,
-      )
+          { style: { display: 'flex', alignItems: 'center', gap: 6 } },
+          React.createElement(
+            'span',
+            { style: { display: 'inline-flex', color: '#2e6e5b' } },
+            icon,
+          ),
+          item.name,
+        )
+
+      if (item.type === 'component') {
+        const kind = atomicKindFromTags(item.tags)
+        if (kind) return iconSpan(React.createElement(ICONS[kind]))
+      }
+
+      if (item.type === 'docs') {
+        const DocIcon = DOC_ICONS[item.id]
+        if (DocIcon) return iconSpan(React.createElement(DocIcon))
+      }
+
+      return item.name
     },
   },
 })
 
 /**
  * `renderLabel` only replaces the text label — Storybook still renders its
- * own generic sprite icon (`svg[type="component"]`, the `#icon--component`
- * symbol) immediately before it for every `type: 'component'` entry, with
- * no config option to suppress it. Every component here carries an atomic
- * tag and gets its own icon above, so hiding the generic one is safe: no
- * entry is left iconless.
+ * own generic sprite icon (`svg[type="component"]`/`svg[type="document"]`,
+ * the `#icon--component`/`#icon--document` symbols) immediately before it,
+ * with no config option to suppress it. Hidden here for every component
+ * (all carry an atomic tag and get their own icon above) and for the three
+ * specific docs pages that get a custom icon — other docs entries (e.g.
+ * "App / Docs") are untouched and keep the default document icon.
  */
 const style = document.createElement('style')
 style.textContent = `
   #storybook-explorer-tree svg[type='component'] {
+    display: none;
+  }
+  ${Object.keys(DOC_ICONS)
+    .map((id) => `#storybook-explorer-tree [data-item-id='${id}'] svg[type='document']`)
+    .join(',\n  ')} {
     display: none;
   }
 `
