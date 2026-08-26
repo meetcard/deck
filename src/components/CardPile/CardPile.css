@@ -1,0 +1,56 @@
+.deck-card-pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--deck-space-16);
+  width: 100%;
+  max-width: 380px;
+}
+
+.deck-card-pile__stage {
+  position: relative;
+  width: 100%;
+}
+
+/* Peeking layers: absolutely positioned so they don't affect the stage's
+   size, offset per-depth via an inline transform computed in JS. */
+.deck-card-pile__layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  will-change: transform;
+  transition: transform var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+/* The front card stays in normal flow — its natural (content-driven) height
+   is what sizes the stage, since MeetCard has no fixed aspect ratio. */
+.deck-card-pile__layer--front {
+  position: relative;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.deck-card-pile__layer--front:active {
+  cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-card-pile__layer {
+    transition: none;
+  }
+}
+
+.deck-card-pile__badge {
+  position: absolute;
+  right: var(--deck-space-8);
+  bottom: var(--deck-space-8);
+  z-index: 100;
+}
+
+.deck-card-pile__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-12);
+}

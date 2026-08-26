@@ -175,6 +175,9 @@ export type { SwitchProps } from './components/Switch'
 export { MeetCard } from './components/MeetCard'
 export type { MeetCardProps } from './components/MeetCard'
 
+export { CardPile } from './components/CardPile'
+export type { CardPileProps } from './components/CardPile'
+
 export { PersonCard } from './components/PersonCard'
 export type { PersonCardProps } from './components/PersonCard'
 
