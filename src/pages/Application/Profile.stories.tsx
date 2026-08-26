@@ -3,7 +3,7 @@ import { Profile } from './Profile'
 
 const meta = {
   component: Profile,
-  title: 'App/Application/Profile',
+  title: 'Experience/Application/Profile',
   tags: ['page'],
 } satisfies Meta<typeof Profile>
 

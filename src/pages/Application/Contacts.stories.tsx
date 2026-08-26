@@ -3,7 +3,7 @@ import { Contacts } from './Contacts'
 
 const meta = {
   component: Contacts,
-  title: 'App/Application/Contacts',
+  title: 'Experience/Application/Contacts',
   tags: ['page'],
 } satisfies Meta<typeof Contacts>
 

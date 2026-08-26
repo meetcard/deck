@@ -3,7 +3,7 @@ import { ContactExchange } from './ContactExchange'
 
 const meta = {
   component: ContactExchange,
-  title: 'App/Networking/Contact Exchange',
+  title: 'Experience/Networking/Contact Exchange',
   tags: ['page'],
 } satisfies Meta<typeof ContactExchange>
 

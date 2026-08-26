@@ -3,7 +3,7 @@ import { Confirmation } from './Confirmation'
 
 const meta = {
   component: Confirmation,
-  title: 'App/Networking/Confirmation',
+  title: 'Experience/Networking/Confirmation',
   tags: ['page'],
 } satisfies Meta<typeof Confirmation>
 

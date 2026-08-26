@@ -3,7 +3,7 @@ import { Dashboard } from './Dashboard'
 
 const meta = {
   component: Dashboard,
-  title: 'App/Application/Dashboard',
+  title: 'Experience/Application/Dashboard',
   tags: ['page'],
 } satisfies Meta<typeof Dashboard>
 

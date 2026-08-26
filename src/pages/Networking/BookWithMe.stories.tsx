@@ -3,7 +3,7 @@ import { BookWithMe } from './BookWithMe'
 
 const meta = {
   component: BookWithMe,
-  title: 'App/Networking/Book with Me',
+  title: 'Experience/Networking/Book with Me',
   tags: ['page'],
   parameters: { layout: 'fullscreen' },
 } satisfies Meta<typeof BookWithMe>

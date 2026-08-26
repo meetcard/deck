@@ -3,7 +3,7 @@ import { LeadCapture } from './LeadCapture'
 
 const meta = {
   component: LeadCapture,
-  title: 'App/Networking/Lead Capture',
+  title: 'Experience/Networking/Lead Capture',
   tags: ['page'],
 } satisfies Meta<typeof LeadCapture>
 
