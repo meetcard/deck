@@ -1,0 +1,7 @@
+# Deploys the Storybook site (deck.meetcard.io), not the npm package.
+# `npm run build` builds the @meetcard/deck library bundle for consumers
+# (vite.lib.config.ts, outputs dist/deck.js — no HTML entry point); the
+# browsable Storybook UI comes from `npm run build-storybook` instead.
+[build]
+  command = "npm run build-storybook"
+  publish = "storybook-static"
