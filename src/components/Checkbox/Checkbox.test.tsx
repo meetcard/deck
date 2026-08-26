@@ -74,4 +74,10 @@ describe('Checkbox', () => {
 
     expect(screen.getByRole('checkbox')).not.toBeChecked()
   })
+
+  it('forwards a ref to the input', () => {
+    const ref = { current: null as HTMLInputElement | null }
+    render(<Checkbox ref={ref} label="Add to CRM" />)
+    expect(ref.current).toBeInstanceOf(HTMLInputElement)
+  })
 })

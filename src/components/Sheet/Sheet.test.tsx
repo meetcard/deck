@@ -106,4 +106,64 @@ describe('Sheet', () => {
       'Share your card or scan one.',
     )
   })
+
+  it('forwards a ref to the dialog element', () => {
+    const ref = { current: null as HTMLDialogElement | null }
+    render(
+      <Sheet ref={ref} open title="Exchange" onClose={vi.fn()}>
+        <p>content</p>
+      </Sheet>,
+    )
+    expect(ref.current).toBeInstanceOf(HTMLDialogElement)
+  })
+
+  describe('backdrop dismissal', () => {
+    // A click landing directly on the <dialog> (not a descendant) is the
+    // backdrop — clicking it should close the sheet by default.
+    it('dismisses when the backdrop itself is clicked', async () => {
+      const onClose = vi.fn()
+      render(
+        <Sheet open title="Exchange" onClose={onClose}>
+          <p>content</p>
+        </Sheet>,
+      )
+
+      await userEvent.click(screen.getByRole('dialog'))
+
+      expect(onClose).toHaveBeenCalled()
+    })
+
+    it('does not dismiss on backdrop click when disabled', async () => {
+      const onClose = vi.fn()
+      render(
+        <Sheet
+          open
+          title="Exchange"
+          onClose={onClose}
+          dismissOnBackdrop={false}
+        >
+          <p>content</p>
+        </Sheet>,
+      )
+
+      await userEvent.click(screen.getByRole('dialog'))
+
+      expect(onClose).not.toHaveBeenCalled()
+    })
+
+    it('does not dismiss when a click lands on the panel content', async () => {
+      const onClose = vi.fn()
+      render(
+        <Sheet open title="Exchange" onClose={onClose}>
+          <button type="button">Show my card</button>
+        </Sheet>,
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Show my card' }),
+      )
+
+      expect(onClose).not.toHaveBeenCalled()
+    })
+  })
 })

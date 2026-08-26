@@ -77,4 +77,10 @@ describe('SearchField', () => {
     render(<SearchField label="Search connections" resultCount={1} />)
     expect(screen.getByRole('status')).toHaveTextContent('1 result')
   })
+
+  it('forwards a ref to the input', () => {
+    const ref = { current: null as HTMLInputElement | null }
+    render(<SearchField ref={ref} label="Search connections" />)
+    expect(ref.current).toBeInstanceOf(HTMLInputElement)
+  })
 })

@@ -118,6 +118,68 @@ describe('CardPile', () => {
       ).toBeVisible()
     })
 
+    it('goes back on ArrowLeft, wrapping to the last card', async () => {
+      render(
+        <CardPile>
+          <MeetCard name="Ada Lovelace" />
+          <MeetCard name="Grace Hopper" />
+        </CardPile>,
+      )
+
+      screen.getByRole('button', { name: 'Previous card' }).focus()
+      await userEvent.keyboard('{ArrowLeft}')
+
+      expect(
+        await screen.findByRole('heading', { name: 'Grace Hopper' }),
+      ).toBeVisible()
+    })
+
+    // The Next/Previous buttons disable themselves while animating, which
+    // already blocks a second click at the DOM level. Keyboard input has no
+    // such guard at the DOM level, so a second ArrowRight arriving before the
+    // first advance commits is what actually exercises advance()'s own
+    // isAnimating check.
+    it('ignores a second advance while one is still animating', async () => {
+      const onActiveIndexChange = vi.fn()
+      render(
+        <CardPile onActiveIndexChange={onActiveIndexChange}>
+          <MeetCard name="Ada Lovelace" />
+          <MeetCard name="Grace Hopper" />
+          <MeetCard name="Katherine Johnson" />
+        </CardPile>,
+      )
+
+      screen.getByRole('button', { name: 'Next card' }).focus()
+      await userEvent.keyboard('{ArrowRight}{ArrowRight}')
+
+      expect(
+        await screen.findByRole('heading', { name: 'Grace Hopper' }),
+      ).toBeVisible()
+      expect(onActiveIndexChange).toHaveBeenCalledOnce()
+    })
+
+    // Prev/Next buttons are hidden for a single card, but the keyboard
+    // handler exists regardless — it must no-op rather than error with
+    // nothing to advance to. Focus lands on the card's own action button,
+    // since the group container itself isn't tabbable.
+    it('ignores ArrowRight on a single-card pile', async () => {
+      const onActiveIndexChange = vi.fn()
+      render(
+        <CardPile onActiveIndexChange={onActiveIndexChange}>
+          <MeetCard
+            name="Ada Lovelace"
+            actions={<button type="button">Share</button>}
+          />
+        </CardPile>,
+      )
+
+      screen.getByRole('button', { name: 'Share' }).focus()
+      await userEvent.keyboard('{ArrowRight}')
+
+      expect(screen.getByRole('heading', { name: 'Ada Lovelace' })).toBeVisible()
+      expect(onActiveIndexChange).not.toHaveBeenCalled()
+    })
+
     it('hides the controls for a single card', () => {
       render(
         <CardPile>
@@ -183,5 +245,17 @@ describe('CardPile', () => {
       </CardPile>,
     )
     expect(ref.current).toBeInstanceOf(HTMLDivElement)
+  })
+
+  // No product path renders an empty pile today, but the render must still
+  // degrade safely rather than throw if `children` ever resolves to nothing.
+  it('renders without crashing when there are no children', () => {
+    render(<CardPile>{null}</CardPile>)
+
+    expect(screen.getByRole('group', { name: 'Card pile' })).toBeInTheDocument()
+    expect(document.querySelector('.deck-card-pile__layer')).toBeNull()
+    expect(
+      screen.queryByRole('button', { name: 'Next card' }),
+    ).not.toBeInTheDocument()
   })
 })

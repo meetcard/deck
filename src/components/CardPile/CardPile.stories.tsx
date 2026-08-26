@@ -116,6 +116,42 @@ export const SmallDragSpringsBack: Story = {
   },
 }
 
+/**
+ * Swiping right — the opposite direction from `SwipeAdvances` — goes
+ * backward instead, wrapping to the last card. Real Chromium only: jsdom's
+ * PointerEvent support can't reliably drive a drag.
+ */
+export const SwipeRightGoesToPrevious: Story = {
+  render: (args) => (
+    <CardPile {...args}>
+      <MeetCard name="Ada Lovelace" title="Card one" />
+      <MeetCard name="Grace Hopper" title="Card two" />
+      <MeetCard name="Katherine Johnson" title="Card three" />
+    </CardPile>
+  ),
+  play: async ({ canvas, userEvent, args }) => {
+    const front = canvas
+      .getByRole('heading', { name: 'Ada Lovelace' })
+      .closest('.deck-card-pile__layer--front') as HTMLElement
+
+    // From the first card, going backward wraps to the last one.
+    await userEvent.pointer([
+      { keys: '[MouseLeft>]', target: front, coords: { x: 60, y: 0 } },
+      { target: front, coords: { x: 200, y: 0 } },
+      { keys: '[/MouseLeft]', target: front, coords: { x: 200, y: 0 } },
+    ])
+
+    await expect(
+      await canvas.findByRole(
+        'heading',
+        { name: 'Katherine Johnson' },
+        { timeout: 1000 },
+      ),
+    ).toBeVisible()
+    await expect(args.onActiveIndexChange).toHaveBeenCalledWith(2)
+  },
+}
+
 /** Previous/Next buttons and Arrow Left/Right are full equivalents to swipe. */
 export const KeyboardAndButtons: Story = {
   render: (args) => (
