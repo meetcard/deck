@@ -38,7 +38,7 @@ const wordmarkDataUri = `data:image/svg+xml,${encodeURIComponent(wordmarkSvg)}`
 export const deckTheme = create({
   base: 'light',
   brandTitle: 'Deck — MeetCard Design System',
-  brandUrl: 'https://meetcard.io',
+  brandUrl: 'https://deck.meetcard.io',
   brandImage: wordmarkDataUri,
   brandTarget: '_self',
 })
