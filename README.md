@@ -12,6 +12,15 @@ consistent, and accessible by default.
 - **Stack:** React 19 · TypeScript · Vite · CSS custom properties
 - **Tooling:** Storybook 10 · Vitest · Testing Library · Playwright · Chromatic
 
+> **Deck is currently under active development.** It is not yet published.
+> The package will be available publicly as:
+>
+> ```bash
+> npm install @meetcard/deck
+> ```
+>
+> Until then, clone this repo and use the Quick start below.
+
 ## Quick start
 
 ```bash
@@ -40,6 +49,8 @@ environment.
 | `npm run chromatic` | Publish Storybook and run visual regression |
 
 ## Using Deck
+
+Once published, usage looks like:
 
 ```tsx
 import '@meetcard/deck/styles.css'
