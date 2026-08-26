@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { MeetCard } from '../MeetCard/MeetCard'
+import { PersonCard } from '../PersonCard/PersonCard'
 import { CardPile } from './CardPile'
 
 // Pointer-drag (swipe) behaviour is exercised in CardPile.stories.tsx, which
@@ -12,7 +12,7 @@ describe('CardPile', () => {
   it('renders a labelled group', () => {
     render(
       <CardPile label="Ada's cards">
-        <MeetCard name="Ada Lovelace" />
+        <PersonCard name="Ada Lovelace" />
       </CardPile>,
     )
     expect(screen.getByRole('group', { name: "Ada's cards" })).toBeInTheDocument()
@@ -21,7 +21,7 @@ describe('CardPile', () => {
   it('falls back to a default label', () => {
     render(
       <CardPile>
-        <MeetCard name="Ada Lovelace" />
+        <PersonCard name="Ada Lovelace" />
       </CardPile>,
     )
     expect(screen.getByRole('group', { name: 'Card pile' })).toBeInTheDocument()
@@ -31,9 +31,9 @@ describe('CardPile', () => {
     it('exposes only the front card to assistive tech', () => {
       render(
         <CardPile>
-          <MeetCard name="Ada Lovelace" />
-          <MeetCard name="Grace Hopper" />
-          <MeetCard name="Katherine Johnson" />
+          <PersonCard name="Ada Lovelace" />
+          <PersonCard name="Grace Hopper" />
+          <PersonCard name="Katherine Johnson" />
         </CardPile>,
       )
 
@@ -51,8 +51,8 @@ describe('CardPile', () => {
     it('marks back layers inert, not just aria-hidden', () => {
       render(
         <CardPile>
-          <MeetCard name="Ada Lovelace" />
-          <MeetCard name="Grace Hopper" />
+          <PersonCard name="Ada Lovelace" />
+          <PersonCard name="Grace Hopper" />
         </CardPile>,
       )
 
@@ -70,8 +70,8 @@ describe('CardPile', () => {
       const onActiveIndexChange = vi.fn()
       render(
         <CardPile onActiveIndexChange={onActiveIndexChange}>
-          <MeetCard name="Ada Lovelace" />
-          <MeetCard name="Grace Hopper" />
+          <PersonCard name="Ada Lovelace" />
+          <PersonCard name="Grace Hopper" />
         </CardPile>,
       )
 
@@ -86,8 +86,8 @@ describe('CardPile', () => {
     it('goes back with the Previous button, wrapping to the last card', async () => {
       render(
         <CardPile>
-          <MeetCard name="Ada Lovelace" />
-          <MeetCard name="Grace Hopper" />
+          <PersonCard name="Ada Lovelace" />
+          <PersonCard name="Grace Hopper" />
         </CardPile>,
       )
 
@@ -105,8 +105,8 @@ describe('CardPile', () => {
     it('advances on ArrowRight from within the pile', async () => {
       render(
         <CardPile>
-          <MeetCard name="Ada Lovelace" />
-          <MeetCard name="Grace Hopper" />
+          <PersonCard name="Ada Lovelace" />
+          <PersonCard name="Grace Hopper" />
         </CardPile>,
       )
 
@@ -121,8 +121,8 @@ describe('CardPile', () => {
     it('goes back on ArrowLeft, wrapping to the last card', async () => {
       render(
         <CardPile>
-          <MeetCard name="Ada Lovelace" />
-          <MeetCard name="Grace Hopper" />
+          <PersonCard name="Ada Lovelace" />
+          <PersonCard name="Grace Hopper" />
         </CardPile>,
       )
 
@@ -143,9 +143,9 @@ describe('CardPile', () => {
       const onActiveIndexChange = vi.fn()
       render(
         <CardPile onActiveIndexChange={onActiveIndexChange}>
-          <MeetCard name="Ada Lovelace" />
-          <MeetCard name="Grace Hopper" />
-          <MeetCard name="Katherine Johnson" />
+          <PersonCard name="Ada Lovelace" />
+          <PersonCard name="Grace Hopper" />
+          <PersonCard name="Katherine Johnson" />
         </CardPile>,
       )
 
@@ -166,9 +166,9 @@ describe('CardPile', () => {
       const onActiveIndexChange = vi.fn()
       render(
         <CardPile onActiveIndexChange={onActiveIndexChange}>
-          <MeetCard
+          <PersonCard
             name="Ada Lovelace"
-            actions={<button type="button">Share</button>}
+            footer={<button type="button">Share</button>}
           />
         </CardPile>,
       )
@@ -183,7 +183,7 @@ describe('CardPile', () => {
     it('hides the controls for a single card', () => {
       render(
         <CardPile>
-          <MeetCard name="Ada Lovelace" />
+          <PersonCard name="Ada Lovelace" />
         </CardPile>,
       )
 
@@ -197,10 +197,10 @@ describe('CardPile', () => {
     it('caps rendered depth at maxVisible and badges the remainder', () => {
       render(
         <CardPile maxVisible={2}>
-          <MeetCard name="Ada Lovelace" />
-          <MeetCard name="Grace Hopper" />
-          <MeetCard name="Katherine Johnson" />
-          <MeetCard name="Margaret Hamilton" />
+          <PersonCard name="Ada Lovelace" />
+          <PersonCard name="Grace Hopper" />
+          <PersonCard name="Katherine Johnson" />
+          <PersonCard name="Margaret Hamilton" />
         </CardPile>,
       )
 
@@ -213,8 +213,8 @@ describe('CardPile', () => {
     it('shows no badge when every card fits', () => {
       render(
         <CardPile maxVisible={3}>
-          <MeetCard name="Ada Lovelace" />
-          <MeetCard name="Grace Hopper" />
+          <PersonCard name="Ada Lovelace" />
+          <PersonCard name="Grace Hopper" />
         </CardPile>,
       )
 
@@ -225,8 +225,8 @@ describe('CardPile', () => {
   it('announces the current position for screen readers', async () => {
     render(
       <CardPile>
-        <MeetCard name="Ada Lovelace" />
-        <MeetCard name="Grace Hopper" />
+        <PersonCard name="Ada Lovelace" />
+        <PersonCard name="Grace Hopper" />
       </CardPile>,
     )
 
@@ -241,7 +241,7 @@ describe('CardPile', () => {
     const ref = { current: null as HTMLDivElement | null }
     render(
       <CardPile ref={ref}>
-        <MeetCard name="Ada Lovelace" />
+        <PersonCard name="Ada Lovelace" />
       </CardPile>,
     )
     expect(ref.current).toBeInstanceOf(HTMLDivElement)

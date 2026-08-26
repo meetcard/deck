@@ -81,6 +81,10 @@
   color: var(--deck-color-text-display);
 }
 
+.deck-heading--serif {
+  font-family: var(--deck-font-serif);
+}
+
 .deck-heading--truncate {
   overflow: hidden;
   text-overflow: ellipsis;

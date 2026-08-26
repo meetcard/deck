@@ -54,16 +54,16 @@ load it however your app loads fonts. The stack degrades to system UI.
 | **Overlays** | `Sheet` |
 | **App shell** | `AppBar`, `BottomNav` |
 | **Navigation** | `Stepper` |
-| **MeetCard patterns** | `MeetCard`, `PersonCard`, `CompanyCard`, `ContactCard`, `EventCard` |
+| **MeetCard patterns** | `PersonCard`, `CardPile`, `CompanyCard`, `ContactCard`, `EventCard` |
 
 ### Building the two surfaces
 
 The **public networking layer** (`meetcard.io`) is unauthenticated and
-recipient-first: `MeetCard` and `PersonCard`/`CompanyCard`/`EventCard` for the
-profile, company, and event pages; `QRCode` for the scannable card; `Banner`
-for the "create your own MeetCard" invite; and `Stepper` for the four-step
-booking wizard (`purpose → availability → details → booked`), where each step
-is its own route.
+recipient-first: `PersonCard`/`CompanyCard`/`EventCard` for the profile,
+company, and event pages, with `CardPile` for browsing a stack of saved
+cards; `QRCode` for the scannable card; `Banner` for the "create your own
+card" invite; and `Stepper` for the four-step booking wizard (`purpose →
+availability → details → booked`), where each step is its own route.
 
 The **application layer** (`app.meetcard.io`) is the installed PWA:
 `AppBar` + `BottomNav` form the shell — four destinations plus the elevated
@@ -99,8 +99,8 @@ primitives for you:
   name="Ada Lovelace"
   title="Head of Partnerships"
   company="MeetCard"
-  href="/people/ada"
-  status={{ label: 'Connected', tone: 'success' }}
+  companyHref="/companies/meetcard"
+  location="London, UK"
 />
 ```
 

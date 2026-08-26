@@ -70,6 +70,14 @@ Inter, across four semantic scales. All sizes in px, aligned to a 4px baseline.
 
 <TypeScale />
 
+### Display serif
+
+`--deck-font-serif` (Fraunces) is a second typeface reserved for signature,
+editorial moments — today that's just the name on `PersonCard`. It is opt-in
+via `<Heading family="serif">`, never the default, and like Inter, Deck does
+not bundle or fetch it: load Fraunces however your app loads fonts, and the
+stack degrades to Georgia.
+
 ## Spacing
 
 Base 4px, Tailwind-aligned. Use via `Stack`'s `gap`, or `var(--deck-space-N)`.

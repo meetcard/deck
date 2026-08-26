@@ -24,7 +24,7 @@
 }
 
 /* The front card stays in normal flow — its natural (content-driven) height
-   is what sizes the stage, since MeetCard has no fixed aspect ratio. */
+   is what sizes the stage, since PersonCard has no fixed aspect ratio. */
 .deck-card-pile__layer--front {
   position: relative;
   cursor: grab;

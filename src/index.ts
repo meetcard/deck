@@ -172,9 +172,6 @@ export { Switch } from './components/Switch'
 export type { SwitchProps } from './components/Switch'
 
 /* ---- MeetCard patterns ------------------------------------------------ */
-export { MeetCard } from './components/MeetCard'
-export type { MeetCardProps } from './components/MeetCard'
-
 export { CardPile } from './components/CardPile'
 export type { CardPileProps } from './components/CardPile'
 

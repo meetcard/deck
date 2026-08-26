@@ -28,6 +28,8 @@ export type HeadingTone =
   | 'brand'
   | 'display'
 
+export type HeadingFamily = 'sans' | 'serif'
+
 export interface HeadingProps extends HTMLAttributes<HTMLHeadingElement> {
   /**
    * Heading rank, which drives the rendered `h1`–`h6` tag. Choose this for
@@ -37,6 +39,11 @@ export interface HeadingProps extends HTMLAttributes<HTMLHeadingElement> {
   /** Visual size. Defaults to the natural size for `level`. */
   size?: HeadingSize
   tone?: HeadingTone
+  /**
+   * Typeface. `serif` is Fraunces — reserved for signature, editorial
+   * moments (a person's name on their own card), never routine hierarchy.
+   */
+  family?: HeadingFamily
   truncate?: boolean
 }
 
@@ -62,7 +69,15 @@ const sizeForLevel: Record<HeadingLevel, HeadingSize> = {
  */
 export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   function Heading(
-    { level = 2, size, tone = 'default', truncate = false, className, ...props },
+    {
+      level = 2,
+      size,
+      tone = 'default',
+      family = 'sans',
+      truncate = false,
+      className,
+      ...props
+    },
     ref,
   ) {
     const Tag = `h${level}` as const
@@ -75,6 +90,7 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
           'deck-heading',
           `deck-heading--${resolved}`,
           `deck-heading--tone-${tone}`,
+          family === 'serif' && 'deck-heading--serif',
           truncate && 'deck-heading--truncate',
           className,
         )}

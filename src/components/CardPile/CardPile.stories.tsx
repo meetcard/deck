@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn } from 'storybook/test'
 import { Button } from '../Button/Button'
-import { MeetCard } from '../MeetCard/MeetCard'
+import { PersonCard } from '../PersonCard/PersonCard'
 import { CardPile } from './CardPile'
 
 const meta = {
   component: CardPile,
   args: {
-    label: "Ada's MeetCards",
+    label: "Ada's saved cards",
     onActiveIndexChange: fn(),
     // Overridden by each story's `render`; present so the required
     // `children` prop is satisfied for the docs table.
-    children: <MeetCard name="Ada Lovelace" />,
+    children: <PersonCard name="Ada Lovelace" />,
   },
 } satisfies Meta<typeof CardPile>
 
@@ -22,24 +22,23 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   render: (args) => (
     <CardPile {...args}>
-      <MeetCard
+      <PersonCard
         name="Ada Lovelace"
         title="Head of Partnerships"
         company="MeetCard"
         tagline="Let's find the overlap."
-        actions={
+        footer={
           <Button variant="secondary" size="sm">
             Share
           </Button>
         }
       />
-      <MeetCard
+      <PersonCard
         name="Ada Lovelace"
         title="Analytical Engine"
         company="Side project"
-        tone="paper"
       />
-      <MeetCard name="Ada Lovelace" title="Countess of Lovelace" tone="brand" />
+      <PersonCard name="Ada Lovelace" title="Countess of Lovelace" />
     </CardPile>
   ),
 }
@@ -53,9 +52,9 @@ export const Default: Story = {
 export const SwipeAdvances: Story = {
   render: (args) => (
     <CardPile {...args}>
-      <MeetCard name="Ada Lovelace" title="Card one" />
-      <MeetCard name="Grace Hopper" title="Card two" />
-      <MeetCard name="Katherine Johnson" title="Card three" />
+      <PersonCard name="Ada Lovelace" title="Card one" />
+      <PersonCard name="Grace Hopper" title="Card two" />
+      <PersonCard name="Katherine Johnson" title="Card three" />
     </CardPile>
   ),
   play: async ({ canvas, userEvent, args }) => {
@@ -94,8 +93,8 @@ export const SwipeAdvances: Story = {
 export const SmallDragSpringsBack: Story = {
   render: (args) => (
     <CardPile {...args}>
-      <MeetCard name="Ada Lovelace" title="Card one" />
-      <MeetCard name="Grace Hopper" title="Card two" />
+      <PersonCard name="Ada Lovelace" title="Card one" />
+      <PersonCard name="Grace Hopper" title="Card two" />
     </CardPile>
   ),
   play: async ({ canvas, userEvent, args }) => {
@@ -124,9 +123,9 @@ export const SmallDragSpringsBack: Story = {
 export const SwipeRightGoesToPrevious: Story = {
   render: (args) => (
     <CardPile {...args}>
-      <MeetCard name="Ada Lovelace" title="Card one" />
-      <MeetCard name="Grace Hopper" title="Card two" />
-      <MeetCard name="Katherine Johnson" title="Card three" />
+      <PersonCard name="Ada Lovelace" title="Card one" />
+      <PersonCard name="Grace Hopper" title="Card two" />
+      <PersonCard name="Katherine Johnson" title="Card three" />
     </CardPile>
   ),
   play: async ({ canvas, userEvent, args }) => {
@@ -156,9 +155,9 @@ export const SwipeRightGoesToPrevious: Story = {
 export const KeyboardAndButtons: Story = {
   render: (args) => (
     <CardPile {...args}>
-      <MeetCard name="Ada Lovelace" title="Card one" />
-      <MeetCard name="Grace Hopper" title="Card two" />
-      <MeetCard name="Katherine Johnson" title="Card three" />
+      <PersonCard name="Ada Lovelace" title="Card one" />
+      <PersonCard name="Grace Hopper" title="Card two" />
+      <PersonCard name="Katherine Johnson" title="Card three" />
     </CardPile>
   ),
   play: async ({ canvas, userEvent }) => {
@@ -184,9 +183,9 @@ export const KeyboardAndButtons: Story = {
 export const BackCardsAreDecorative: Story = {
   render: (args) => (
     <CardPile {...args}>
-      <MeetCard name="Ada Lovelace" title="Card one" />
-      <MeetCard name="Grace Hopper" title="Card two" />
-      <MeetCard name="Katherine Johnson" title="Card three" />
+      <PersonCard name="Ada Lovelace" title="Card one" />
+      <PersonCard name="Grace Hopper" title="Card two" />
+      <PersonCard name="Katherine Johnson" title="Card three" />
     </CardPile>
   ),
   play: async ({ canvas }) => {
@@ -207,11 +206,11 @@ export const OverflowBadge: Story = {
   args: { maxVisible: 3 },
   render: (args) => (
     <CardPile {...args}>
-      <MeetCard name="Ada Lovelace" title="One" />
-      <MeetCard name="Grace Hopper" title="Two" />
-      <MeetCard name="Katherine Johnson" title="Three" />
-      <MeetCard name="Margaret Hamilton" title="Four" />
-      <MeetCard name="Radia Perlman" title="Five" />
+      <PersonCard name="Ada Lovelace" title="One" />
+      <PersonCard name="Grace Hopper" title="Two" />
+      <PersonCard name="Katherine Johnson" title="Three" />
+      <PersonCard name="Margaret Hamilton" title="Four" />
+      <PersonCard name="Radia Perlman" title="Five" />
     </CardPile>
   ),
   play: async ({ canvas }) => {
@@ -223,7 +222,7 @@ export const OverflowBadge: Story = {
 export const SingleCard: Story = {
   render: (args) => (
     <CardPile {...args}>
-      <MeetCard name="Ada Lovelace" title="Head of Partnerships" />
+      <PersonCard name="Ada Lovelace" title="Head of Partnerships" />
     </CardPile>
   ),
   play: async ({ canvas }) => {

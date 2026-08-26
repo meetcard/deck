@@ -19,7 +19,7 @@ import './CardPile.css'
 
 export interface CardPileProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
-  /** `MeetCard` elements, front-to-back — the first child starts on top. */
+  /** `PersonCard` elements, front-to-back — the first child starts on top. */
   children: ReactNode
   /**
    * How many cards render as physical depth (the front card plus peeking
@@ -31,7 +31,7 @@ export interface CardPileProps
   defaultActiveIndex?: number
   /** Fires after a swipe, button press, or arrow key completes. */
   onActiveIndexChange?: (index: number) => void
-  /** Accessible name for the pile, e.g. "Ada's saved MeetCards". */
+  /** Accessible name for the pile, e.g. "Ada's saved cards". */
   label?: string
 }
 
@@ -82,7 +82,7 @@ const ChevronRightIcon = () => (
 )
 
 /**
- * A pile of `MeetCard`s you flip through by swiping — the physical-deck
+ * A pile of `PersonCard`s you flip through by swiping — the physical-deck
  * metaphor made literal, for browsing a person's saved or captured cards.
  *
  * Only the front card is real to assistive tech; the peeking cards behind it
@@ -95,9 +95,9 @@ const ChevronRightIcon = () => (
  * treated as a swipe.
  *
  * @example
- * <CardPile label="Ada's MeetCards">
- *   <MeetCard name="Ada Lovelace" title="Head of Partnerships" />
- *   <MeetCard name="Ada Lovelace" tone="paper" tagline="Side project card" />
+ * <CardPile label="Ada's saved cards">
+ *   <PersonCard name="Ada Lovelace" title="Head of Partnerships" />
+ *   <PersonCard name="Grace Hopper" title="Principal Engineer" />
  * </CardPile>
  */
 export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
