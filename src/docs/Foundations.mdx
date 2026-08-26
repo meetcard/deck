@@ -27,16 +27,26 @@ green in both themes rather than adapting like body content does.
 
 This is the **"Full Color — Light"** variant: Ink-colored type needs a light
 backdrop to read. No dark or mono variant has been supplied yet, so avoid
-placing `Wordmark` directly on a dark or solid-brand surface — Storybook's own
-theme (`.storybook/theme.ts`) is pinned to `base: 'light'` for the same
-reason. `Mark` alone (just the two green card shapes, no type) is safer on
-darker surfaces — it's what `AppBar`'s stories use in the app shell.
+placing `Wordmark` directly on a dark or solid-brand surface. `Mark` alone
+(just the two green card shapes, no type) is safer on darker surfaces — it's
+what `AppBar`'s stories use in the app shell.
 
 ```tsx
 import { Mark, Wordmark } from '@meetcard/deck'
 
 <AppBar brand={<Mark style={{ height: 24, width: 24 }} />} />
 ```
+
+### Deck's own identity vs. MeetCard's
+
+This Storybook's own chrome (its favicon and sidebar logo, in
+`.storybook/theme.ts` and `public/favicon.svg`) uses a **separate mark and
+wordmark for Deck itself** — a stack of three cards, distinct from the
+`Mark`/`Wordmark` above. That's deliberate: this Storybook documents Deck the
+tool, so its chrome carries Deck's own identity, while `Mark`/`Wordmark`
+(above) are MeetCard's product brand, meant for actual product UI. Deck's own
+assets live in `.storybook/brand/` and aren't part of the public API — there
+was no product need to export them as components.
 
 ## Color
 
