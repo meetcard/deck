@@ -5,6 +5,7 @@ import { Radio, RadioGroup } from './Radio'
 
 const meta = {
   component: RadioGroup,
+  tags: ['atom'],
   subcomponents: { Radio },
   args: {
     label: 'Card visibility',

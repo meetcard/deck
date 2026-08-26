@@ -5,6 +5,7 @@ import { Spinner } from './Spinner'
 
 const meta = {
   component: Spinner,
+  tags: ['atom'],
 } satisfies Meta<typeof Spinner>
 
 export default meta

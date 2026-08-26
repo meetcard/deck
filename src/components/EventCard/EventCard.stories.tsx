@@ -6,6 +6,7 @@ import { EventCard } from './EventCard'
 
 const meta = {
   component: EventCard,
+  tags: ['organism'],
   args: {
     name: 'RevOps Summit',
     startDate: '2027-05-18',

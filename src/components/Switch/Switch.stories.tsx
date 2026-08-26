@@ -4,6 +4,7 @@ import { Switch } from './Switch'
 
 const meta = {
   component: Switch,
+  tags: ['atom'],
   args: { label: 'Discoverable by email', onChange: fn() },
 } satisfies Meta<typeof Switch>
 

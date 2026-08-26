@@ -4,6 +4,7 @@ import { Textarea } from './Textarea'
 
 const meta = {
   component: Textarea,
+  tags: ['molecule'],
   args: {
     label: 'Meeting notes',
     placeholder: 'What did you talk about?',

@@ -24,6 +24,7 @@ const SearchIcon = () => (
 
 const meta = {
   component: Input,
+  tags: ['molecule'],
   args: {
     label: 'Work email',
     placeholder: 'ada@meetcard.com',

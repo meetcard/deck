@@ -18,6 +18,7 @@ const QrIcon = () => (
 
 const meta = {
   component: Sheet,
+  tags: ['organism'],
   args: { title: 'Exchange', onClose: fn(), open: false },
   parameters: { layout: 'fullscreen' },
 } satisfies Meta<typeof Sheet>

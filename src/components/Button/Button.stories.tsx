@@ -18,6 +18,7 @@ const ShareIcon = () => (
 
 const meta = {
   component: Button,
+  tags: ['atom'],
   args: {
     children: 'Share card',
     onClick: fn(),

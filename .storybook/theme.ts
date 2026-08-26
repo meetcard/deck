@@ -1,14 +1,16 @@
 import { create } from 'storybook/theming'
 
 /**
- * Deck's Storybook theme — Deck's own mark and wordmark, not the default
- * Storybook logo, and not MeetCard's product brand.
+ * Deck's Storybook theme — Deck's own mark and wordmark (not the default
+ * Storybook logo), reskinned in the MeetCard brand palette so the tool and
+ * the product it documents feel like one family.
  *
- * These two identities are deliberately separate: this Storybook documents
- * Deck the tool, so its chrome carries Deck's own identity. MeetCard's brand
- * (the `Mark`/`Wordmark` React components exported from
- * `src/foundations/brand`) is what ships in actual product UI — e.g. the
- * `AppBar` stories — and is unaffected by this file.
+ * The logo identity stays Deck's own — MeetCard's brand (the `Mark`/
+ * `Wordmark` React components exported from `src/foundations/brand`) is
+ * what ships in actual product UI, e.g. the `AppBar` stories, and is
+ * unaffected by this file. Only the chrome *colors* below are pulled from
+ * MeetCard's palette (`src/foundations/tokens/primitives.css`) — Paper,
+ * Ink, and Signal Green.
  *
  * `brandImage` only accepts a static image URL, not a live React component.
  * `manager.ts`/`theme.ts` are bundled by esbuild for the browser (no Node
@@ -20,6 +22,12 @@ import { create } from 'storybook/theming'
  * The wordmark's type is Ink (#1A1A1A) on a light background, so the theme
  * is pinned to `base: 'light'` rather than following the visitor's OS color
  * scheme — on a dark manager theme that text would be nearly invisible.
+ *
+ * Colors below are literal hex, not `var(--deck-*)` references — like the
+ * wordmark, this file has no access to Deck's own stylesheet, so the
+ * primitives are copied in directly:
+ *   paper #faf8f4 · sand #ede7dd · hairline #d9d2c7 · ink #1a1a1a ·
+ *   mist-deep #565c5a · signal-green #2e6e5b
  */
 const wordmarkSvg = `<svg width="145" height="52" viewBox="0 0 145 52" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect width="15.485" height="22.2004" rx="3" transform="matrix(0.966481 0.256739 -0.260914 0.965362 13.3907 15.6461)" fill="#407366"/>
@@ -51,4 +59,36 @@ export const deckTheme = create({
   brandUrl: 'https://deck.meetcard.io',
   brandImage: wordmarkDataUri,
   brandTarget: '_self',
+
+  fontBase:
+    '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+  fontCode: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+
+  colorPrimary: '#2e6e5b',
+  colorSecondary: '#2e6e5b',
+
+  appBg: '#faf8f4',
+  appContentBg: '#ffffff',
+  appPreviewBg: '#ffffff',
+  appBorderColor: '#d9d2c7',
+  appBorderRadius: 8,
+
+  textColor: '#1a1a1a',
+  textInverseColor: '#faf8f4',
+  textMutedColor: '#565c5a',
+
+  barBg: '#faf8f4',
+  barTextColor: '#565c5a',
+  barHoverColor: '#2e6e5b',
+  barSelectedColor: '#2e6e5b',
+
+  buttonBg: '#ffffff',
+  buttonBorder: '#d9d2c7',
+  booleanBg: '#ede7dd',
+  booleanSelectedBg: '#2e6e5b',
+
+  inputBg: '#ffffff',
+  inputBorder: '#d9d2c7',
+  inputTextColor: '#1a1a1a',
+  inputBorderRadius: 6,
 })

@@ -6,6 +6,7 @@ import { Divider } from './Divider'
 
 const meta = {
   component: Divider,
+  tags: ['atom'],
 } satisfies Meta<typeof Divider>
 
 export default meta

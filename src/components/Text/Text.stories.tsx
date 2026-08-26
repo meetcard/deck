@@ -4,6 +4,7 @@ import { Text } from './Text'
 
 const meta = {
   component: Text,
+  tags: ['atom'],
   args: { children: 'Capture every connection, activate every relationship.' },
 } satisfies Meta<typeof Text>
 

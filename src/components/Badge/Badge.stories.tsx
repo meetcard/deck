@@ -6,6 +6,7 @@ const tones = ['neutral', 'brand', 'success', 'warning', 'error'] as const
 
 const meta = {
   component: Badge,
+  tags: ['atom'],
   args: { children: 'Connected' },
 } satisfies Meta<typeof Badge>
 

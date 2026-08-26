@@ -6,6 +6,7 @@ import { Banner } from './Banner'
 
 const meta = {
   component: Banner,
+  tags: ['molecule'],
   args: { title: 'Heads up', children: 'Something worth knowing about.' },
   render: (args) => (
     <div style={{ maxWidth: 560 }}>

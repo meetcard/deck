@@ -4,6 +4,7 @@ import { StatTile } from './StatTile'
 
 const meta = {
   component: StatTile,
+  tags: ['molecule'],
   args: {
     label: 'Connections captured',
     value: '1,284',

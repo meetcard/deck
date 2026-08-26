@@ -5,6 +5,7 @@ import { Heading } from './Heading'
 
 const meta = {
   component: Heading,
+  tags: ['atom'],
   args: { children: 'Your network is your net worth.' },
 } satisfies Meta<typeof Heading>
 

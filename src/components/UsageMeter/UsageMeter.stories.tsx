@@ -6,6 +6,7 @@ import { UsageMeter } from './UsageMeter'
 
 const meta = {
   component: UsageMeter,
+  tags: ['atom'],
   args: { label: 'Connections', value: 42, max: 100 },
   render: (args) => (
     <div style={{ maxWidth: 360 }}>

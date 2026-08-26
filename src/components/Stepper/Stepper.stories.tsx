@@ -13,6 +13,7 @@ const bookingSteps = [
 
 const meta = {
   component: Stepper,
+  tags: ['atom'],
   args: { steps: bookingSteps, currentStepId: 'availability', onSelect: fn() },
   render: (args) => (
     <div style={{ maxWidth: 480 }}>

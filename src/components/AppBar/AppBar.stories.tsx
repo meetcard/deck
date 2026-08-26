@@ -7,6 +7,7 @@ import { AppBar } from './AppBar'
 
 const meta = {
   component: AppBar,
+  tags: ['organism'],
   args: {
     brand: <Mark style={{ height: 24, width: 24 }} />,
     actions: (

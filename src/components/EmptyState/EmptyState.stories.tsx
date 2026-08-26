@@ -12,6 +12,7 @@ const CardsIcon = () => (
 
 const meta = {
   component: EmptyState,
+  tags: ['molecule'],
   args: {
     title: 'No connections yet',
     description: 'Scan a card or share yours to start building your deck.',

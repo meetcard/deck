@@ -13,6 +13,7 @@ const MoreIcon = () => (
 
 const meta = {
   component: IconButton,
+  tags: ['atom'],
   args: {
     label: 'More actions',
     icon: <MoreIcon />,
