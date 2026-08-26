@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/addon-docs/blocks'
-import { ColorTokens, TypeScale, SpaceScale, RadiusScale, ShadowScale } from './FoundationsSpecimens'
+import { ColorTokens, TypeScale, SpaceScale, RadiusScale, ShadowScale, BrandMarks } from './FoundationsSpecimens'
 
 <Meta title="Deck/Foundations" />
 
@@ -16,6 +16,27 @@ Primitive tokens        Semantic tokens             Component usage
 
 **Never reference a primitive from a component.** Semantic tokens are what
 resolve differently between light and dark mode; a primitive is a fixed value.
+
+## Brand
+
+MeetCard's mark and wordmark, exported as `Mark` and `Wordmark`. Fixed brand
+colors (Signal Green + Ink), not semantic tokens — the logo stays MeetCard
+green in both themes rather than adapting like body content does.
+
+<BrandMarks />
+
+This is the **"Full Color — Light"** variant: Ink-colored type needs a light
+backdrop to read. No dark or mono variant has been supplied yet, so avoid
+placing `Wordmark` directly on a dark or solid-brand surface — Storybook's own
+theme (`.storybook/theme.ts`) is pinned to `base: 'light'` for the same
+reason. `Mark` alone (just the two green card shapes, no type) is safer on
+darker surfaces — it's what `AppBar`'s stories use in the app shell.
+
+```tsx
+import { Mark, Wordmark } from '@meetcard/deck'
+
+<AppBar brand={<Mark style={{ height: 24, width: 24 }} />} />
+```
 
 ## Color
 

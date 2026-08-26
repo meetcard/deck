@@ -5,6 +5,7 @@
  * values, so the documentation cannot drift from the tokens themselves.
  */
 import { colorTokens, space, typeScales } from '../foundations/tokens'
+import { Mark, Wordmark } from '../foundations/brand'
 import { Text } from '../components/Text'
 import { Heading } from '../components/Heading'
 
@@ -177,6 +178,44 @@ const shadowUse: Record<string, string> = {
   lg: 'modals, drawers',
   xl: 'command palette',
   '2xl': 'sheets, overlays',
+}
+
+/**
+ * The mark and wordmark on a fixed light plate — deliberately not the
+ * surrounding docs page background, since these are the "Full Color —
+ * Light" brand assets and only reliably read on a light surface.
+ */
+export function BrandMarks() {
+  const plateStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '24px',
+    background: '#ffffff',
+    border: '1px solid var(--deck-color-border-default)',
+    borderRadius: 'var(--deck-radius-lg)',
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ ...plateStyle, width: 96, height: 96 }}>
+          <Mark style={{ height: 48, width: 48 }} />
+        </div>
+        <Text size="xs" tone="muted" style={{ marginTop: '8px' }}>
+          Mark
+        </Text>
+      </div>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ ...plateStyle, width: 280, height: 96 }}>
+          <Wordmark style={{ height: 40 }} />
+        </div>
+        <Text size="xs" tone="muted" style={{ marginTop: '8px' }}>
+          Wordmark
+        </Text>
+      </div>
+    </div>
+  )
 }
 
 export function ShadowScale() {

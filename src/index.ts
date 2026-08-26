@@ -34,6 +34,9 @@ export type {
   ColorGroup,
 } from './foundations/tokens'
 
+export { Mark, Wordmark } from './foundations/brand'
+export type { MarkProps, WordmarkProps } from './foundations/brand'
+
 /* ---- Typography ----------------------------------------------------- */
 export { Text } from './components/Text'
 export type {

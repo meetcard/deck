@@ -1,27 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
+import { Mark } from '../../foundations/brand'
 import { Avatar } from '../Avatar/Avatar'
 import { IconButton } from '../IconButton/IconButton'
 import { AppBar } from './AppBar'
 
-const Brand = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-    <rect width="24" height="24" rx="6" fill="var(--deck-color-action-primary)" />
-    <path
-      d="M7 16V8l5 5 5-5v8"
-      fill="none"
-      stroke="var(--deck-color-action-primary-text)"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
-
 const meta = {
   component: AppBar,
   args: {
-    brand: <Brand />,
+    brand: <Mark style={{ height: 24, width: 24 }} />,
     actions: (
       <IconButton
         label="Me"

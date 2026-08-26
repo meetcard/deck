@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
+import { Mark } from '../../foundations/brand'
 import { AppBar } from '../AppBar/AppBar'
 import { Avatar } from '../Avatar/Avatar'
 import { EmptyState } from '../EmptyState/EmptyState'
@@ -68,7 +69,7 @@ export const InAppShell: Story = {
         }}
       >
         <AppBar
-          brand={<strong style={{ fontSize: 18 }}>MeetCard</strong>}
+          brand={<Mark style={{ height: 24, width: 24 }} />}
           actions={
             <IconButton
               label="Me"
