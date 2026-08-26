@@ -94,3 +94,19 @@ addons.setConfig({
     },
   },
 })
+
+/**
+ * `renderLabel` only replaces the text label — Storybook still renders its
+ * own generic sprite icon (`svg[type="component"]`, the `#icon--component`
+ * symbol) immediately before it for every `type: 'component'` entry, with
+ * no config option to suppress it. Every component here carries an atomic
+ * tag and gets its own icon above, so hiding the generic one is safe: no
+ * entry is left iconless.
+ */
+const style = document.createElement('style')
+style.textContent = `
+  #storybook-explorer-tree svg[type='component'] {
+    display: none;
+  }
+`
+document.head.appendChild(style)
