@@ -34,6 +34,7 @@ environment.
 | `npm run test:watch` | Tests in watch mode |
 | `npm run test:unit` | Testing Library specs only (jsdom) |
 | `npm run test:storybook` | Story tests only (real Chromium) |
+| `npm run test:a11y` | axe over every story in light **and** dark (needs Storybook running) |
 | `npm run lint` | oxlint |
 | `npm run typecheck` | `tsc -b` across the project |
 | `npm run chromatic` | Publish Storybook and run visual regression |
@@ -114,6 +115,12 @@ The a11y addon runs axe on **every story as part of `npm test`**
 violation fails the build. Page-scope rules that cannot hold for an isolated
 component (`region`, `landmark-one-main`, `page-has-heading-one`, `bypass`)
 are disabled there.
+
+`npm test` only exercises the browser's default (light) scheme. Because the
+dark palette is derived rather than published by design, `npm run test:a11y`
+sweeps every story in **both** schemes; CI runs it against the built
+Storybook. Waivers live at the top of `scripts/a11y-sweep.mjs` and each one
+must state why.
 
 Solid brand and status surfaces must carry the `deck-solid-surface` class
 alongside their fill. It re-points descendant color tokens to an on-color

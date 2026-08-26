@@ -33,6 +33,7 @@
     "test:watch": "vitest",
     "test:storybook": "vitest run --project storybook",
     "test:unit": "vitest run --project unit",
+    "test:a11y": "node scripts/a11y-sweep.mjs",
     "lint": "oxlint",
     "typecheck": "tsc -b",
     "chromatic": "chromatic --exit-zero-on-changes"

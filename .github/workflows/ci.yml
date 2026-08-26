@@ -53,6 +53,12 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
 
+      # axe over every story in BOTH color schemes. `npm test` only covers
+      # the default (light) scheme; Deck's dark palette is derived, so it
+      # needs its own gate.
+      - name: Accessibility sweep (light + dark)
+        run: node scripts/a11y-sweep.mjs --static storybook-static
+
       # Publishes the built Storybook and runs visual regression.
       # Requires the CHROMATIC_PROJECT_TOKEN repository secret.
       - name: Publish to Chromatic
