@@ -4,10 +4,13 @@
  * These read the resolved CSS custom properties rather than hardcoding
  * values, so the documentation cannot drift from the tokens themselves.
  */
+import { useState } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { colorTokens, space, typeScales } from '../foundations/tokens'
 import { Mark, Wordmark } from '../foundations/brand'
 import { Text } from '../components/Text'
 import { Heading } from '../components/Heading'
+import { IconButton } from '../components/IconButton'
 
 const cellStyle: React.CSSProperties = {
   fontFamily: 'var(--deck-font-mono)',
@@ -180,6 +183,94 @@ const shadowUse: Record<string, string> = {
   '2xl': 'sheets, overlays',
 }
 
+const CopyIcon = () => (
+  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+    <rect
+      x="5.5"
+      y="5.5"
+      width="8"
+      height="8"
+      rx="1.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M3.5 10.5V4a1.5 1.5 0 0 1 1.5-1.5h6.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
+
+const CheckIcon = () => (
+  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+    <path
+      d="M3 8.5l3 3 7-7"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
+
+/**
+ * Brand primitives, resolved to literal hex — copying `var(--deck-primitive-*)`
+ * would produce an SVG that only renders correctly inside Deck's own token
+ * scope. Substituting the values here keeps the copied markup a portable,
+ * standalone asset.
+ */
+const brandPrimitives: Record<string, string> = {
+  'var(--deck-primitive-signal-green)': '#2e6e5b',
+  'var(--deck-primitive-ink)': '#1a1a1a',
+}
+
+function toCleanSvg(element: React.ReactElement): string {
+  let markup = renderToStaticMarkup(element)
+  for (const [token, hex] of Object.entries(brandPrimitives)) {
+    markup = markup.split(token).join(hex)
+  }
+  return markup
+}
+
+function CopySvgButton({
+  getSvg,
+  label,
+}: {
+  getSvg: () => string
+  label: string
+}) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(getSvg())
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // Clipboard access denied or unavailable — nothing to recover into.
+    }
+  }
+
+  return (
+    <div style={{ position: 'absolute', top: '6px', right: '6px' }}>
+      <IconButton
+        label={copied ? `Copied ${label} SVG` : `Copy ${label} SVG`}
+        icon={copied ? <CheckIcon /> : <CopyIcon />}
+        variant="ghost"
+        size="sm"
+        onClick={handleCopy}
+        style={{ opacity: copied ? 1 : 0.5 }}
+      />
+    </div>
+  )
+}
+
 /**
  * The mark and wordmark on a fixed light plate — deliberately not the
  * surrounding docs page background, since these are the "Full Color —
@@ -187,6 +278,7 @@ const shadowUse: Record<string, string> = {
  */
 export function BrandMarks() {
   const plateStyle: React.CSSProperties = {
+    position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -201,6 +293,7 @@ export function BrandMarks() {
       <div style={{ textAlign: 'center' }}>
         <div style={{ ...plateStyle, width: 96, height: 96 }}>
           <Mark style={{ height: 48, width: 48 }} />
+          <CopySvgButton getSvg={() => toCleanSvg(<Mark />)} label="Mark" />
         </div>
         <Text size="xs" tone="muted" style={{ marginTop: '8px' }}>
           Mark
@@ -209,6 +302,10 @@ export function BrandMarks() {
       <div style={{ textAlign: 'center' }}>
         <div style={{ ...plateStyle, width: 280, height: 96 }}>
           <Wordmark style={{ height: 40 }} />
+          <CopySvgButton
+            getSvg={() => toCleanSvg(<Wordmark />)}
+            label="Wordmark"
+          />
         </div>
         <Text size="xs" tone="muted" style={{ marginTop: '8px' }}>
           Wordmark
