@@ -4,6 +4,7 @@ import App from './App';
 
 const meta = {
   component: App,
+  title: 'App/Misc/Vite Smoke Test',
   tags: ['ai-generated'],
 } satisfies Meta<typeof App>;
 
