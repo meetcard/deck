@@ -59,7 +59,14 @@
   --deck-color-action-destructive-hover: var(--deck-primitive-clay-text);
   --deck-color-action-destructive-text: var(--deck-primitive-paper);
 
-  /* Status */
+  /**
+   * Status.
+   *
+   * Each `status-*-text` is verified against its OWN `status-*-background`
+   * only. On any other surface — a card, the page — use `text-error` /
+   * `text-warning`, which are verified against the regular backgrounds.
+   * Mixing the two families is a silent contrast failure.
+   */
   --deck-color-status-success-background: var(--deck-primitive-green-tint);
   --deck-color-status-success-text: var(--deck-primitive-signal-green);
   --deck-color-status-success-border: var(--deck-primitive-green-mid);

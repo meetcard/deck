@@ -1,0 +1,87 @@
+.deck-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--deck-space-4);
+  box-sizing: border-box;
+  font-family: var(--deck-font-sans);
+  font-weight: var(--deck-font-weight-medium);
+  letter-spacing: var(--deck-tracking-label);
+  white-space: nowrap;
+  color: var(--deck-color-text-default);
+  background-color: var(--deck-color-background-subtle);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-md);
+}
+
+.deck-tag--sm {
+  min-height: 22px;
+  padding: 0 var(--deck-space-6);
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+}
+
+.deck-tag--md {
+  min-height: 28px;
+  padding: 0 var(--deck-space-10);
+  font-size: var(--deck-font-size-label-sm);
+  line-height: var(--deck-line-height-label-sm);
+}
+
+/* Filter variant */
+.deck-tag--toggle {
+  cursor: pointer;
+  transition:
+    background-color var(--deck-duration-fast) var(--deck-ease-standard),
+    border-color var(--deck-duration-fast) var(--deck-ease-standard),
+    color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-tag--toggle:hover {
+  border-color: var(--deck-color-border-strong);
+}
+
+.deck-tag--toggle:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-tag--selected {
+  background-color: var(--deck-color-background-brand-subtle);
+  border-color: var(--deck-color-border-brand);
+  color: var(--deck-color-text-brand);
+}
+
+/* Remove control */
+.deck-tag__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: calc(var(--deck-space-2) * -1);
+  padding: 0;
+  cursor: pointer;
+  color: var(--deck-color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--deck-radius-full);
+  transition:
+    color var(--deck-duration-fast) var(--deck-ease-standard),
+    background-color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-tag__remove:hover {
+  color: var(--deck-color-text-default);
+  background-color: var(--deck-color-background-overlay);
+}
+
+.deck-tag__remove:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: 1px;
+}
+
+.deck-tag__remove > svg {
+  display: block;
+  width: 8px;
+  height: 8px;
+}

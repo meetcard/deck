@@ -1,0 +1,75 @@
+.deck-search-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-6);
+  min-width: 0;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-search-field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.deck-search-field__icon {
+  position: absolute;
+  left: var(--deck-space-12);
+  display: inline-flex;
+  color: var(--deck-color-text-muted);
+  pointer-events: none;
+}
+
+.deck-search-field__icon > svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.deck-search-field__input {
+  padding-left: var(--deck-space-40);
+  padding-right: var(--deck-space-40);
+}
+
+/* Chrome and Safari draw their own clear affordance for type="search";
+   suppress it so ours is the only one and it stays token-styled. */
+.deck-search-field__input::-webkit-search-decoration,
+.deck-search-field__input::-webkit-search-cancel-button,
+.deck-search-field__input::-webkit-search-results-button,
+.deck-search-field__input::-webkit-search-results-decoration {
+  appearance: none;
+}
+
+.deck-search-field__clear {
+  position: absolute;
+  right: var(--deck-space-8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  cursor: pointer;
+  color: var(--deck-color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--deck-radius-full);
+  transition: color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-search-field__clear:hover {
+  color: var(--deck-color-text-default);
+  background-color: var(--deck-color-background-subtle);
+}
+
+.deck-search-field__clear:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: 1px;
+}
+
+.deck-search-field__clear > svg {
+  display: block;
+  width: 12px;
+  height: 12px;
+}

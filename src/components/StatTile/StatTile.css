@@ -1,0 +1,82 @@
+.deck-stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-4);
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--deck-space-16);
+  font-family: var(--deck-font-sans);
+  background-color: var(--deck-color-background-elevated);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-lg);
+}
+
+.deck-stat-tile__label {
+  margin: 0;
+  font-size: var(--deck-font-size-label-sm);
+  line-height: var(--deck-line-height-label-sm);
+  font-weight: var(--deck-font-weight-medium);
+  letter-spacing: var(--deck-tracking-caps);
+  text-transform: uppercase;
+  color: var(--deck-color-text-muted);
+}
+
+.deck-stat-tile__value {
+  margin: 0;
+  font-size: var(--deck-font-size-display-sm);
+  line-height: var(--deck-line-height-display-sm);
+  letter-spacing: var(--deck-tracking-display);
+  font-weight: var(--deck-font-weight-semibold);
+  color: var(--deck-color-text-default);
+  font-variant-numeric: tabular-nums;
+}
+
+.deck-stat-tile__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-8);
+  margin-top: var(--deck-space-2);
+}
+
+.deck-stat-tile__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--deck-space-4);
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  font-weight: var(--deck-font-weight-medium);
+}
+
+.deck-stat-tile__trend > svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.deck-stat-tile__trend--positive {
+  color: var(--deck-color-status-success-text);
+}
+
+/* `text-error`, not `status-error-text`: the latter is only verified against
+   the status error background, and this trend sits on the elevated tile. */
+.deck-stat-tile__trend--negative {
+  color: var(--deck-color-text-error);
+}
+
+.deck-stat-tile__trend--neutral {
+  color: var(--deck-color-text-muted);
+}
+
+.deck-stat-tile__caption {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+@media (max-width: 640px) {
+  .deck-stat-tile__value {
+    font-size: var(--deck-font-size-heading-xl);
+    line-height: var(--deck-line-height-heading-xl);
+  }
+}

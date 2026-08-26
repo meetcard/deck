@@ -1,0 +1,82 @@
+.deck-usage-meter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+  min-width: 0;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-usage-meter__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--deck-space-12);
+}
+
+.deck-usage-meter__label {
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+}
+
+.deck-usage-meter__readout {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.deck-usage-meter__track {
+  position: relative;
+  height: 8px;
+  overflow: hidden;
+  background-color: var(--deck-color-background-subtle);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-full);
+}
+
+.deck-usage-meter__fill {
+  height: 100%;
+  width: calc(var(--deck-usage-ratio, 0) * 100%);
+  border-radius: inherit;
+  background-color: var(--deck-color-action-primary);
+  transition: width var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+.deck-usage-meter__track--warn .deck-usage-meter__fill {
+  background-color: var(--deck-color-status-warning-border);
+}
+
+.deck-usage-meter__track--full .deck-usage-meter__fill {
+  background-color: var(--deck-color-status-error-border);
+}
+
+.deck-usage-meter__status {
+  margin: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+}
+
+/* On-surface text tokens: the meter can sit on any surface, whereas the
+   `status-*-text` tokens are only verified against their own backgrounds. */
+.deck-usage-meter__status--warn {
+  color: var(--deck-color-text-warning);
+}
+
+.deck-usage-meter__status--full {
+  color: var(--deck-color-text-error);
+}
+
+.deck-usage-meter__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-usage-meter__fill {
+    transition: none;
+  }
+}

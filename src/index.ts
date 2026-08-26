@@ -86,7 +86,47 @@ export type { IconButtonProps } from './components/IconButton'
 export { Link } from './components/Link'
 export type { LinkProps, LinkTone } from './components/Link'
 
+/* ---- Feedback -------------------------------------------------------- */
+export { Banner } from './components/Banner'
+export type { BannerProps, BannerTone } from './components/Banner'
+
+export { EmptyState } from './components/EmptyState'
+export type { EmptyStateProps } from './components/EmptyState'
+
+export { Spinner } from './components/Spinner'
+export type { SpinnerProps, SpinnerSize } from './components/Spinner'
+
+/* ---- Overlays -------------------------------------------------------- */
+export { Sheet } from './components/Sheet'
+export type { SheetProps } from './components/Sheet'
+
+/* ---- Application shell ------------------------------------------------ */
+export { AppBar } from './components/AppBar'
+export type { AppBarProps } from './components/AppBar'
+
+export { BottomNav } from './components/BottomNav'
+export type {
+  BottomNavProps,
+  BottomNavItemProps,
+} from './components/BottomNav'
+
+/* ---- Navigation & progress -------------------------------------------- */
+export { Stepper } from './components/Stepper'
+export type { StepperProps, Step } from './components/Stepper'
+
 /* ---- Data display ---------------------------------------------------- */
+export { StatTile } from './components/StatTile'
+export type { StatTileProps, TrendDirection } from './components/StatTile'
+
+export { UsageMeter } from './components/UsageMeter'
+export type { UsageMeterProps } from './components/UsageMeter'
+
+export { Tag } from './components/Tag'
+export type { TagProps } from './components/Tag'
+
+export { QRCode } from './components/QRCode'
+export type { QRCodeProps, QRCodeSize } from './components/QRCode'
+
 export { Badge } from './components/Badge'
 export type {
   BadgeProps,
@@ -113,6 +153,9 @@ export type { InputProps } from './components/Input'
 export { Textarea } from './components/Textarea'
 export type { TextareaProps } from './components/Textarea'
 
+export { SearchField } from './components/SearchField'
+export type { SearchFieldProps } from './components/SearchField'
+
 export { Select } from './components/Select'
 export type { SelectProps, SelectOption } from './components/Select'
 
@@ -137,3 +180,6 @@ export type { CompanyCardProps } from './components/CompanyCard'
 
 export { ContactCard } from './components/ContactCard'
 export type { ContactCardProps, ContactDetail } from './components/ContactCard'
+
+export { EventCard } from './components/EventCard'
+export type { EventCardProps } from './components/EventCard'

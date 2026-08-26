@@ -44,9 +44,28 @@ load it however your app loads fonts. The stack degrades to system UI.
 | **Typography** | `Text`, `Heading` |
 | **Layout** | `Stack`, `Divider`, `Card` (+ `CardHeader`, `CardBody`, `CardFooter`) |
 | **Actions** | `Button`, `IconButton`, `Link` |
-| **Data display** | `Badge`, `Avatar` |
-| **Forms** | `Field`, `Input`, `Textarea`, `Select`, `Checkbox`, `Radio` (+ `RadioGroup`), `Switch` |
-| **MeetCard patterns** | `MeetCard`, `PersonCard`, `CompanyCard`, `ContactCard` |
+| **Data display** | `Badge`, `Avatar`, `Tag`, `StatTile`, `UsageMeter`, `QRCode` |
+| **Forms** | `Field`, `Input`, `Textarea`, `Select`, `SearchField`, `Checkbox`, `Radio` (+ `RadioGroup`), `Switch` |
+| **Feedback** | `Banner`, `EmptyState`, `Spinner` |
+| **Overlays** | `Sheet` |
+| **App shell** | `AppBar`, `BottomNav` |
+| **Navigation** | `Stepper` |
+| **MeetCard patterns** | `MeetCard`, `PersonCard`, `CompanyCard`, `ContactCard`, `EventCard` |
+
+### Building the two surfaces
+
+The **public networking layer** (`meetcard.io`) is unauthenticated and
+recipient-first: `MeetCard` and `PersonCard`/`CompanyCard`/`EventCard` for the
+profile, company, and event pages; `QRCode` for the scannable card; `Banner`
+for the "create your own MeetCard" invite; and `Stepper` for the four-step
+booking wizard (`purpose → availability → details → booked`), where each step
+is its own route.
+
+The **application layer** (`app.meetcard.io`) is the installed PWA:
+`AppBar` + `BottomNav` form the shell — four destinations plus the elevated
+**Exchange** action, which opens a `Sheet` offering "Show my card" and "Scan a
+card". `SearchField` and `Tag` drive the Rolodex, `StatTile` the dashboard
+headline metrics, and `UsageMeter` the Solo connections cap.
 
 ## Usage
 

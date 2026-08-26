@@ -1,0 +1,52 @@
+.deck-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.deck-spinner__track {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--deck-radius-full);
+  border: 2px solid var(--deck-color-border-default);
+  border-top-color: var(--deck-color-action-primary);
+  animation: deck-spin 700ms linear infinite;
+}
+
+.deck-spinner--sm {
+  width: 16px;
+  height: 16px;
+}
+.deck-spinner--md {
+  width: 24px;
+  height: 24px;
+}
+.deck-spinner--lg {
+  width: 40px;
+  height: 40px;
+}
+
+@keyframes deck-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Motion-sensitive users get a static ring with a pulsing accent instead. */
+@media (prefers-reduced-motion: reduce) {
+  .deck-spinner__track {
+    animation: deck-spinner-pulse 1.4s ease-in-out infinite;
+  }
+
+  @keyframes deck-spinner-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+}
