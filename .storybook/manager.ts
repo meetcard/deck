@@ -148,17 +148,6 @@ const DOC_ICONS: Record<string, () => React.ReactElement> = {
   'meet-deck-design-principles--docs': DesignPrinciplesIcon,
 }
 
-/**
- * A line under each root saying what that section is for, keyed by root id.
- * The three roots are a sequence — learn it, see it working, then build with
- * it — and the labels alone don't carry that; the descriptions do.
- */
-const ROOT_DESCRIPTIONS: Record<string, string> = {
-  'meet-deck': 'Understand what Deck is.',
-  experience: 'See Deck in a real product.',
-  build: 'Explore the building blocks.',
-}
-
 addons.setConfig({
   theme: deckTheme,
   sidebar: {
@@ -186,22 +175,6 @@ addons.setConfig({
         if (DocIcon) return iconSpan(React.createElement(DocIcon))
       }
 
-      if (item.type === 'root') {
-        const description = ROOT_DESCRIPTIONS[item.id]
-        if (description) {
-          return React.createElement(
-            'span',
-            { className: 'deck-root-label' },
-            React.createElement('span', null, item.name),
-            React.createElement(
-              'span',
-              { className: 'deck-root-label__description' },
-              description,
-            ),
-          )
-        }
-      }
-
       return item.name
     },
   },
@@ -225,27 +198,6 @@ style.textContent = `
     .map((id) => `#storybook-explorer-tree [data-item-id='${id}'] svg[type='document']`)
     .join(',\n  ')} {
     display: none;
-  }
-
-  /*
-    Root headers are laid out for a single uppercase word, so the label
-    stacks its description and the row grows to fit.
-  */
-  .deck-root-label {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  /* Opts out of the caps treatment Storybook applies to root headers. */
-  .deck-root-label__description {
-    font-size: 11px;
-    font-weight: 400;
-    line-height: 1.4;
-    text-transform: none;
-    letter-spacing: 0;
-    color: #6b6b6b;
   }
 `
 document.head.appendChild(style)
