@@ -117,6 +117,26 @@ export type {
 export { Stepper } from './components/Stepper'
 export type { StepperProps, Step } from './components/Stepper'
 
+/* ---- Scheduling ------------------------------------------------------- */
+export { ChoiceGroup } from './components/ChoiceGroup'
+export type {
+  ChoiceGroupProps,
+  ChoiceGroupVariant,
+  ChoiceOption,
+} from './components/ChoiceGroup'
+
+export { DayStrip } from './components/DayStrip'
+export type { DayStripProps, DayOption } from './components/DayStrip'
+
+export { TimeSlotPicker } from './components/TimeSlotPicker'
+export type { TimeSlotPickerProps, TimeSlot } from './components/TimeSlotPicker'
+
+export { BookingSummary } from './components/BookingSummary'
+export type {
+  BookingSummaryProps,
+  BookingSummaryItem,
+} from './components/BookingSummary'
+
 /* ---- Data display ---------------------------------------------------- */
 export { StatTile } from './components/StatTile'
 export type { StatTileProps, TrendDirection } from './components/StatTile'

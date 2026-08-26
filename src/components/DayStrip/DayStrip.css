@@ -1,0 +1,173 @@
+.deck-day-strip {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-day-strip__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--deck-space-8);
+  margin-bottom: var(--deck-space-8);
+}
+
+.deck-day-strip__legend {
+  padding: 0;
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+}
+
+.deck-day-strip__zone {
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+}
+
+.deck-day-strip__track {
+  display: flex;
+  gap: var(--deck-space-8);
+  /* The strip runs past the viewport on purpose; scroll it rather than wrap,
+     so the run of days stays a single readable sequence. */
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: var(--deck-space-4);
+}
+
+.deck-day-strip__day {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  cursor: pointer;
+}
+
+.deck-day-strip__control {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--deck-space-2);
+  min-width: 3.5rem;
+  padding: var(--deck-space-8);
+  background-color: var(--deck-color-background-elevated);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-lg);
+  transition:
+    background-color var(--deck-duration-fast) var(--deck-ease-standard),
+    border-color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-day-strip__weekday,
+.deck-day-strip__month {
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+  color: var(--deck-color-text-muted);
+}
+
+/* Keeps the row's height while dropping it from view and from the
+   accessibility tree, so repeated months don't restate themselves. */
+.deck-day-strip__month--repeat {
+  visibility: hidden;
+}
+
+.deck-day-strip__date {
+  font-size: var(--deck-font-size-body-md);
+  line-height: var(--deck-line-height-body-md);
+  font-weight: var(--deck-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--deck-color-text-default);
+}
+
+.deck-day-strip__density {
+  display: flex;
+  gap: 2px;
+  margin-top: var(--deck-space-2);
+}
+
+.deck-day-strip__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-color-border-default);
+}
+
+.deck-day-strip__dot--filled {
+  background-color: var(--deck-color-solid-brand);
+}
+
+.deck-day-strip__today {
+  position: absolute;
+  inset-block-start: var(--deck-space-4);
+  inset-inline-end: var(--deck-space-4);
+  width: 4px;
+  height: 4px;
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-color-text-muted);
+}
+
+.deck-day-strip__day:hover
+  .deck-day-strip__input:not(:disabled):not(:checked)
+  + .deck-day-strip__control {
+  border-color: var(--deck-color-border-strong);
+  background-color: var(--deck-color-background-subtle);
+}
+
+.deck-day-strip__input:checked + .deck-day-strip__control {
+  background-color: var(--deck-color-action-primary);
+  border-color: var(--deck-color-action-primary);
+}
+
+.deck-day-strip__input:checked + .deck-day-strip__control
+  .deck-day-strip__weekday,
+.deck-day-strip__input:checked + .deck-day-strip__control
+  .deck-day-strip__month,
+.deck-day-strip__input:checked + .deck-day-strip__control
+  .deck-day-strip__date {
+  color: var(--deck-color-action-primary-text);
+}
+
+.deck-day-strip__input:checked + .deck-day-strip__control
+  .deck-day-strip__dot--filled,
+.deck-day-strip__input:checked + .deck-day-strip__control
+  .deck-day-strip__today {
+  background-color: var(--deck-color-action-primary-text);
+}
+
+.deck-day-strip__input:checked + .deck-day-strip__control .deck-day-strip__dot {
+  background-color: color-mix(
+    in srgb,
+    var(--deck-color-action-primary-text) 35%,
+    transparent
+  );
+}
+
+.deck-day-strip__input:disabled + .deck-day-strip__control {
+  background-color: var(--deck-color-background-subtle);
+  cursor: not-allowed;
+}
+
+.deck-day-strip__input:disabled + .deck-day-strip__control
+  .deck-day-strip__weekday,
+.deck-day-strip__input:disabled + .deck-day-strip__control
+  .deck-day-strip__month,
+.deck-day-strip__input:disabled + .deck-day-strip__control
+  .deck-day-strip__date {
+  color: var(--deck-color-text-disabled);
+}
+
+.deck-day-strip__input:focus-visible + .deck-day-strip__control {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-day-strip__control {
+    transition-duration: 0ms;
+  }
+}
