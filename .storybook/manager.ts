@@ -4,18 +4,21 @@ import { deckTheme } from './theme'
 
 /**
  * Atomic-design sidebar icons — every component's story `meta` carries a
- * `tags: ['atom' | 'molecule' | 'organism']` entry (set at the CSF level,
- * next to `component:`), and `renderLabel` below reads it back to pick the
- * icon. Docs pages and other untagged entries fall through to plain text.
+ * `tags: ['atom' | 'molecule' | 'organism' | 'page']` entry (set at the CSF
+ * level, next to `component:`), and `renderLabel` below reads it back to
+ * pick the icon. Docs pages and other untagged entries fall through to
+ * plain text.
  *
  *   atom      — a single filled circle: the smallest, indivisible unit
  *   molecule  — two overlapping filled circles: a couple of atoms working
  *               as one
  *   organism  — a 2×2 grid of filled squares: a composed section of UI
+ *   page      — a single large filled square: a full, real screen (as
+ *               opposed to an organism, which is a section within one)
  */
-type AtomicKind = 'atom' | 'molecule' | 'organism'
+type AtomicKind = 'atom' | 'molecule' | 'organism' | 'page'
 
-const ATOMIC_KINDS: AtomicKind[] = ['atom', 'molecule', 'organism']
+const ATOMIC_KINDS: AtomicKind[] = ['atom', 'molecule', 'organism', 'page']
 
 function atomicKindFromTags(tags: string[] | undefined): AtomicKind | null {
   if (!tags) return null
@@ -65,10 +68,19 @@ function OrganismIcon() {
   )
 }
 
+function PageIcon() {
+  return React.createElement(
+    'svg',
+    iconSvgProps,
+    React.createElement('rect', { x: 1, y: 1, width: 12, height: 12, rx: 2, fill: 'currentColor' }),
+  )
+}
+
 const ICONS: Record<AtomicKind, () => React.ReactElement> = {
   atom: AtomIcon,
   molecule: MoleculeIcon,
   organism: OrganismIcon,
+  page: PageIcon,
 }
 
 /**
