@@ -61,7 +61,13 @@ export const MeetCard = forwardRef<HTMLDivElement, MeetCardProps>(
     return (
       <div
         ref={ref}
-        className={cx('deck-meetcard', `deck-meetcard--${tone}`, className)}
+        className={cx(
+          'deck-meetcard',
+          `deck-meetcard--${tone}`,
+          // Re-points descendant tokens to the fill's guaranteed on-color.
+          tone === 'brand' && 'deck-solid-surface',
+          className,
+        )}
         {...props}
       >
         <div className="deck-meetcard__top">

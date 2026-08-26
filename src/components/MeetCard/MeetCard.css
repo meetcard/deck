@@ -26,20 +26,21 @@
   }
 }
 
-/* Signature card: brand green surface, inverse text. */
+/* Signature card: solid brand surface. Uses the `solid` pair so the text
+   is guaranteed against the fill in both themes — `text-inverse` tracks
+   the page, not this surface, and silently fails contrast on it. */
+/* The on-color and descendant token overrides come from
+   `.deck-solid-surface`, which the component adds alongside this class. */
 .deck-meetcard--brand {
-  background-color: var(--deck-color-background-brand);
-  border-color: var(--deck-color-border-brand);
+  background-color: var(--deck-color-solid-brand);
+  border-color: var(--deck-color-solid-brand);
 }
 
-.deck-meetcard--brand .deck-meetcard__name {
-  color: var(--deck-color-text-inverse);
-}
-
+/* Hierarchy comes from size and weight, not opacity — fading the text
+   would eat the contrast headroom the token pair just guaranteed. */
 .deck-meetcard--brand .deck-meetcard__subtitle,
 .deck-meetcard--brand .deck-meetcard__tagline {
-  color: var(--deck-color-text-inverse);
-  opacity: 0.85;
+  font-weight: var(--deck-font-weight-medium);
 }
 
 /* Paper variant for light surfaces and print-like contexts. */

@@ -74,7 +74,7 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
             <div className="deck-person-card__heading">
               <Heading level={3} size="sm" truncate>
                 {href ? (
-                  <Link href={href} tone="default">
+                  <Link href={href} tone="default" underline="hover">
                     {name}
                   </Link>
                 ) : (

@@ -29,10 +29,9 @@ const preview: Preview = {
     },
 
     a11y: {
-      // 'todo' - show a11y violations in the test UI only
-      // 'error' - fail CI on a11y violations
-      // 'off' - skip a11y checks entirely
-      test: 'todo',
+      // Violations fail the test run, so an inaccessible story cannot merge.
+      // 'todo' downgrades to a warning if you need to land work in stages.
+      test: 'error',
       config: {
         // Page-scope rules that cannot hold for a single component rendered
         // in isolation. Leaving them on reports noise on every story and

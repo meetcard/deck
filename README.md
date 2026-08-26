@@ -109,8 +109,16 @@ Deck encodes accessibility in the API rather than leaving it to memory:
 - Semantic HTML first: `<hr>`, `<fieldset>`/`<legend>`, `<dl>`, native `<select>`.
 - One shared focus treatment across every interactive component.
 
-The a11y addon runs axe on every story. It's set to `'todo'` in
-`.storybook/preview.tsx`; switch to `'error'` to make violations fail CI.
+The a11y addon runs axe on **every story as part of `npm test`**
+(`a11y.test: 'error'` in `.storybook/preview.tsx`), so a story with a
+violation fails the build. Page-scope rules that cannot hold for an isolated
+component (`region`, `landmark-one-main`, `page-has-heading-one`, `bypass`)
+are disabled there.
+
+Solid brand and status surfaces must carry the `deck-solid-surface` class
+alongside their fill. It re-points descendant color tokens to an on-color
+proven against that fill — inheriting `color` alone is not enough, because
+`Text`, `Heading`, and `Button` each set their own `color` from tokens.
 
 ## Testing
 

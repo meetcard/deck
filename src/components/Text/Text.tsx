@@ -5,13 +5,22 @@ import './Text.css'
 
 export type TextSize = 'xl' | 'lg' | 'md' | 'sm' | 'xs'
 
+/**
+ * Body-copy tones.
+ *
+ * There is deliberately no `display` tone: the Clay Display color only
+ * clears contrast as large text, which the Body scale never reaches. Use
+ * `<Heading tone="display">` at a display size instead.
+ *
+ * `disabled` is for content inside a disabled control, where WCAG 1.4.3
+ * exempts contrast — never for ordinary de-emphasised text (use `muted`).
+ */
 export type TextTone =
   | 'default'
   | 'muted'
   | 'disabled'
   | 'inverse'
   | 'brand'
-  | 'display'
   | 'error'
   | 'warning'
 

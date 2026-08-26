@@ -64,7 +64,13 @@ Before a component ships:
 - Meaning is never carried by color alone — pair it with text, an icon, or a
   dot.
 - Errors are announced (`role="alert"`), not just rendered.
-- The a11y panel shows no violations for any of its stories.
+- The a11y panel shows no violations for any of its stories — `npm test`
+  enforces this, so a violation is a failing build, not a warning.
+- Text on a solid fill uses the `--deck-color-solid-*` pair, never
+  `text-inverse` (which tracks the page, not the fill), and the element
+  carries `deck-solid-surface` so nested components inherit the on-color.
+- A link inside prose keeps the default `underline="always"`; `hover` is
+  only for links outside a text block.
 
 Prefer a native element over an ARIA reimplementation. `Select` wraps a real
 `<select>` on purpose: platform keyboard behaviour, mobile pickers, and screen

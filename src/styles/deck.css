@@ -31,6 +31,48 @@
   text-rendering: optimizeLegibility;
 }
 
+/**
+ * Solid surface contract.
+ *
+ * Apply to any element filled with `--deck-color-solid-*`. Text and control
+ * components set their own `color` from tokens, so inheriting a `color` is
+ * not enough — this re-points the tokens themselves, and custom properties
+ * inherit, so every descendant resolves against the fill instead of the page.
+ *
+ * Buttons become outlined in the on-color, hover washes are derived from it,
+ * and the focus ring switches to it too (the brand focus color is the fill
+ * itself on these surfaces, so it would otherwise be invisible).
+ */
+.deck-solid-surface {
+  --deck-color-text-default: var(--deck-color-solid-on);
+  --deck-color-text-muted: var(--deck-color-solid-on);
+
+  --deck-color-action-secondary: transparent;
+  --deck-color-action-secondary-border: var(--deck-color-solid-on);
+  --deck-color-action-secondary-text: var(--deck-color-solid-on);
+
+  --deck-color-background-subtle: color-mix(
+    in srgb,
+    var(--deck-color-solid-on) 14%,
+    transparent
+  );
+  --deck-color-background-overlay: color-mix(
+    in srgb,
+    var(--deck-color-solid-on) 22%,
+    transparent
+  );
+
+  --deck-color-border-default: color-mix(
+    in srgb,
+    var(--deck-color-solid-on) 35%,
+    transparent
+  );
+  --deck-color-border-strong: var(--deck-color-solid-on);
+  --deck-color-border-focus: var(--deck-color-solid-on);
+
+  color: var(--deck-color-solid-on);
+}
+
 /* Shared focus treatment for every interactive Deck component. */
 .deck-focus-ring:focus-visible {
   outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);

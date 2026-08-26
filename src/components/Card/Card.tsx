@@ -57,6 +57,8 @@ export const Card = forwardRef<HTMLElement, CardProps>(function Card(
       className={cx(
         'deck-card',
         `deck-card--surface-${surface}`,
+        // Re-points descendant tokens to the fill's guaranteed on-color.
+        surface === 'brand' && 'deck-solid-surface',
         elevation !== 'none' && `deck-card--elevation-${elevation}`,
         interactive && 'deck-card--interactive',
         className,

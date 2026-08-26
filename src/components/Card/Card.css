@@ -28,10 +28,11 @@
   background-color: var(--deck-color-background-elevated);
   color: var(--deck-color-text-default);
 }
+/* Solid fill. The on-color and descendant token overrides come from
+   `.deck-solid-surface`, which the component adds alongside this class. */
 .deck-card--surface-brand {
-  background-color: var(--deck-color-background-brand);
-  border-color: var(--deck-color-border-brand);
-  color: var(--deck-color-text-inverse);
+  background-color: var(--deck-color-solid-brand);
+  border-color: var(--deck-color-solid-brand);
 }
 
 /* Elevation */

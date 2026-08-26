@@ -34,7 +34,10 @@
   --deck-color-text-brand: var(--deck-primitive-signal-green);
   --deck-color-text-display: var(--deck-primitive-clay-display);
   --deck-color-text-error: var(--deck-primitive-clay-text);
-  --deck-color-text-warning: var(--deck-primitive-clay-display);
+  /* Figma's text/warning is Clay Display (#c66a4a), which is only 3.55:1 on
+     Paper and fails AA for body copy. Warning text is body-sized, so Deck
+     uses Clay Text (#a84b2c, 5.34:1). Deviation from the kit is deliberate. */
+  --deck-color-text-warning: var(--deck-primitive-clay-text);
 
   /* Border */
   --deck-color-border-default: var(--deck-primitive-hairline);
@@ -66,6 +69,27 @@
   --deck-color-status-error-background: var(--deck-primitive-clay-tint);
   --deck-color-status-error-text: var(--deck-primitive-clay-text);
   --deck-color-status-error-border: var(--deck-primitive-brick-deep);
+
+  /**
+   * Solid fills.
+   *
+   * A fill and the on-color guaranteed to clear 4.5:1 against it. Needed
+   * because `text-inverse` is defined relative to the *page*, so it is not
+   * safe on an arbitrary coloured surface — pairing it with a mid-tone fill
+   * silently fails contrast. Use these for any solid brand or status
+   * surface: solid badges, brand cards, the MeetCard face.
+   *
+   * Warning and error are close in luminance here because the brand puts
+   * both on the Clay/Brick family (Figma assigns `#a84b2c` to warning-text
+   * and error-text alike). They differ in hue, but never rely on that
+   * alone — the label text carries the meaning.
+   */
+  --deck-color-solid-neutral: var(--deck-primitive-mist-deep);
+  --deck-color-solid-brand: var(--deck-primitive-signal-green);
+  --deck-color-solid-success: var(--deck-primitive-signal-green);
+  --deck-color-solid-warning: var(--deck-primitive-clay-text);
+  --deck-color-solid-error: var(--deck-primitive-brick-deep);
+  --deck-color-solid-on: var(--deck-primitive-paper);
 
   /* Elevation tint — shadows are ink-based in light mode. */
   --deck-shadow-color: 26 26 26;
@@ -124,6 +148,14 @@
     --deck-color-status-error-text: #d38e75;
     --deck-color-status-error-border: #b56a5a;
 
+    /* Bright fills with Ink as the on-color — see the light block above. */
+    --deck-color-solid-neutral: #acaca6;
+    --deck-color-solid-brand: #6fc3aa;
+    --deck-color-solid-success: #6fc3aa;
+    --deck-color-solid-warning: #c66a4a;
+    --deck-color-solid-error: #b87060;
+    --deck-color-solid-on: #1a1a1a;
+
     --deck-shadow-color: 0 0 0;
   }
 }
@@ -172,6 +204,14 @@
   --deck-color-status-error-background: #44312b;
   --deck-color-status-error-text: #d38e75;
   --deck-color-status-error-border: #b56a5a;
+
+  /* Bright fills with Ink as the on-color — see the light block above. */
+  --deck-color-solid-neutral: #acaca6;
+  --deck-color-solid-brand: #6fc3aa;
+  --deck-color-solid-success: #6fc3aa;
+  --deck-color-solid-warning: #c66a4a;
+  --deck-color-solid-error: #b87060;
+  --deck-color-solid-on: #1a1a1a;
 
   --deck-shadow-color: 0 0 0;
 }

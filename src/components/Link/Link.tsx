@@ -7,7 +7,15 @@ export type LinkTone = 'brand' | 'default' | 'muted' | 'inverse'
 
 export interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   tone?: LinkTone
-  /** `hover` keeps prose clean; `always` is clearer for standalone links. */
+  /**
+   * `always` (the default) is the accessible choice inside prose: a link
+   * distinguished from surrounding text by color alone needs 3:1 against
+   * that text, which brand colors rarely clear.
+   *
+   * Only use `hover` where the link is NOT inside a block of text — a card
+   * title, a nav item, a standalone action — so its role is obvious from
+   * position rather than color.
+   */
   underline?: 'always' | 'hover'
   /**
    * Opens in a new tab with safe `rel`, and appends a visually hidden
@@ -29,7 +37,7 @@ export interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
   {
     tone = 'brand',
-    underline = 'hover',
+    underline = 'always',
     external = false,
     className,
     children,

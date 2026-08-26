@@ -78,7 +78,7 @@ export const CompanyCard = forwardRef<HTMLElement, CompanyCardProps>(
             <div className="deck-company-card__heading">
               <Heading level={3} size="sm" truncate>
                 {href ? (
-                  <Link href={href} tone="default">
+                  <Link href={href} tone="default" underline="hover">
                     {name}
                   </Link>
                 ) : (

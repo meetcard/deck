@@ -42,9 +42,6 @@
 .deck-text--tone-brand {
   color: var(--deck-color-text-brand);
 }
-.deck-text--tone-display {
-  color: var(--deck-color-text-display);
-}
 .deck-text--tone-error {
   color: var(--deck-color-text-error);
 }

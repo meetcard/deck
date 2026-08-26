@@ -80,24 +80,25 @@
   color: var(--deck-color-status-error-text);
 }
 
-/* ---- Solid ---------------------------------------------------------- */
+/* ---- Solid ----------------------------------------------------------
+   Uses the `solid` token family: each fill ships with an on-color proven
+   to clear 4.5:1 against it. `text-inverse` is NOT safe here — it tracks
+   the page, not the fill. */
+.deck-badge--solid {
+  color: var(--deck-color-solid-on);
+}
 .deck-badge--solid.deck-badge--neutral {
-  background-color: var(--deck-color-text-muted);
-  color: var(--deck-color-text-inverse);
+  background-color: var(--deck-color-solid-neutral);
 }
 .deck-badge--solid.deck-badge--brand {
-  background-color: var(--deck-color-background-brand);
-  color: var(--deck-color-text-inverse);
+  background-color: var(--deck-color-solid-brand);
 }
 .deck-badge--solid.deck-badge--success {
-  background-color: var(--deck-color-status-success-border);
-  color: var(--deck-color-text-inverse);
+  background-color: var(--deck-color-solid-success);
 }
 .deck-badge--solid.deck-badge--warning {
-  background-color: var(--deck-color-status-warning-border);
-  color: var(--deck-color-text-inverse);
+  background-color: var(--deck-color-solid-warning);
 }
 .deck-badge--solid.deck-badge--error {
-  background-color: var(--deck-color-status-error-border);
-  color: var(--deck-color-text-inverse);
+  background-color: var(--deck-color-solid-error);
 }

@@ -25,8 +25,21 @@ export const Sizes: Story = {
   ),
 }
 
-/** Semantic tones. Never communicate meaning with color alone. */
+/**
+ * Semantic tones. Never communicate meaning with color alone.
+ *
+ * There is no `display` tone on Text — the Clay Display color only clears
+ * contrast as large text, so it lives on `Heading` at a display size.
+ */
 export const Tones: Story = {
+  parameters: {
+    a11y: {
+      // `disabled` is shown here as a swatch, out of its real context.
+      // WCAG 1.4.3 exempts text in a disabled control from contrast, but
+      // axe cannot know this standalone sample is such a case.
+      config: { rules: [{ id: 'color-contrast', enabled: false }] },
+    },
+  },
   render: (args) => (
     <Stack gap={8}>
       <Text {...args} tone="default">
@@ -38,14 +51,14 @@ export const Tones: Story = {
       <Text {...args} tone="brand">
         brand — Signal Green emphasis
       </Text>
-      <Text {...args} tone="display">
-        display — warm Clay accent
+      <Text {...args} tone="warning">
+        warning — cautionary copy
       </Text>
       <Text {...args} tone="error">
         error — validation and failure messages
       </Text>
       <Text {...args} tone="disabled">
-        disabled — inert content
+        disabled — only inside a disabled control
       </Text>
     </Stack>
   ),
