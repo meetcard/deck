@@ -1,0 +1,69 @@
+---
+interface Props {
+  title?: string
+  description?: string
+}
+
+const { title = 'Deck Design System — MeetCard', description = "MeetCard's flagship React design system" } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <style is:global>
+      :root {
+        --color-bg: #faf8f4;
+        --color-bg-subtle: #f0ebe1;
+        --color-text: #1a1a1a;
+        --color-text-muted: #6b6b6b;
+        --color-border: #e0dbd2;
+        --color-accent: #2e6e5b;
+        --color-accent-hover: #246b54;
+        --space-24: 24px;
+        --space-32: 32px;
+        --space-16: 16px;
+        --space-12: 12px;
+        --radius-lg: 12px;
+        --radius-full: 9999px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --color-bg: #252d2d;
+          --color-bg-subtle: #323a3a;
+          --color-text: #faf8f4;
+          --color-text-muted: #b3b3b3;
+          --color-border: #3d4545;
+          --color-accent: #4a9d7d;
+          --color-accent-hover: #5bb091;
+        }
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
