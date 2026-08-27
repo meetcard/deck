@@ -8,7 +8,7 @@ interface NavLink {
 // these land somewhere you can browse from. IDs are the real ones from
 // storybook-static/index.json — Storybook does not resolve bare prefixes.
 const links: NavLink[] = [
-  { label: 'Foundations', href: '/storybook/?path=/docs/meet-deck-foundations--docs' },
+  { label: 'Foundations', href: '/storybook/?path=/docs/design-system-foundations--docs' },
   { label: 'Atoms', href: '/storybook/?path=/docs/build-atoms-avatar--docs' },
   { label: 'Molecules', href: '/storybook/?path=/docs/build-molecules-attendeelist--docs' },
   { label: 'Organisms', href: '/storybook/?path=/docs/build-organisms-appbar--docs' },

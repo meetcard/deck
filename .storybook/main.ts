@@ -2,7 +2,7 @@ import type { StorybookConfig } from '@storybook/react-vite';
 
 const config: StorybookConfig = {
   // Root order in the sidebar follows discovery order here, not an
-  // alphabetical or explicit sort — this is Meet Deck, then Experience,
+  // alphabetical or explicit sort — this is Design System, then Experience,
   // then Build on purpose: learn it, see it working, then build with it.
   "stories": [
     "../src/**/*.mdx",
