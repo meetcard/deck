@@ -1,7 +1,16 @@
-# Deploys the Storybook site (deck.meetcard.io), not the npm package.
-# `npm run build` builds the @meetcard/deck library bundle for consumers
-# (vite.lib.config.ts, outputs dist/deck.js — no HTML entry point); the
-# browsable Storybook UI comes from `npm run build-storybook` instead.
+# Deploys both the Astro landing page (at /) and Storybook (at /storybook)
+# Astro output: dist/site/
+# Storybook output: storybook-static/ → published to dist/site/storybook/
 [build]
-  command = "npm run build-storybook"
-  publish = "storybook-static"
+  command = "npm run build:site && npm run build-storybook && mkdir -p dist/site/storybook && cp -r storybook-static/* dist/site/storybook/ || true"
+  publish = "dist/site"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Storybook iframe.html is served from /storybook subdirectory
+# but iframe links reference /storybook paths correctly
+[[redirects]]
+  from = "/storybook/*"
+  to = "/storybook/:splat"
+  status = 200
