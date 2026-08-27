@@ -85,10 +85,22 @@ const PlusIcon = (
  * Four destinations, matching the app's bottom bar. Exchange is deliberately
  * absent: it is the elevated center action below, because it is something you
  * do rather than a place you go.
+ *
+ * Two destinations carry a terser label here than their page title, and only
+ * here — the pages, their headings, and their Storybook entries are unchanged.
+ * A slot gives 61px of label room at 375px wide, the tightest common phone.
+ * "Connections" measures 68 and ellipsised to "Connecti…"; "Dashboard"
+ * measures 59, clearing by 2px, which is one font tweak or one translation
+ * from the same bug. The slots are `flex: 1`, so neither is something the
+ * other labels or the destination count can fix — dropping to three
+ * destinations buys a single pixel. "People" (37) and "Home" (32) both leave
+ * real headroom, and "Home" is what the house icon was already saying.
+ * A terser nav label than page title is ordinary; a truncated primary
+ * destination is not.
  */
 const DESTINATIONS: BottomNavItemProps[] = [
-  { id: '/', label: 'Dashboard', icon: HomeIcon, href: '/' },
-  { id: '/connections', label: 'Connections', icon: ConnectionsIcon, href: '/connections' },
+  { id: '/', label: 'Home', icon: HomeIcon, href: '/' },
+  { id: '/connections', label: 'People', icon: ConnectionsIcon, href: '/connections' },
   { id: '/events', label: 'Events', icon: EventsIcon, href: '/events' },
   { id: '/settings', label: 'Settings', icon: SettingsIcon, href: '/settings' },
 ]

@@ -43,7 +43,8 @@ export const Default: Story = {
 export const WithTitle: Story = {
   args: { currentId: '/connections', title: 'Connections' },
   play: async ({ canvas }) => {
-    const active = canvas.getByRole('link', { name: 'Connections' })
+    // Nav label is "People"; the bar's label is terser than the page title.
+    const active = canvas.getByRole('link', { name: 'People' })
     await expect(active).toHaveAttribute('aria-current', 'page')
   },
 }
