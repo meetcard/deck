@@ -1,0 +1,231 @@
+.exchange-page {
+  display: flex;
+  justify-content: center;
+  padding: var(--deck-space-32);
+}
+
+/* Visually hidden: the sheet title changes while the sheet stays open, so the
+   caption needs its own live region to be announced. */
+.exchange__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- The animated stage ------------------------------------------------ */
+
+/* A fixed-height well so the sheet does not resize under the cards as they
+   move — the surface staying still is what makes the cards read as moving. */
+.exchange__stage {
+  position: relative;
+  height: 168px;
+  border-radius: var(--deck-radius-xl);
+  background-color: var(--deck-color-background-subtle);
+  overflow: hidden;
+}
+
+.exchange-card {
+  position: absolute;
+  box-sizing: border-box;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-10);
+  width: 200px;
+  padding: var(--deck-space-10) var(--deck-space-12);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-lg);
+  background-color: var(--deck-color-background-elevated);
+  box-shadow: var(--deck-shadow-md);
+  transition:
+    transform var(--deck-duration-slow) var(--deck-ease-standard),
+    opacity var(--deck-duration-slow) var(--deck-ease-standard);
+}
+
+.exchange-card__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* The cards deliberately overlap while they fly, so one is always partly
+   hidden. Truncate what the other card covers rather than letting it wrap —
+   a name breaking onto a second line changes the card's height mid-motion. */
+.exchange-card__body > * {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.exchange-card__company {
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+}
+
+/* Beat one — the cards lean toward each other, like two hands meeting. */
+.exchange__stage--greeting .exchange-card--mine {
+  left: 8px;
+  transform: translateY(-50%) rotate(-7deg);
+}
+
+.exchange__stage--greeting .exchange-card--theirs {
+  right: 8px;
+  transform: translateY(-50%) rotate(7deg);
+}
+
+/* Beat two — they slide across each other and flatten out. The crossing is
+   the whole point: it is what says *mutual* rather than *sent*. */
+/* 18px, not 34: far enough that the cards visibly move into each other,
+   close enough that the lower card is still more than an avatar. */
+.exchange__stage--trading .exchange-card--mine {
+  left: 8px;
+  transform: translate(18px, -50%) rotate(-2deg);
+}
+
+.exchange__stage--trading .exchange-card--theirs {
+  right: 8px;
+  transform: translate(-18px, -50%) rotate(2deg);
+  z-index: 1;
+}
+
+/* The seal that appears where the two cards cross. */
+.exchange__seal {
+  position: absolute;
+  /* Sits on the cards' lower edge rather than their centre: dead centre put
+     it squarely on top of a name. */
+  top: calc(50% + 30px);
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--deck-radius-full);
+  color: var(--deck-color-action-primary-text);
+  background-color: var(--deck-color-action-primary);
+  box-shadow: var(--deck-shadow-sm);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.6);
+  transition:
+    opacity var(--deck-duration-base) var(--deck-ease-standard),
+    transform var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+.exchange__seal > svg {
+  width: 15px;
+  height: 15px;
+}
+
+.exchange__stage--trading .exchange__seal {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* ---- Receipt ----------------------------------------------------------- */
+
+.exchange__badge,
+.exchange__saved,
+.exchange__identity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--deck-space-8);
+  margin: 0;
+  font-size: var(--deck-font-size-label-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.exchange__badge {
+  padding: var(--deck-space-8) var(--deck-space-16);
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-color-status-success-background);
+  color: var(--deck-color-status-success-text);
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+  font-weight: var(--deck-font-weight-semibold);
+}
+
+.exchange__saved {
+  padding: var(--deck-space-10);
+  border-radius: var(--deck-radius-lg);
+  background-color: var(--deck-color-background-subtle);
+}
+
+.exchange__badge-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.exchange__badge-icon > svg {
+  width: 14px;
+  height: 14px;
+}
+
+.exchange__receipt {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--deck-space-12);
+}
+
+.exchange__slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+}
+
+.exchange__slot-label {
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+}
+
+/* Static in the receipt: the cards have arrived, so they sit flat and fill
+   their column rather than keeping the absolute placement they fly in. */
+.exchange__slot .exchange-card {
+  position: static;
+  width: 100%;
+  transform: none;
+  box-shadow: none;
+}
+
+/* minmax(0, 1fr) rather than 1fr: a bare 1fr floors at the content's min
+   width, and "Save contact" alone measures wider than a third of the sheet,
+   which pushed the row out of its container. */
+.exchange__next {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--deck-space-8);
+}
+
+@media (max-width: 640px) {
+  .exchange__receipt {
+    grid-template-columns: 1fr;
+  }
+
+  /* Three icon+label buttons need ~383px of text on a 301px row. Stacking is
+     honest; shrinking them would just clip the labels. */
+  .exchange__next {
+    grid-template-columns: 1fr;
+  }
+
+  /* Two 200px cards in a ~300px well overlap by 80px, which buries most of
+     the lower card. Narrower cards keep both readable while still crossing. */
+  .exchange__stage .exchange-card {
+    width: 170px;
+  }
+}
+
+/* The component skips the beats entirely under reduced motion — it renders
+   the receipt on open rather than animating. This is belt-and-braces for any
+   transition that would otherwise still run. */
+@media (prefers-reduced-motion: reduce) {
+  .exchange-card,
+  .exchange__seal {
+    transition: none;
+  }
+}
