@@ -209,3 +209,20 @@ export type { ContactCardProps, ContactDetail } from './components/ContactCard'
 
 export { EventCard } from './components/EventCard'
 export type { EventCardProps } from './components/EventCard'
+
+/* ---- Events ------------------------------------------------------------ */
+export { EventCalendar } from './components/EventCalendar'
+export type {
+  EventCalendarProps,
+  EventCalendarMarkedDate,
+  EventCalendarDateStatus,
+} from './components/EventCalendar'
+
+export { RsvpControl } from './components/RsvpControl'
+export type { RsvpControlProps, RsvpStatus, RsvpCounts } from './components/RsvpControl'
+
+export { EventMetaList } from './components/EventMetaList'
+export type { EventMetaListProps, EventMetaItem } from './components/EventMetaList'
+
+export { AttendeeList } from './components/AttendeeList'
+export type { AttendeeListProps, EventAttendee } from './components/AttendeeList'

@@ -1,0 +1,23 @@
+.deck-rsvp-control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+}
+
+.deck-rsvp-control__option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--deck-space-4);
+}
+
+.deck-rsvp-control__option svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.deck-rsvp-control__tally {
+  margin: 0;
+  font-size: var(--deck-font-size-body-xs);
+  color: var(--deck-color-text-muted);
+}
