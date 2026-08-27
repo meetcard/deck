@@ -1,0 +1,22 @@
+/* The frame is a three-row grid so the content column is the only thing that
+   scrolls — the bar and nav stay put without needing fixed positioning, which
+   would take them out of flow and leave the content to guess at their size. */
+.app-shell {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100%;
+  block-size: 100dvb;
+  background-color: var(--deck-color-background-default);
+}
+
+.app-shell__content {
+  overflow-y: auto;
+  /* Room for the nav's elevated center action, which overhangs its own bar. */
+  padding-block-end: var(--deck-space-16);
+}
+
+.app-shell__exchange {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+}
