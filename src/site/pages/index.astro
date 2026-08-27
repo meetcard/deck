@@ -1,16 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import { NavigationGrid } from '../components/NavigationGrid'
-
-const deckLogo = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="4">
-  <path d="M20 30 L50 50 L80 30 L80 70 Q80 85 65 85 L35 85 Q20 85 20 70 Z" fill="currentColor" />
-</svg>`
+import { LogoSection } from '../components/LogoSection'
 ---
 
 <Layout title="Welcome to Deck" description="MeetCard's flagship React design system">
   <div class="container">
     <div class="content">
-      <div class="logo" set:html={deckLogo} />
+      <LogoSection client:load />
 
       <div class="header">
         <h1>Welcome to Deck</h1>
@@ -52,17 +49,25 @@ const deckLogo = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" 
       text-align: center;
     }
 
+    .logo-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-12);
+    }
+
     .logo {
-      width: 120px;
       height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .logo :global(svg) {
-      width: 100%;
-      height: 100%;
+    .wordmark {
+      height: auto;
+      width: auto;
+      max-width: 150px;
+      color: var(--color-text);
     }
 
     .header {
