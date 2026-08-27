@@ -150,6 +150,9 @@ export type { TagProps } from './components/Tag'
 export { QRCode } from './components/QRCode'
 export type { QRCodeProps, QRCodeSize } from './components/QRCode'
 
+export { CopyField } from './components/CopyField'
+export type { CopyFieldProps } from './components/CopyField'
+
 export { Badge } from './components/Badge'
 export type {
   BadgeProps,
