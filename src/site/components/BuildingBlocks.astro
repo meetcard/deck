@@ -3,11 +3,16 @@
 // ones from storybook-static/index.json — Storybook does not resolve bare
 // prefixes, so each of these points at a concrete first entry in its section.
 // Ordered largest-to-smallest, as in the mockups.
-const blocks = [
-  { label: 'Organisms', href: '/storybook/?path=/docs/build-organisms-appbar--docs', icon: 'grid' },
-  { label: 'Molecules', href: '/storybook/?path=/docs/build-molecules-attendeelist--docs', icon: 'pair' },
-  { label: 'Atoms', href: '/storybook/?path=/docs/build-atoms-avatar--docs', icon: 'dot' },
-] as const
+//
+// Icon geometry is shared with the Storybook sidebar via atomicKindIcons, so
+// a Molecule looks the same in both places.
+import { atomicKindIcons, type AtomicKind } from '../../foundations/icons/atomicKind'
+
+const blocks: ReadonlyArray<{ label: string; href: string; kind: AtomicKind }> = [
+  { label: 'Organisms', href: '/storybook/?path=/docs/build-organisms-appbar--docs', kind: 'organism' },
+  { label: 'Molecules', href: '/storybook/?path=/docs/build-molecules-attendeelist--docs', kind: 'molecule' },
+  { label: 'Atoms', href: '/storybook/?path=/docs/build-atoms-avatar--docs', kind: 'atom' },
+]
 ---
 
 <section class="blocks" aria-labelledby="blocks-heading">
@@ -21,22 +26,25 @@ const blocks = [
         blocks.map((block) => (
           <li>
             <a class="pill" href={block.href}>
-              <svg class="pill__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                {block.icon === 'grid' && (
-                  <>
-                    <rect x="2" y="2" width="5" height="5" rx="1.2" />
-                    <rect x="9" y="2" width="5" height="5" rx="1.2" />
-                    <rect x="2" y="9" width="5" height="5" rx="1.2" />
-                    <rect x="9" y="9" width="5" height="5" rx="1.2" />
-                  </>
+              <svg
+                class="pill__icon"
+                viewBox={atomicKindIcons[block.kind].viewBox}
+                aria-hidden="true"
+                focusable="false"
+              >
+                {atomicKindIcons[block.kind].shapes.map((shape) =>
+                  shape.kind === 'circle' ? (
+                    <circle cx={shape.cx} cy={shape.cy} r={shape.r} />
+                  ) : (
+                    <rect
+                      x={shape.x}
+                      y={shape.y}
+                      width={shape.width}
+                      height={shape.height}
+                      rx={shape.rx}
+                    />
+                  ),
                 )}
-                {block.icon === 'pair' && (
-                  <>
-                    <circle cx="6" cy="9.5" r="3.4" />
-                    <circle cx="10.5" cy="6" r="2.6" />
-                  </>
-                )}
-                {block.icon === 'dot' && <circle cx="8" cy="8" r="3.4" />}
               </svg>
               {block.label}
             </a>

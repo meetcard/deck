@@ -1,6 +1,10 @@
 import React from 'react'
 import { addons } from 'storybook/manager-api'
 import { deckTheme } from './theme'
+import {
+  atomicKindIcons,
+  type AtomicKind,
+} from '../src/foundations/icons/atomicKind'
 
 /**
  * Atomic-design sidebar icons — every component's story `meta` carries a
@@ -9,14 +13,11 @@ import { deckTheme } from './theme'
  * pick the icon. Docs pages and other untagged entries fall through to
  * plain text.
  *
- *   atom      — a single filled circle: the smallest, indivisible unit
- *   molecule  — two overlapping filled circles: a couple of atoms working
- *               as one
- *   organism  — a 2×2 grid of filled squares: a composed section of UI
- *   page      — a single large filled square: a full, real screen (as
- *               opposed to an organism, which is a section within one)
+ * The shapes come from `atomicKindIcons`, which the Astro landing page draws
+ * from too — the two used to keep separate hand-drawn sets and had drifted
+ * apart. Geometry is shared; the colour and 14px size stay local to the
+ * sidebar.
  */
-type AtomicKind = 'atom' | 'molecule' | 'organism' | 'page'
 
 const ATOMIC_KINDS: AtomicKind[] = ['atom', 'molecule', 'organism', 'page']
 
@@ -28,59 +29,45 @@ function atomicKindFromTags(tags: string[] | undefined): AtomicKind | null {
 const iconSvgProps = {
   width: 14,
   height: 14,
-  viewBox: '0 0 14 14',
   'aria-hidden': true,
   focusable: false,
   style: { flexShrink: 0 },
 }
 
-function AtomIcon() {
-  return React.createElement(
-    'svg',
-    iconSvgProps,
-    React.createElement('circle', { cx: 7, cy: 7, r: 5, fill: 'currentColor' }),
-  )
-}
-
-function MoleculeIcon() {
-  return React.createElement(
-    'svg',
-    iconSvgProps,
-    React.createElement('circle', {
-      cx: 5,
-      cy: 7,
-      r: 4.5,
-      fill: 'currentColor',
-      opacity: 0.5,
-    }),
-    React.createElement('circle', { cx: 9.5, cy: 7, r: 4.5, fill: 'currentColor' }),
-  )
-}
-
-function OrganismIcon() {
-  return React.createElement(
-    'svg',
-    iconSvgProps,
-    React.createElement('rect', { x: 1, y: 1, width: 5, height: 5, rx: 1, fill: 'currentColor' }),
-    React.createElement('rect', { x: 8, y: 1, width: 5, height: 5, rx: 1, fill: 'currentColor' }),
-    React.createElement('rect', { x: 1, y: 8, width: 5, height: 5, rx: 1, fill: 'currentColor' }),
-    React.createElement('rect', { x: 8, y: 8, width: 5, height: 5, rx: 1, fill: 'currentColor' }),
-  )
-}
-
-function PageIcon() {
-  return React.createElement(
-    'svg',
-    iconSvgProps,
-    React.createElement('rect', { x: 1, y: 1, width: 12, height: 12, rx: 2, fill: 'currentColor' }),
-  )
+/** Renders one shared icon definition as a filled `currentColor` SVG. */
+function atomicIcon(kind: AtomicKind) {
+  const { viewBox, shapes } = atomicKindIcons[kind]
+  return () =>
+    React.createElement(
+      'svg',
+      { ...iconSvgProps, viewBox },
+      ...shapes.map((shape, i) =>
+        shape.kind === 'circle'
+          ? React.createElement('circle', {
+              key: i,
+              cx: shape.cx,
+              cy: shape.cy,
+              r: shape.r,
+              fill: 'currentColor',
+            })
+          : React.createElement('rect', {
+              key: i,
+              x: shape.x,
+              y: shape.y,
+              width: shape.width,
+              height: shape.height,
+              rx: shape.rx,
+              fill: 'currentColor',
+            }),
+      ),
+    )
 }
 
 const ICONS: Record<AtomicKind, () => React.ReactElement> = {
-  atom: AtomIcon,
-  molecule: MoleculeIcon,
-  organism: OrganismIcon,
-  page: PageIcon,
+  atom: atomicIcon('atom'),
+  molecule: atomicIcon('molecule'),
+  organism: atomicIcon('organism'),
+  page: atomicIcon('page'),
 }
 
 /**
