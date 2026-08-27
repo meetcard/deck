@@ -8,6 +8,7 @@ import { Card, CardBody, CardFooter, CardHeader } from './Card'
 
 const meta = {
   component: Card,
+  title: 'Build/Molecules/Card',
   tags: ['molecule'],
   subcomponents: { CardHeader, CardBody, CardFooter },
 } satisfies Meta<typeof Card>

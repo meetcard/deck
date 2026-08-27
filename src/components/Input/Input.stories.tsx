@@ -24,6 +24,7 @@ const SearchIcon = () => (
 
 const meta = {
   component: Input,
+  title: 'Build/Molecules/Input',
   tags: ['molecule'],
   args: {
     label: 'Work email',

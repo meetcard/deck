@@ -15,6 +15,7 @@ const details = [
 
 const meta = {
   component: ContactCard,
+  title: 'Build/Organisms/ContactCard',
   tags: ['organism'],
   args: {
     name: 'Ada Lovelace',

@@ -4,6 +4,7 @@ import { EventCalendar } from './EventCalendar'
 
 const meta = {
   component: EventCalendar,
+  title: 'Build/Molecules/EventCalendar',
   tags: ['molecule'],
   args: {
     month: '2026-07',

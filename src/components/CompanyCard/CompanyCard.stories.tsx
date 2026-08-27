@@ -6,6 +6,7 @@ import { CompanyCard } from './CompanyCard'
 
 const meta = {
   component: CompanyCard,
+  title: 'Build/Organisms/CompanyCard',
   tags: ['organism'],
   args: {
     name: 'MeetCard',

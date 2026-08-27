@@ -16,6 +16,7 @@ const SampleMatrix = () => (
 
 const meta = {
   component: QRCode,
+  title: 'Build/Atoms/QRCode',
   tags: ['atom'],
   args: { value: 'https://metcard.io/ben' },
   render: (args) => (

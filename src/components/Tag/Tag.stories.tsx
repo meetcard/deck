@@ -6,6 +6,7 @@ import { Tag } from './Tag'
 
 const meta = {
   component: Tag,
+  title: 'Build/Atoms/Tag',
   tags: ['atom'],
   args: { children: 'follow-up' },
 } satisfies Meta<typeof Tag>

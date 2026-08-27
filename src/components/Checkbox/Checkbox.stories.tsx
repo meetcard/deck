@@ -5,6 +5,7 @@ import { Checkbox } from './Checkbox'
 
 const meta = {
   component: Checkbox,
+  title: 'Build/Atoms/Checkbox',
   tags: ['atom'],
   args: { label: 'Add to CRM', onChange: fn() },
 } satisfies Meta<typeof Checkbox>
