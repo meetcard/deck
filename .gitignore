@@ -25,3 +25,6 @@ dist-ssr
 
 *storybook.log
 storybook-static
+
+# Astro's generated types cache (regenerated on every `astro build`)
+.astro

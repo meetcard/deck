@@ -5,6 +5,10 @@ interface Props {
 }
 
 const { title = 'Deck Design System — MeetCard', description = "MeetCard's flagship React design system" } = Astro.props
+
+// Deck's token layers. The brand marks fill from
+// --deck-primitive-signal-green, so without this they render invisible.
+import '../../styles/deck.css'
 ---
 
 <!doctype html>

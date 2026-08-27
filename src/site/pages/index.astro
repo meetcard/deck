@@ -19,7 +19,7 @@ import { LogoSection } from '../components/LogoSection'
         for building card-centric experiences.
       </p>
 
-      <a href="/iframe.html?id=build-atoms" class="cta-button">
+      <a href="/storybook/?path=/docs/meet-deck-introduction--docs" class="cta-button">
         Explore Components
       </a>
 
@@ -49,25 +49,36 @@ import { LogoSection } from '../components/LogoSection'
       text-align: center;
     }
 
-    .logo-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--space-12);
-    }
-
-    .logo {
-      height: 120px;
+    /* Anchored on .content, not .logo-section: LogoSection is a React island,
+       so its own root carries no Astro scoping attribute and a selector
+       starting there would never match. .content is authored here, so it does. */
+    .content :global(.logo-section) {
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .wordmark {
-      height: auto;
+    /* Wordmark in light, Mark alone in dark — the wordmark's Ink type needs
+       a light backdrop, per its own Foundations note. */
+    .content :global(.wordmark) {
+      height: 64px;
       width: auto;
-      max-width: 150px;
-      color: var(--color-text);
+    }
+
+    .content :global(.mark) {
+      display: none;
+      height: 96px;
+      width: auto;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .content :global(.wordmark) {
+        display: none;
+      }
+
+      .content :global(.mark) {
+        display: block;
+      }
     }
 
     .header {
@@ -93,7 +104,9 @@ import { LogoSection } from '../components/LogoSection'
       line-height: 1.8;
     }
 
-    .nav-grid {
+    /* :global — NavigationGrid is a React island, so its markup never gets
+       Astro's scoping attribute and scoped selectors would not reach it. */
+    .content :global(.nav-grid) {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: var(--space-16);
@@ -101,7 +114,7 @@ import { LogoSection } from '../components/LogoSection'
       margin-top: var(--space-16);
     }
 
-    .nav-link {
+    .content :global(.nav-link) {
       padding: var(--space-12) var(--space-16);
       border-radius: var(--radius-lg);
       border: 1px solid var(--color-border);
@@ -113,7 +126,7 @@ import { LogoSection } from '../components/LogoSection'
       background-color: transparent;
     }
 
-    .nav-link:hover {
+    .content :global(.nav-link:hover) {
       border-color: var(--color-accent);
       background-color: var(--color-bg-subtle);
       color: var(--color-accent);

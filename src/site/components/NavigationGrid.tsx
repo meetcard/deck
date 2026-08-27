@@ -3,11 +3,15 @@ interface NavLink {
   href: string
 }
 
+// Storybook is published under /storybook (see netlify.toml). Each href is a
+// manager URL with ?path=, not iframe.html: the manager keeps the sidebar, so
+// these land somewhere you can browse from. IDs are the real ones from
+// storybook-static/index.json — Storybook does not resolve bare prefixes.
 const links: NavLink[] = [
-  { label: 'Foundations', href: '/iframe.html?id=meet-deck-foundations' },
-  { label: 'Atoms', href: '/iframe.html?id=build-atoms' },
-  { label: 'Molecules', href: '/iframe.html?id=build-molecules' },
-  { label: 'Organisms', href: '/iframe.html?id=build-organisms' },
+  { label: 'Foundations', href: '/storybook/?path=/docs/meet-deck-foundations--docs' },
+  { label: 'Atoms', href: '/storybook/?path=/docs/build-atoms-avatar--docs' },
+  { label: 'Molecules', href: '/storybook/?path=/docs/build-molecules-attendeelist--docs' },
+  { label: 'Organisms', href: '/storybook/?path=/docs/build-organisms-appbar--docs' },
 ]
 
 export function NavigationGrid() {
