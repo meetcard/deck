@@ -1,0 +1,76 @@
+.deck-copy-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-6);
+  min-width: 0;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-copy-field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.deck-copy-field__icon {
+  position: absolute;
+  left: var(--deck-space-12);
+  display: inline-flex;
+  color: var(--deck-color-text-muted);
+  pointer-events: none;
+}
+
+.deck-copy-field__icon > svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.deck-copy-field__input {
+  padding-left: var(--deck-space-40);
+  padding-right: var(--deck-space-40);
+  color: var(--deck-color-text-default);
+  cursor: default;
+}
+
+.deck-copy-field__input--no-icon {
+  padding-left: var(--deck-space-12);
+}
+
+.deck-copy-field__copy {
+  position: absolute;
+  right: var(--deck-space-8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  cursor: pointer;
+  color: var(--deck-color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--deck-radius-full);
+  transition: color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-copy-field__copy:hover {
+  color: var(--deck-color-text-default);
+  background-color: var(--deck-color-background-subtle);
+}
+
+.deck-copy-field__copy:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: 1px;
+}
+
+.deck-copy-field__copy--copied {
+  color: var(--deck-color-solid-success);
+}
+
+.deck-copy-field__copy > svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
