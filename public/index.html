@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deck Design System — MeetCard</title>
+  <style>
+    :root {
+      --color-bg: #faf8f4;
+      --color-bg-subtle: #f0ebe1;
+      --color-text: #1a1a1a;
+      --color-text-muted: #6b6b6b;
+      --color-border: #e0dbd2;
+      --color-accent: #2e6e5b;
+      --color-accent-hover: #246b54;
+      --space-24: 24px;
+      --space-32: 32px;
+      --space-16: 16px;
+      --space-12: 12px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg: #252d2d;
+        --color-bg-subtle: #323a3a;
+        --color-text: #faf8f4;
+        --color-text-muted: #b3b3b3;
+        --color-border: #3d4545;
+        --color-accent: #4a9d7d;
+        --color-accent-hover: #5bb091;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-24);
+    }
+
+    .content {
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-32);
+      align-items: center;
+      text-align: center;
+    }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-12);
+    }
+
+    h1 {
+      font-size: 48px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .tagline {
+      font-size: 20px;
+      color: var(--color-text-muted);
+    }
+
+    .description {
+      font-size: 16px;
+      color: var(--color-text-muted);
+      line-height: 1.8;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--space-16);
+      width: 100%;
+      margin-top: var(--space-16);
+    }
+
+    .nav-link {
+      padding: var(--space-12) var(--space-16);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border);
+      text-decoration: none;
+      color: var(--color-text);
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 200ms ease;
+      background-color: transparent;
+    }
+
+    .nav-link:hover {
+      border-color: var(--color-accent);
+      background-color: var(--color-bg-subtle);
+      color: var(--color-accent);
+    }
+
+    .cta-button {
+      padding: var(--space-12) var(--space-24);
+      border-radius: var(--radius-lg);
+      background-color: var(--color-accent);
+      color: #faf8f4;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: background-color 200ms ease;
+      display: inline-block;
+    }
+
+    .cta-button:hover {
+      background-color: var(--color-accent-hover);
+    }
+
+    .footer {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      margin-top: var(--space-16);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="content">
+      <div class="logo">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="4">
+          <path d="M20 30 L50 50 L80 30 L80 70 Q80 85 65 85 L35 85 Q20 85 20 70 Z" fill="currentColor" />
+        </svg>
+      </div>
+
+      <div class="header">
+        <h1>Welcome to Deck</h1>
+        <div class="tagline">MeetCard's flagship React design system</div>
+      </div>
+
+      <p class="description">
+        Deck is a composable foundation of accessible, production-ready components for building card-centric experiences.
+      </p>
+
+      <a href="/iframe.html?id=welcome--welcome&viewMode=story" class="cta-button">
+        Explore Components
+      </a>
+
+      <div class="nav-grid">
+        <a href="/iframe.html?id=foundations" class="nav-link">Foundations</a>
+        <a href="/iframe.html?id=build-atoms" class="nav-link">Atoms</a>
+        <a href="/iframe.html?id=build-molecules" class="nav-link">Molecules</a>
+        <a href="/iframe.html?id=build-organisms" class="nav-link">Organisms</a>
+      </div>
+
+      <div class="footer">Built with React 19 + TypeScript • Accessible • Production-ready</div>
+    </div>
+  </div>
+</body>
+</html>
