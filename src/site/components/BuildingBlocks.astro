@@ -1,0 +1,147 @@
+---
+// Storybook is published under /storybook (see netlify.toml). Ids are the real
+// ones from storybook-static/index.json — Storybook does not resolve bare
+// prefixes, so each of these points at a concrete first entry in its section.
+// Ordered largest-to-smallest, as in the mockups.
+const blocks = [
+  { label: 'Organisms', href: '/storybook/?path=/docs/build-organisms-appbar--docs', icon: 'grid' },
+  { label: 'Molecules', href: '/storybook/?path=/docs/build-molecules-attendeelist--docs', icon: 'pair' },
+  { label: 'Atoms', href: '/storybook/?path=/docs/build-atoms-avatar--docs', icon: 'dot' },
+] as const
+---
+
+<section class="blocks" aria-labelledby="blocks-heading">
+  <div class="blocks__rule" aria-hidden="true"></div>
+
+  <div class="blocks__body">
+    <h2 class="blocks__heading" id="blocks-heading">Building blocks</h2>
+
+    <ul class="blocks__list">
+      {
+        blocks.map((block) => (
+          <li>
+            <a class="pill" href={block.href}>
+              <svg class="pill__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                {block.icon === 'grid' && (
+                  <>
+                    <rect x="2" y="2" width="5" height="5" rx="1.2" />
+                    <rect x="9" y="2" width="5" height="5" rx="1.2" />
+                    <rect x="2" y="9" width="5" height="5" rx="1.2" />
+                    <rect x="9" y="9" width="5" height="5" rx="1.2" />
+                  </>
+                )}
+                {block.icon === 'pair' && (
+                  <>
+                    <circle cx="6" cy="9.5" r="3.4" />
+                    <circle cx="10.5" cy="6" r="2.6" />
+                  </>
+                )}
+                {block.icon === 'dot' && <circle cx="8" cy="8" r="3.4" />}
+              </svg>
+              {block.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="blocks__rule" aria-hidden="true"></div>
+</section>
+
+<style>
+  .blocks {
+    display: flex;
+    align-items: center;
+    gap: var(--deck-space-24);
+    width: 100%;
+  }
+
+  /* The hairlines either side of the pill row. They flex to fill whatever the
+     centre column leaves, so the group stays centred at any width. */
+  .blocks__rule {
+    flex: 1;
+    height: 1px;
+    background-color: var(--deck-color-border-default);
+  }
+
+  .blocks__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--deck-space-12);
+  }
+
+  .blocks__heading {
+    margin: 0;
+    font-size: var(--deck-font-size-label-xs);
+    font-weight: var(--deck-font-weight-semibold);
+    letter-spacing: var(--deck-tracking-caps);
+    text-transform: uppercase;
+    color: var(--deck-color-text-muted);
+  }
+
+  .blocks__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--deck-space-10);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--deck-space-8);
+    padding: var(--deck-space-8) var(--deck-space-16);
+    border: 1px solid var(--deck-color-border-default);
+    border-radius: var(--deck-radius-full);
+    background-color: var(--deck-color-background-elevated);
+    color: var(--deck-color-text-default);
+    font-size: var(--deck-font-size-label-md);
+    font-weight: var(--deck-font-weight-medium);
+    text-decoration: none;
+    transition: border-color 150ms ease, color 150ms ease, transform 150ms ease;
+  }
+
+  .pill:hover {
+    border-color: var(--deck-color-border-brand);
+    color: var(--deck-color-text-brand);
+  }
+
+  .pill__icon {
+    width: 14px;
+    height: 14px;
+    fill: var(--deck-color-solid-brand);
+    flex-shrink: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pill:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  /* The mockup drops the rules on mobile and lets the pills wrap. */
+  @media (max-width: 640px) {
+    .blocks__rule {
+      display: none;
+    }
+
+    .blocks__list {
+      gap: var(--deck-space-8);
+    }
+
+    .pill {
+      padding: var(--deck-space-8) var(--deck-space-12);
+      font-size: var(--deck-font-size-label-sm);
+    }
+
+    /* The mobile mockup drops the pill icons — text only at this width. */
+    .pill__icon {
+      display: none;
+    }
+  }
+</style>

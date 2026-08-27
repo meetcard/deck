@@ -1,0 +1,61 @@
+---
+interface Props {
+  /** Which corner the cluster sits in. */
+  corner: 'top-left' | 'bottom-right'
+}
+
+const { corner } = Astro.props
+---
+
+{/*
+  The faint fanned-card clusters in the mockup's corners. Purely decorative —
+  aria-hidden, pointer-events off, and hidden on small screens where the
+  mockup has no room for them.
+*/}
+<svg
+  class:list={['drift', `drift--${corner}`]}
+  width="280"
+  height="300"
+  viewBox="0 0 280 300"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  <rect width="180" height="260" rx="16" transform="rotate(-18 0 -40)" y="-40" />
+  <rect width="180" height="260" rx="16" transform="rotate(-6 50 -20)" x="50" y="-20" />
+  <rect width="180" height="260" rx="16" transform="rotate(6 100 0)" x="100" />
+</svg>
+
+<style>
+  .drift {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    fill: var(--deck-color-background-brand);
+    opacity: 0.06;
+  }
+
+  .drift--top-left {
+    top: -40px;
+    left: -60px;
+  }
+
+  .drift--bottom-right {
+    right: -60px;
+    bottom: -40px;
+    transform: rotate(180deg);
+    opacity: 0.05;
+  }
+
+  @media (max-width: 900px) {
+    .drift {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .drift {
+      transition: opacity 400ms ease;
+    }
+  }
+</style>

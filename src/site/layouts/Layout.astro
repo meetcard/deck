@@ -4,10 +4,14 @@ interface Props {
   description?: string
 }
 
-const { title = 'Deck Design System — MeetCard', description = "MeetCard's flagship React design system" } = Astro.props
+const {
+  title = 'Deck — MeetCard Design System',
+  description = 'The design system behind MeetCard. Accessible, composable components for card-centric experiences.',
+} = Astro.props
 
-// Deck's token layers. The brand marks fill from
-// --deck-primitive-signal-green, so without this they render invisible.
+// Deck's token layers. Everything on this page is built from the semantic
+// layer, which is also what makes dark mode work: the mockups are light-only,
+// but the semantic tokens already resolve for both schemes.
 import '../../styles/deck.css'
 ---
 
@@ -17,53 +21,38 @@ import '../../styles/deck.css'
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+
     <style is:global>
-      :root {
-        --color-bg: #faf8f4;
-        --color-bg-subtle: #f0ebe1;
-        --color-text: #1a1a1a;
-        --color-text-muted: #6b6b6b;
-        --color-border: #e0dbd2;
-        --color-accent: #2e6e5b;
-        --color-accent-hover: #246b54;
-        --space-24: 24px;
-        --space-32: 32px;
-        --space-16: 16px;
-        --space-12: 12px;
-        --radius-lg: 12px;
-        --radius-full: 9999px;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --color-bg: #252d2d;
-          --color-bg-subtle: #323a3a;
-          --color-text: #faf8f4;
-          --color-text-muted: #b3b3b3;
-          --color-border: #3d4545;
-          --color-accent: #4a9d7d;
-          --color-accent-hover: #5bb091;
-        }
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
+      *,
+      *::before,
+      *::after {
         box-sizing: border-box;
       }
 
-      html,
       body {
-        height: 100%;
+        margin: 0;
+        font-family: var(--deck-font-sans);
+        background-color: var(--deck-color-background-default);
+        color: var(--deck-color-text-default);
+        -webkit-font-smoothing: antialiased;
       }
 
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-          'Helvetica Neue', Arial, sans-serif;
-        background-color: var(--color-bg);
-        color: var(--color-text);
-        line-height: 1.6;
+      :focus-visible {
+        outline: 2px solid var(--deck-color-border-focus);
+        outline-offset: 2px;
       }
     </style>
   </head>

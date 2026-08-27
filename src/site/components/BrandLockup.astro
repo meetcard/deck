@@ -1,0 +1,99 @@
+---
+/**
+ * The "Deck / DESIGN SYSTEM" lockup from the mockups.
+ *
+ * The three fanned cards are *Deck's* mark, not MeetCard's — the same one the
+ * Storybook sidebar uses (see .storybook/theme.ts). It is deliberately not the
+ * `Mark` component from foundations/brand: that is MeetCard's two-card mark,
+ * which is a different logo. Kept as three rects here rather than importing
+ * theme.ts's copy, which is a flattened data-URI with the type outlined.
+ *
+ * Colors are literal for the same reason `Mark` hardcodes Signal Green: the
+ * logo must read the same in both schemes rather than adapting like body text.
+ */
+---
+
+<div class="lockup">
+  <svg
+    class="lockup__mark"
+    viewBox="8 12 34 30"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <rect
+      width="15.485"
+      height="22.2004"
+      rx="3"
+      transform="matrix(0.966481 0.256739 -0.260914 0.965362 13.3907 15.6461)"
+      fill="#407366"
+    />
+    <rect x="18.5553" y="15.4988" width="15.4939" height="22.1874" rx="3" fill="#598C80" />
+    <rect
+      width="15.485"
+      height="22.2004"
+      rx="3"
+      transform="matrix(0.966481 -0.256739 0.260914 0.965362 23.72 15.2823)"
+      fill="#73A694"
+    />
+  </svg>
+
+  <div class="lockup__name">
+    <span class="lockup__word">Deck</span>
+    <span class="lockup__sub">Design System</span>
+  </div>
+</div>
+
+<style>
+  .lockup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--deck-space-10);
+  }
+
+  .lockup__mark {
+    height: 29px;
+    width: 36px;
+    flex-shrink: 0;
+  }
+
+  .lockup__name {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+
+  .lockup__word {
+    font-size: var(--deck-font-size-heading-lg);
+    font-weight: var(--deck-font-weight-bold);
+    letter-spacing: var(--deck-tracking-heading);
+    color: var(--deck-color-text-default);
+  }
+
+  .lockup__sub {
+    font-size: var(--deck-font-size-label-xs);
+    font-weight: var(--deck-font-weight-medium);
+    letter-spacing: var(--deck-tracking-caps);
+    text-transform: uppercase;
+    color: var(--deck-color-text-muted);
+  }
+
+  /* Mobile stacks the mark above the name and centres the pair. */
+  @media (max-width: 640px) {
+    .lockup {
+      flex-direction: column;
+      gap: var(--deck-space-8);
+    }
+
+    .lockup__name {
+      align-items: center;
+    }
+
+    .lockup__mark {
+      height: 44px;
+      width: 50px;
+    }
+  }
+</style>

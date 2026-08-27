@@ -1,159 +1,239 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import { NavigationGrid } from '../components/NavigationGrid'
-import { LogoSection } from '../components/LogoSection'
+import BrandLockup from '../components/BrandLockup.astro'
+import BuildingBlocks from '../components/BuildingBlocks.astro'
+import CardDrift from '../components/CardDrift.astro'
+import SiteFooter from '../components/SiteFooter.astro'
 ---
 
-<Layout title="Welcome to Deck" description="MeetCard's flagship React design system">
-  <div class="container">
-    <div class="content">
-      <LogoSection client:load />
+<Layout
+  title="Deck — MeetCard Design System"
+  description="The design system behind MeetCard. Accessible, composable components for card-centric experiences."
+>
+  <main class="page">
+    <CardDrift corner="top-left" />
+    <CardDrift corner="bottom-right" />
 
-      <div class="header">
-        <h1>Welcome to Deck</h1>
-        <div class="tagline">MeetCard's flagship React design system</div>
+    <div class="page__inner">
+      <BrandLockup />
+
+      <div class="hero">
+        <h1 class="hero__title">Build with Deck.</h1>
+        <p class="hero__lede">The design system behind MeetCard.</p>
+        <p class="hero__body">
+          Accessible, composable components for card-centric experiences.
+        </p>
       </div>
 
-      <p class="description">
-        Deck is a composable foundation of accessible, production-ready components
-        for building card-centric experiences.
-      </p>
+      <div class="actions">
+        <a class="button button--primary" href="/storybook/?path=/docs/design-system-introduction--docs">
+          Explore the system
+          <svg class="button__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path
+              d="M3 8h10m0 0-3.6-3.6M13 8l-3.6 3.6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
 
-      <a href="/storybook/?path=/docs/design-system-introduction--docs" class="cta-button">
-        Explore Components
-      </a>
-
-      <NavigationGrid client:load />
-
-      <div class="footer">
-        Built with React 19 + TypeScript • Accessible • Production-ready
+        <a class="button button--secondary" href="/storybook/">
+          Experience Deck
+          <svg class="button__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path
+              d="M6.5 3.5H3.4A.9.9 0 0 0 2.5 4.4v8.2a.9.9 0 0 0 .9.9h8.2a.9.9 0 0 0 .9-.9V9.5M9.5 2.5h4v4M13.5 2.5 7.8 8.2"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
       </div>
+
+      <BuildingBlocks />
     </div>
-  </div>
 
-  <style>
-    .container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: var(--space-24);
-    }
+    <div class="page__spacer" aria-hidden="true"></div>
 
-    .content {
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-32);
-      align-items: center;
-      text-align: center;
-    }
-
-    /* Anchored on .content, not .logo-section: LogoSection is a React island,
-       so its own root carries no Astro scoping attribute and a selector
-       starting there would never match. .content is authored here, so it does. */
-    .content :global(.logo-section) {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Wordmark in light, Mark alone in dark — the wordmark's Ink type needs
-       a light backdrop, per its own Foundations note. */
-    .content :global(.wordmark) {
-      height: 64px;
-      width: auto;
-    }
-
-    .content :global(.mark) {
-      display: none;
-      height: 96px;
-      width: auto;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .content :global(.wordmark) {
-        display: none;
-      }
-
-      .content :global(.mark) {
-        display: block;
-      }
-    }
-
-    .header {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-12);
-    }
-
-    h1 {
-      font-size: 48px;
-      font-weight: 600;
-      line-height: 1.2;
-    }
-
-    .tagline {
-      font-size: 20px;
-      color: var(--color-text-muted);
-    }
-
-    .description {
-      font-size: 16px;
-      color: var(--color-text-muted);
-      line-height: 1.8;
-    }
-
-    /* :global — NavigationGrid is a React island, so its markup never gets
-       Astro's scoping attribute and scoped selectors would not reach it. */
-    .content :global(.nav-grid) {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: var(--space-16);
-      width: 100%;
-      margin-top: var(--space-16);
-    }
-
-    .content :global(.nav-link) {
-      padding: var(--space-12) var(--space-16);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--color-border);
-      text-decoration: none;
-      color: var(--color-text);
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 200ms ease;
-      background-color: transparent;
-    }
-
-    .content :global(.nav-link:hover) {
-      border-color: var(--color-accent);
-      background-color: var(--color-bg-subtle);
-      color: var(--color-accent);
-    }
-
-    .cta-button {
-      padding: var(--space-12) var(--space-24);
-      border-radius: var(--radius-lg);
-      background-color: var(--color-accent);
-      color: #faf8f4;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: 500;
-      border: none;
-      cursor: pointer;
-      transition: background-color 200ms ease;
-      display: inline-block;
-    }
-
-    .cta-button:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    .footer {
-      font-size: 14px;
-      color: var(--color-text-muted);
-      margin-top: var(--space-16);
-    }
-  </style>
+    <SiteFooter />
+  </main>
 </Layout>
+
+<style>
+  .page {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 88 / 80 rather than a single value: the mockup insets the lockup 86px
+       from the top and floats the footer 80px off the bottom. */
+    padding: calc(var(--deck-space-80) + var(--deck-space-8)) var(--deck-space-32)
+      var(--deck-space-80);
+  }
+
+  /* Top-weighted, not centred: in both mockups the hero sits in the upper
+     half and the footer is pinned to the bottom by the flex:1 spacer below.
+     The gaps between groups are deliberately not uniform — they step 48/40/64
+     to match the measured rhythm of the desktop mockup. */
+  .page__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 720px;
+    text-align: center;
+  }
+
+  /* Group spacing lives on the children, not a shared gap, because the
+     mockup's rhythm steps 48 / 56 / 64 rather than repeating one value. */
+  .page__inner > :global(.blocks) {
+    margin-top: var(--deck-space-64);
+  }
+
+  .page__spacer {
+    flex: 1;
+    min-height: var(--deck-space-48);
+  }
+
+  .hero {
+    margin-top: var(--deck-space-48);
+    display: flex;
+    flex-direction: column;
+    gap: var(--deck-space-12);
+  }
+
+  .hero__title {
+    margin: 0;
+    font-size: var(--deck-font-size-display-2xl);
+    font-weight: var(--deck-font-weight-bold);
+    letter-spacing: var(--deck-tracking-heading);
+    line-height: 1.05;
+    color: var(--deck-color-text-default);
+  }
+
+  .hero__lede {
+    margin: 0;
+    margin-top: var(--deck-space-8);
+    font-size: var(--deck-font-size-body-xl);
+    font-weight: var(--deck-font-weight-medium);
+    color: var(--deck-color-text-brand);
+  }
+
+  .hero__body {
+    margin: 0;
+    font-size: var(--deck-font-size-body-md);
+    color: var(--deck-color-text-muted);
+  }
+
+  .actions {
+    margin-top: calc(var(--deck-space-48) + var(--deck-space-8));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--deck-space-12);
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--deck-space-8);
+    padding: var(--deck-space-12) var(--deck-space-40);
+    border: 1px solid transparent;
+    border-radius: var(--deck-radius-xl);
+    font-size: var(--deck-font-size-label-lg);
+    font-weight: var(--deck-font-weight-semibold);
+    line-height: 1.5;
+    text-decoration: none;
+    transition: background-color 150ms ease, border-color 150ms ease,
+      transform 150ms ease;
+  }
+
+  .button--primary {
+    background-color: var(--deck-color-action-primary);
+    color: var(--deck-color-action-primary-text);
+    box-shadow: var(--deck-shadow-sm);
+  }
+
+  .button--primary:hover {
+    background-color: var(--deck-color-action-primary-hover);
+  }
+
+  .button--secondary {
+    background-color: var(--deck-color-background-subtle);
+    border-color: var(--deck-color-border-default);
+    color: var(--deck-color-text-default);
+  }
+
+  .button--secondary:hover {
+    border-color: var(--deck-color-border-brand);
+  }
+
+  .button__icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .button:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .page {
+      padding: var(--deck-space-40) var(--deck-space-20) var(--deck-space-24);
+    }
+
+    .hero {
+      margin-top: var(--deck-space-32);
+    }
+
+    .actions {
+      margin-top: var(--deck-space-32);
+    }
+
+    .page__inner > :global(.blocks) {
+      margin-top: var(--deck-space-40);
+    }
+
+    .hero__title {
+      font-size: var(--deck-font-size-display-md);
+    }
+
+    .hero__lede {
+      font-size: var(--deck-font-size-body-md);
+    }
+
+    .hero__body {
+      font-size: var(--deck-font-size-body-sm);
+    }
+
+    /* Mobile stacks the CTAs full-width, as in the mobile mockup. */
+    .actions {
+      flex-direction: column;
+      align-self: stretch;
+      gap: var(--deck-space-8);
+    }
+
+    .button {
+      width: 100%;
+    }
+
+    /* The mobile mockup drops the button icons too. */
+    .button__icon {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,135 @@
+---
+// The Figma UI Kit is not linked yet — set this to the file URL and the chip
+// becomes a link automatically. Left null so we don't ship a guessed
+// destination on a public page.
+const figmaUrl: string | null = null
+
+// Astro picks a dynamic tag from a *capitalized* variable. A lowercase
+// <component is="..."> is Vue syntax and renders a literal <component> element.
+const FigmaTag = figmaUrl ? 'a' : 'span'
+
+const year = new Date().getFullYear()
+---
+
+<footer class="footer">
+  <ul class="footer__chips">
+    <li>
+      <a class="chip" href="/storybook/">
+        <svg class="chip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <path
+            d="M8 1.8 13.4 4.6v6.8L8 14.2 2.6 11.4V4.6L8 1.8Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.3"
+            stroke-linejoin="round"
+          />
+          <path d="M8 8.1 13.2 5.4M8 8.1 2.8 5.4M8 8.1v5.9" fill="none" stroke="currentColor" stroke-width="1.3" />
+        </svg>
+        Component Library · Built with Storybook
+      </a>
+    </li>
+
+    <li>
+      <!-- Renders as a link once figmaUrl is set, and as plain text until then. -->
+      <FigmaTag
+        class="chip"
+        href={figmaUrl ?? undefined}
+        target={figmaUrl ? '_blank' : undefined}
+        rel={figmaUrl ? 'noopener noreferrer' : undefined}
+      >
+        <svg class="chip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <path
+            d="M6.2 1.6h1.7v3.4H6.2a1.7 1.7 0 1 1 0-3.4ZM8 1.6h1.7a1.7 1.7 0 0 1 0 3.4H8V1.6ZM8 5.1h1.7a1.7 1.7 0 0 1 0 3.4H8V5.1ZM6.2 5.1h1.7v3.4H6.2a1.7 1.7 0 0 1 0-3.4ZM6.2 8.6h1.7V12a1.7 1.7 0 1 1-1.7-1.7V8.6Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.2"
+            stroke-linejoin="round"
+          />
+        </svg>
+        UI Kit · Designed in Figma
+      </FigmaTag>
+    </li>
+  </ul>
+
+  <p class="footer__legal">© {year} MeetCard · Deck Design System</p>
+</footer>
+
+<style>
+  /* Held to a container rather than the viewport edge, so the chips and the
+     legal line sit inside the same gutters as the hero above them. */
+  .footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--deck-space-16);
+    width: 100%;
+    max-width: 960px;
+  }
+
+  .footer__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--deck-space-16);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--deck-space-8);
+    padding: var(--deck-space-6) var(--deck-space-16);
+    border: 1px solid var(--deck-color-border-default);
+    border-radius: var(--deck-radius-lg);
+    background-color: var(--deck-color-background-elevated);
+    color: var(--deck-color-text-muted);
+    font-size: var(--deck-font-size-label-sm);
+    text-decoration: none;
+    transition: border-color 150ms ease, color 150ms ease;
+  }
+
+  a.chip:hover {
+    border-color: var(--deck-color-border-brand);
+    color: var(--deck-color-text-brand);
+  }
+
+  .chip__icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .footer__legal {
+    margin: 0;
+    font-size: var(--deck-font-size-label-sm);
+    color: var(--deck-color-text-muted);
+  }
+
+  /* Mobile: chips stack and lose their borders, and the legal line drops —
+     matching the mobile mockup. */
+  @media (max-width: 640px) {
+    .footer {
+      flex-direction: column;
+      gap: var(--deck-space-8);
+    }
+
+    .footer__chips {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--deck-space-8);
+    }
+
+    .chip {
+      padding: 0;
+      border: none;
+      background: none;
+    }
+
+    .footer__legal {
+      display: none;
+    }
+  }
+</style>
