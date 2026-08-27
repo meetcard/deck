@@ -4,7 +4,7 @@ export function Settings() {
   return (
     <PagePlaceholder
       title="Settings"
-      description="Account, notification, and card-visibility preferences."
+      description="Profile, account, notifications, billing, company, and team preferences."
     />
   )
 }

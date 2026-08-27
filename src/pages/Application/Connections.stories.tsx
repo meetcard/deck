@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Contacts } from './Contacts'
+import { Connections } from './Connections'
 
 const meta = {
-  component: Contacts,
-  title: 'Experience/Application/Contacts',
+  component: Connections,
+  title: 'Experience/Application/Connections',
   tags: ['page'],
-} satisfies Meta<typeof Contacts>
+} satisfies Meta<typeof Connections>
 
 export default meta
 type Story = StoryObj<typeof meta>

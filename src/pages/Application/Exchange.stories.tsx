@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Profile } from './Profile'
+import { Exchange } from './Exchange'
 
 const meta = {
-  component: Profile,
-  title: 'Experience/Application/Profile',
+  component: Exchange,
+  title: 'Experience/Application/Exchange',
   tags: ['page'],
-} satisfies Meta<typeof Profile>
+} satisfies Meta<typeof Exchange>
 
 export default meta
 type Story = StoryObj<typeof meta>
