@@ -3,7 +3,7 @@ import { Activity } from './Activity'
 
 const meta = {
   component: Activity,
-  title: 'App/Application/Activity',
+  title: 'Experience/Application/Activity',
   tags: ['page'],
 } satisfies Meta<typeof Activity>
 

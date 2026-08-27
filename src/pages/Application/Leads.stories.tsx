@@ -3,7 +3,7 @@ import { Leads } from './Leads'
 
 const meta = {
   component: Leads,
-  title: 'App/Application/Leads',
+  title: 'Experience/Application/Leads',
   tags: ['page'],
 } satisfies Meta<typeof Leads>
 

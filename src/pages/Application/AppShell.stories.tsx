@@ -3,7 +3,7 @@ import { AppShell } from './AppShell'
 
 const meta = {
   component: AppShell,
-  title: 'App/Application/App Shell',
+  title: 'Experience/Application/App Shell',
   tags: ['page'],
 } satisfies Meta<typeof AppShell>
 

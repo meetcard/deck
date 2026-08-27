@@ -3,7 +3,7 @@ import { Settings } from './Settings'
 
 const meta = {
   component: Settings,
-  title: 'App/Application/Settings',
+  title: 'Experience/Application/Settings',
   tags: ['page'],
 } satisfies Meta<typeof Settings>
 

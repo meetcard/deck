@@ -3,7 +3,7 @@ import { PublicCard } from './PublicCard'
 
 const meta = {
   component: PublicCard,
-  title: 'App/Networking/Public Card',
+  title: 'Experience/Networking/Public Card',
   tags: ['page'],
 } satisfies Meta<typeof PublicCard>
 

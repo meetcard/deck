@@ -143,9 +143,9 @@ function DesignPrinciplesIcon() {
 }
 
 const DOC_ICONS: Record<string, () => React.ReactElement> = {
-  'deck-foundations--docs': FoundationsIcon,
-  'deck-introduction--docs': IntroductionIcon,
-  'deck-design-principles--docs': DesignPrinciplesIcon,
+  'meet-deck-foundations--docs': FoundationsIcon,
+  'meet-deck-introduction--docs': IntroductionIcon,
+  'meet-deck-design-principles--docs': DesignPrinciplesIcon,
 }
 
 addons.setConfig({
