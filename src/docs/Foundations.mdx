@@ -120,3 +120,29 @@ import { mediaQuery } from '@meetcard/deck'
 
 window.matchMedia(mediaQuery('md')) // "(min-width: 768px)"
 ```
+
+### Checking a component responsively
+
+Use **Viewport size** in the toolbar above the canvas. It carries device
+widths for "how does this look on a phone", and `Edge ·` pairs for "does the
+breakpoint fire correctly".
+
+The control only appears on a **story**, not on a Docs page. A Docs page
+renders many stories at once, so there is no single canvas to resize — if you
+clicked a component name in the sidebar you landed on Docs, and the control is
+genuinely absent. Open any story beneath it and it appears.
+
+The edge presets straddle rather than sit on a breakpoint, because Deck's
+queries are `max-width`: at exactly 640px the mobile rule *matches*, so a
+preset named "sm 640" would show the narrow layout — the opposite of what
+you'd expect. `sm − 1px` and `sm + 1px` show each side honestly.
+
+Two things worth knowing while you're in there:
+
+- Only `sm` 640 and `lg` 1024 are actually queried in CSS. `md` 768, `xl` 1280
+  and `2xl` 1536 exist as tokens but no rule references them, so they are
+  offered as device widths only.
+- At exactly 640px, `Sheet` widens (`min-width: 640px`) while every other
+  component is still narrow (`max-width: 640px`). Both rules match on the
+  line. Nothing is broken, but that width is not a state any real screen
+  sits in.

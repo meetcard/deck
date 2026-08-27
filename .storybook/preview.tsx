@@ -45,36 +45,87 @@ const preview: Preview = {
       },
     },
 
-    // Deck's breakpoints, for responsive checks in the toolbar.
+    /**
+     * Viewports for responsive checks, in two groups.
+     *
+     * Devices first, for "how does this look on a phone" — real widths, all
+     * sitting between breakpoints rather than on them.
+     *
+     * Then edge pairs, for "does the breakpoint fire correctly". These
+     * deliberately straddle rather than land on a breakpoint value: Deck's
+     * queries are `max-width`, so a preset at exactly 640px matches the
+     * mobile rule and shows the narrow layout, which is the opposite of what
+     * someone reaching for "sm" expects. 639/641 shows each side honestly.
+     *
+     * The pairs cover the widths actually queried in the codebase — 640
+     * (11 rules) and 1024 (8) — not the full token scale. `md` 768 and `xl`
+     * 1280 have no `@media` rule anywhere, so they appear as device widths
+     * only; there is nothing at those numbers for an edge test to catch.
+     *
+     * NOTE: at exactly 640px, Sheet's `min-width: 640px` rule and every other
+     * component's `max-width: 640px` rule both apply, so the canvas shows
+     * Sheet wide and everything else narrow. Another reason not to park a
+     * preset on the line.
+     */
     viewport: {
       options: {
+        mobileS: {
+          name: 'Mobile S — 375px',
+          styles: { width: '375px', height: '812px' },
+          type: 'mobile',
+        },
         mobile: {
-          name: 'Mobile (390px)',
+          name: 'Mobile — 390px',
           styles: { width: '390px', height: '844px' },
           type: 'mobile',
         },
-        sm: {
-          name: 'sm (640px)',
-          styles: { width: '640px', height: '900px' },
+        mobileL: {
+          name: 'Mobile L — 430px',
+          styles: { width: '430px', height: '932px' },
           type: 'mobile',
         },
-        md: {
-          name: 'md (768px)',
+        tablet: {
+          name: 'Tablet — 768px',
           styles: { width: '768px', height: '1024px' },
           type: 'tablet',
         },
-        lg: {
-          name: 'lg (1024px)',
-          styles: { width: '1024px', height: '900px' },
+        tabletL: {
+          name: 'Tablet landscape — 1024px',
+          styles: { width: '1024px', height: '768px' },
+          type: 'tablet',
+        },
+        laptop: {
+          name: 'Laptop — 1280px',
+          styles: { width: '1280px', height: '800px' },
           type: 'desktop',
         },
-        xl: {
-          name: 'xl (1280px)',
-          styles: { width: '1280px', height: '900px' },
+        desktop: {
+          name: 'Desktop — 1440px',
+          styles: { width: '1440px', height: '900px' },
+          type: 'desktop',
+        },
+        smBelow: {
+          name: 'Edge · sm − 1px (639px, narrow)',
+          styles: { width: '639px', height: '900px' },
+          type: 'mobile',
+        },
+        smAbove: {
+          name: 'Edge · sm + 1px (641px, wide)',
+          styles: { width: '641px', height: '900px' },
+          type: 'tablet',
+        },
+        lgBelow: {
+          name: 'Edge · lg − 1px (1023px, narrow)',
+          styles: { width: '1023px', height: '800px' },
+          type: 'tablet',
+        },
+        lgAbove: {
+          name: 'Edge · lg + 1px (1025px, wide)',
+          styles: { width: '1025px', height: '800px' },
           type: 'desktop',
         },
       },
-    },
+    }
   },
 }
 
