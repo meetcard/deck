@@ -92,7 +92,8 @@ export function ChoiceGroup({
     <fieldset
       className={cx('deck-choice-group', className)}
       aria-describedby={
-        cx(description && descriptionId, error && errorId) || undefined
+        cx(description ? descriptionId : null, error ? errorId : null) ||
+        undefined
       }
     >
       <legend
