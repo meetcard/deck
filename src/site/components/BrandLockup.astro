@@ -1,48 +1,22 @@
 ---
 /**
- * The "Deck / DESIGN SYSTEM" lockup from the mockups.
+ * The "Deck / DESIGN SYSTEM" lockup in the page header.
  *
- * The three fanned cards are *Deck's* mark, not MeetCard's — the same one the
- * Storybook sidebar uses (see .storybook/theme.ts). It is deliberately not the
- * `Mark` component from foundations/brand: that is MeetCard's two-card mark,
- * which is a different logo. Kept as three rects here rather than importing
- * theme.ts's copy, which is a flattened data-URI with the type outlined.
+ * Renders the same `deckWordmarkSvg` that Storybook's manager theme uses for
+ * its sidebar brand, so the landing page and the docs it links to show one
+ * identical logo. This used to be a lookalike rebuilt from three rects plus
+ * live text, which is exactly how the two drifted.
  *
- * Colors are literal for the same reason `Mark` hardcodes Signal Green: the
- * logo must read the same in both schemes rather than adapting like body text.
+ * The wordmark's type is outlined, so the `<svg>` carries no readable text —
+ * hence the explicit role/label on the wrapper and `aria-hidden` on the
+ * markup itself, leaving one clean accessible name rather than a pile of
+ * unlabelled paths.
  */
+import { deckWordmarkSvg } from '../../foundations/brand/deckWordmark'
 ---
 
-<div class="lockup">
-  <svg
-    class="lockup__mark"
-    viewBox="8 12 34 30"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-    focusable="false"
-  >
-    <rect
-      width="15.485"
-      height="22.2004"
-      rx="3"
-      transform="matrix(0.966481 0.256739 -0.260914 0.965362 13.3907 15.6461)"
-      fill="#407366"
-    />
-    <rect x="18.5553" y="15.4988" width="15.4939" height="22.1874" rx="3" fill="#598C80" />
-    <rect
-      width="15.485"
-      height="22.2004"
-      rx="3"
-      transform="matrix(0.966481 -0.256739 0.260914 0.965362 23.72 15.2823)"
-      fill="#73A694"
-    />
-  </svg>
-
-  <div class="lockup__name">
-    <span class="lockup__word">Deck</span>
-    <span class="lockup__sub">Design System</span>
-  </div>
+<div class="lockup" role="img" aria-label="Deck — Design System">
+  <span class="lockup__art" aria-hidden="true" set:html={deckWordmarkSvg} />
 </div>
 
 <style>
@@ -50,50 +24,48 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--deck-space-10);
   }
 
-  .lockup__mark {
-    height: 29px;
-    width: 36px;
-    flex-shrink: 0;
+  .lockup__art {
+    display: block;
+    line-height: 0;
   }
 
-  .lockup__name {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.15;
+  /* The asset ships width/height attributes; override them so it scales to
+     the header rather than pinning itself at its natural 145x52. :global
+     because set:html markup never receives Astro's scoping attribute. */
+  .lockup__art :global(svg) {
+    display: block;
+    height: 52px;
+    width: auto;
   }
 
-  .lockup__word {
-    font-size: var(--deck-font-size-heading-lg);
-    font-weight: var(--deck-font-weight-bold);
-    letter-spacing: var(--deck-tracking-heading);
-    color: var(--deck-color-text-default);
+  /* The asset is the "Full Color — Light" variant: its type is baked to Ink
+     (#212121) and grey (#595959), which all but disappears on the dark
+     background — the same reason .storybook/theme.ts pins the manager to
+     base: 'light'. The page has no such escape hatch, so the two type fills
+     are remapped onto the semantic text tokens here. The card shapes keep
+     their brand greens, which read fine in either scheme.
+
+     This targets the fills by value, so it is coupled to them; deckWordmark's
+     test asserts they are still present, and will fail loudly rather than
+     letting the wordmark quietly go invisible if the asset is re-exported.
+
+     The real fix is a dark variant of the wordmark from design — at which
+     point this block should go away. */
+  @media (prefers-color-scheme: dark) {
+    .lockup__art :global(svg [fill='#212121']) {
+      fill: var(--deck-color-text-default);
+    }
+
+    .lockup__art :global(svg [fill='#595959']) {
+      fill: var(--deck-color-text-muted);
+    }
   }
 
-  .lockup__sub {
-    font-size: var(--deck-font-size-label-xs);
-    font-weight: var(--deck-font-weight-medium);
-    letter-spacing: var(--deck-tracking-caps);
-    text-transform: uppercase;
-    color: var(--deck-color-text-muted);
-  }
-
-  /* Mobile stacks the mark above the name and centres the pair. */
   @media (max-width: 640px) {
-    .lockup {
-      flex-direction: column;
-      gap: var(--deck-space-8);
-    }
-
-    .lockup__name {
-      align-items: center;
-    }
-
-    .lockup__mark {
-      height: 44px;
-      width: 50px;
+    .lockup__art :global(svg) {
+      height: 46px;
     }
   }
 </style>
