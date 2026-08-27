@@ -1,0 +1,29 @@
+.deck-event-details {
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+  padding: var(--deck-space-32) var(--deck-space-16);
+  font-family: var(--deck-font-sans);
+  background-color: var(--deck-color-background-subtle);
+}
+
+.deck-event-details__container {
+  width: 100%;
+  max-width: 40rem;
+}
+
+.deck-event-details__eyebrow {
+  align-self: flex-start;
+}
+
+.deck-event-details__section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.deck-event-details__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--deck-space-8);
+}

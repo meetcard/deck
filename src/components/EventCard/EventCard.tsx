@@ -37,8 +37,13 @@ const STATUS_TONE = {
   past: 'neutral',
 } as const
 
+/** Parsed as local noon so a UTC offset can't roll the date over a boundary. */
+function parseISODate(date: string): Date {
+  return new Date(`${date}T12:00:00`)
+}
+
 function formatRange(start: string, end?: string): string {
-  const startDate = new Date(start)
+  const startDate = parseISODate(start)
   if (Number.isNaN(startDate.getTime())) return start
 
   const opts: Intl.DateTimeFormatOptions = {
@@ -48,7 +53,7 @@ function formatRange(start: string, end?: string): string {
   }
   if (!end) return startDate.toLocaleDateString(undefined, opts)
 
-  const endDate = new Date(end)
+  const endDate = parseISODate(end)
   if (Number.isNaN(endDate.getTime())) {
     return startDate.toLocaleDateString(undefined, opts)
   }
