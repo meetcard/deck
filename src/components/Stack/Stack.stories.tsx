@@ -11,6 +11,7 @@ const Box = ({ label }: { label: string }) => (
 
 const meta = {
   component: Stack,
+  title: 'Build/Atoms/Stack',
   tags: ['atom'],
   args: { gap: 12 },
 } satisfies Meta<typeof Stack>

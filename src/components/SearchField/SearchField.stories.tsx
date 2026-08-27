@@ -14,6 +14,7 @@ const people = [
 
 const meta = {
   component: SearchField,
+  title: 'Build/Molecules/SearchField',
   tags: ['molecule'],
   args: { label: 'Search connections', placeholder: 'Search connections' },
   render: (args) => (

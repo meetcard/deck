@@ -8,14 +8,10 @@ const config: StorybookConfig = {
     "../src/**/*.mdx",
     "../src/pages/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../src/*.stories.@(js|jsx|mjs|ts|tsx)",
-    // Component stories are auto-titled from their folder name, so the root
-    // segment comes from this prefix rather than an explicit `title`
-    // repeated across every file.
-    {
-      directory: "../src/components",
-      titlePrefix: "Build",
-      files: "**/*.stories.@(js|jsx|mjs|ts|tsx)"
-    }
+    // Every component story sets its own `title: 'Build/<Kind>/<Name>'`
+    // (Atoms/Molecules/Organisms), so this is a plain glob rather than a
+    // titlePrefix entry — the prefix would double up with the explicit title.
+    "../src/components/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   // The preview iframe (Vite) already serves ../public automatically; the
   // manager shell (esbuild) does not, and needs this to pick up

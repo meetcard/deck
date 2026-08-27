@@ -87,7 +87,7 @@ const DISABLED_RULES = [
  * convenience hatch.
  */
 const WAIVERS = {
-  'build-text--tones':
+  'build-atoms-text--tones':
     'shows the `disabled` tone as a standalone swatch; WCAG 1.4.3 exempts ' +
     'text in a disabled control, which axe cannot infer out of context',
 }

@@ -6,6 +6,7 @@ import { CardPile } from './CardPile'
 
 const meta = {
   component: CardPile,
+  title: 'Build/Organisms/CardPile',
   tags: ['organism'],
   args: {
     label: "Ada's saved cards",

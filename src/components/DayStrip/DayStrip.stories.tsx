@@ -4,6 +4,7 @@ import { DayStrip } from './DayStrip'
 
 const meta = {
   component: DayStrip,
+  title: 'Build/Molecules/DayStrip',
   tags: ['molecule'],
   args: {
     today: '2026-09-01',

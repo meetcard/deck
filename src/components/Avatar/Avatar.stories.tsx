@@ -11,6 +11,7 @@ const photo =
 
 const meta = {
   component: Avatar,
+  title: 'Build/Atoms/Avatar',
   tags: ['atom'],
   args: { name: 'Ada Lovelace' },
 } satisfies Meta<typeof Avatar>

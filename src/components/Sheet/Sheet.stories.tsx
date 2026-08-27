@@ -69,6 +69,7 @@ const SampleMatrix = () => (
 
 const meta = {
   component: Sheet,
+  title: 'Build/Organisms/Sheet',
   tags: ['organism'],
   args: { title: 'Exchange', onClose: fn(), open: false },
   parameters: { layout: 'fullscreen' },

@@ -4,6 +4,7 @@ import { RsvpControl, type RsvpStatus } from './RsvpControl'
 
 const meta = {
   component: RsvpControl,
+  title: 'Build/Molecules/RsvpControl',
   tags: ['molecule'],
   args: {
     counts: { yes: 12, maybe: 3, no: 1 },

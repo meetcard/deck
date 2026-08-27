@@ -16,6 +16,7 @@ const LinkIcon = () => (
 
 const meta = {
   component: CopyField,
+  title: 'Build/Molecules/CopyField',
   tags: ['molecule'],
   args: {
     label: 'Shareable link',

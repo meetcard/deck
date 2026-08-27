@@ -6,6 +6,7 @@ import { UsageMeter } from './UsageMeter'
 
 const meta = {
   component: UsageMeter,
+  title: 'Build/Atoms/UsageMeter',
   tags: ['atom'],
   args: { label: 'Connections', value: 42, max: 100 },
   render: (args) => (

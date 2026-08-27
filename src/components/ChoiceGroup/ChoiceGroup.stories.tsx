@@ -4,6 +4,7 @@ import { ChoiceGroup } from './ChoiceGroup'
 
 const meta = {
   component: ChoiceGroup,
+  title: 'Build/Molecules/ChoiceGroup',
   tags: ['molecule'],
   args: {
     label: 'What are you looking to discuss?',

@@ -5,6 +5,7 @@ import { Radio, RadioGroup } from './Radio'
 
 const meta = {
   component: RadioGroup,
+  title: 'Build/Atoms/Radio',
   tags: ['atom'],
   subcomponents: { Radio },
   args: {

@@ -12,6 +12,7 @@ const CardsIcon = () => (
 
 const meta = {
   component: EmptyState,
+  title: 'Build/Molecules/EmptyState',
   tags: ['molecule'],
   args: {
     title: 'No connections yet',

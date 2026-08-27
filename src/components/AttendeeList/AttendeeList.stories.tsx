@@ -3,6 +3,7 @@ import { AttendeeList } from './AttendeeList'
 
 const meta = {
   component: AttendeeList,
+  title: 'Build/Molecules/AttendeeList',
   tags: ['molecule'],
 } satisfies Meta<typeof AttendeeList>
 

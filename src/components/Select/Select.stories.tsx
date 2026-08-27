@@ -10,6 +10,7 @@ const options = [
 
 const meta = {
   component: Select,
+  title: 'Build/Molecules/Select',
   tags: ['molecule'],
   args: {
     label: 'Card type',

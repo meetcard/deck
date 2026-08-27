@@ -29,6 +29,7 @@ const VideoIcon = () => (
 
 const meta = {
   component: BookingSummary,
+  title: 'Build/Molecules/BookingSummary',
   tags: ['molecule'],
   args: {
     items: [

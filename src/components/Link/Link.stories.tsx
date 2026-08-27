@@ -6,6 +6,7 @@ import { Link } from './Link'
 
 const meta = {
   component: Link,
+  title: 'Build/Atoms/Link',
   tags: ['atom'],
   args: { children: 'Back to your deck', href: '#' },
 } satisfies Meta<typeof Link>

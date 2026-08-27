@@ -96,6 +96,7 @@ const footer = (
 
 const meta = {
   component: PersonCard,
+  title: 'Build/Organisms/PersonCard',
   tags: ['organism'],
   args: {
     name: 'Ben Ackles',

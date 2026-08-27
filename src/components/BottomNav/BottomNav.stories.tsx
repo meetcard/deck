@@ -33,6 +33,7 @@ const exchangeIcon = <Icon d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h3v3h-3z
 
 const meta = {
   component: BottomNav,
+  title: 'Build/Organisms/BottomNav',
   tags: ['organism'],
   args: { items: destinations, currentId: '/' },
   parameters: { layout: 'fullscreen' },

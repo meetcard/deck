@@ -25,6 +25,7 @@ const PeopleIcon = () => (
 
 const meta = {
   component: EventMetaList,
+  title: 'Build/Molecules/EventMetaList',
   tags: ['molecule'],
 } satisfies Meta<typeof EventMetaList>
 

@@ -4,6 +4,7 @@ import { TimeSlotPicker } from './TimeSlotPicker'
 
 const meta = {
   component: TimeSlotPicker,
+  title: 'Build/Molecules/TimeSlotPicker',
   tags: ['molecule'],
   args: {
     timeZone: 'America/Denver',
