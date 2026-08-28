@@ -142,31 +142,57 @@
   gap: var(--deck-space-4);
   width: fit-content;
   max-width: 100%;
+  /* Both lines are load-bearing, and neither is enough alone.
+
+     `min-width: 0` because the pill is itself a flex item, and a flex item's
+     `min-width: auto` refuses to go below its content.
+
+     `box-sizing` because Deck has no global border-box reset — each component
+     sets its own — and without it `max-width: 100%` caps the *content* box,
+     then padding and border are added on top. Measured: the computed width
+     clamped correctly to 338px while the rendered box was 372, spilling 32px
+     past a 380px card whose role, company and place were all set. */
+  min-width: 0;
+  box-sizing: border-box;
   overflow: hidden;
   padding: var(--deck-space-8) var(--deck-space-16);
   border: 1px solid var(--deck-color-border-default);
   border-radius: var(--deck-radius-full);
 }
 
-/* Nothing wraps, and only the role gives.
+/* Nothing wraps, and the deficit falls on the two parts that can carry it.
 
-   Letting every child shrink shares the deficit around and truncates all of
-   them at once — "Head of Partners… a. MeetC… Boulder, Color…", with the word
-   "at" clipped to "a.". The role is both the longest part and the one that
-   survives abbreviation best, so it absorbs the shortfall alone and the
-   company and place stay whole. */
+   Letting *every* child shrink truncates all of them at once — "Head of
+   Partners… a. MeetC… Boulder, Color…", with the word "at" clipped to "a.".
+   Letting only the role shrink is fine while the shortfall is small, but a
+   card carrying a role, a company *and* a place is short by far more than
+   the role alone can give, and it collapses to "De…".
+
+   So the place gives four times as fast as the role, and the company and the
+   connectives do not give at all. "Design Lead at Northwind Studio" is the
+   line someone reads to know who you are; the city is the part they can lose
+   and still have the card. Sacrificing the role instead leaves "D… at
+   Northwind Studio · Boulder, Colorado", which keeps the least useful half. */
 .deck-person-card__pill > * {
   flex-shrink: 0;
   white-space: nowrap;
 }
 
-.deck-person-card__pill > *:first-child {
-  flex-shrink: 1;
-  /* Without this the text refuses to go below its content width and the pill
-     overflows instead of ellipsising. */
+.deck-person-card__pill > *:first-child,
+.deck-person-card__pill > *:last-child {
+  /* Without `min-width: 0` the text refuses to go below its content width
+     and the pill overflows instead of ellipsising. */
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.deck-person-card__pill > *:first-child {
+  flex-shrink: 1;
+}
+
+.deck-person-card__pill > *:last-child {
+  flex-shrink: 4;
 }
 
 .deck-person-card__company-link {
