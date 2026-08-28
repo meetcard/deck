@@ -9,10 +9,21 @@ const preview: Preview = {
    * background, text color, and font tokens — the same wrapper a consuming
    * app puts on its shell. Without it, stories would sit on Storybook's own
    * canvas color and contrast checks would test the wrong pairing.
+   *
+   * The breathing room is skipped for `layout: 'fullscreen'` stories. Those
+   * are the ones that go edge to edge — app bars, the nav, sheets, whole
+   * screens — and padding them contradicts the layout they asked for. It
+   * also silently narrowed them: 48px off a 375px canvas is most of a
+   * bottom-nav label.
    */
   decorators: [
-    (Story) => (
-      <div className="deck-root" style={{ padding: '24px' }}>
+    (Story, context) => (
+      <div
+        className="deck-root"
+        style={{
+          padding: context.parameters.layout === 'fullscreen' ? 0 : '24px',
+        }}
+      >
         <Story />
       </div>
     ),

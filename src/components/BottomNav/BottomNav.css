@@ -7,16 +7,29 @@
   font-family: var(--deck-font-sans);
   background-color: var(--deck-color-background-elevated);
   border-top: 1px solid var(--deck-color-border-default);
-  /* Clears the iOS home indicator in an installed PWA. */
+  /* Clears the iOS home indicator in an installed PWA. The inline insets
+     matter now that the list itself carries no horizontal padding; both
+     resolve to 0px off a notched device. */
   padding-bottom: env(safe-area-inset-bottom);
+  padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
 }
 
+/* Equal columns rather than flex slots. `grid-auto-flow: column` with a
+   uniform `grid-auto-columns` gives every slot the same width whatever the
+   destination count, and puts the center action in a column of its own
+   instead of a fixed-width interruption between two flexible halves.
+   That difference is what buys back enough room for "Connections": the
+   old arrangement left 61px of label per slot at 375px, this leaves 75. */
 .deck-bottom-nav__list {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  align-items: end;
   margin: 0;
-  padding: var(--deck-space-4) var(--deck-space-8);
+  /* No inline padding: at 375px the eight pixels it cost were the
+     difference between a label fitting and ellipsising. Labels are centred
+     in their columns, so nothing sits against the screen edge regardless. */
+  padding: var(--deck-space-4) 0;
   list-style: none;
 }
 
@@ -24,7 +37,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1;
   min-width: 0;
 }
 
@@ -37,7 +49,7 @@
   width: 100%;
   /* 44px minimum touch target. */
   min-height: 48px;
-  padding: var(--deck-space-4);
+  padding: var(--deck-space-4) 0;
   color: var(--deck-color-text-muted);
   text-decoration: none;
   background: none;
@@ -100,10 +112,10 @@
   max-width: 100%;
 }
 
-/* Elevated center action */
+/* Elevated center action. It occupies one of the equal columns like any
+   other slot — its button is simply wider and lifted. */
 .deck-bottom-nav__slot--center {
-  flex: 0 0 auto;
-  padding: 0 var(--deck-space-4);
+  padding: 0;
 }
 
 .deck-bottom-nav__center {
