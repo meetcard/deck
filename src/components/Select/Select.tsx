@@ -11,10 +11,29 @@ export interface SelectOption {
   disabled?: boolean
 }
 
+/**
+ * A titled run of options, rendered as a native `<optgroup>`.
+ *
+ * Worth reaching for whenever the choices fall into kinds the person already
+ * thinks in — settings that are yours versus your company's, say. The
+ * grouping is the same information a sectioned list carries on a wider
+ * screen, and dropping it when the list collapses loses it.
+ */
+export interface SelectOptionGroup {
+  label: string
+  options: SelectOption[]
+}
+
+export type SelectItem = SelectOption | SelectOptionGroup
+
+const isGroup = (item: SelectItem): item is SelectOptionGroup =>
+  'options' in item
+
 export interface SelectProps
   extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size' | 'children'> {
   label: ReactNode
-  options: SelectOption[]
+  /** Plain options, or `SelectOptionGroup`s to render native `<optgroup>`s. */
+  options: SelectItem[]
   description?: ReactNode
   error?: ReactNode
   size?: ControlSize
@@ -90,15 +109,29 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
               {placeholder}
             </option>
           ) : null}
-          {options.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              disabled={option.disabled}
-            >
-              {option.label}
-            </option>
-          ))}
+          {options.map((item) =>
+            isGroup(item) ? (
+              <optgroup key={item.label} label={item.label}>
+                {item.options.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    disabled={option.disabled}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </optgroup>
+            ) : (
+              <option
+                key={item.value}
+                value={item.value}
+                disabled={item.disabled}
+              >
+                {item.label}
+              </option>
+            ),
+          )}
         </select>
         <svg
           className="deck-select__chevron"

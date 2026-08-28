@@ -119,6 +119,13 @@ export type {
 export { SideNav } from './components/SideNav'
 export type { SideNavProps, SideNavItemProps } from './components/SideNav'
 
+export { SettingsNav } from './components/SettingsNav'
+export type {
+  SettingsNavProps,
+  SettingsNavItemProps,
+  SettingsNavGroup,
+} from './components/SettingsNav'
+
 export { PrivateNote } from './components/PrivateNote'
 export type {
   PrivateNoteProps,

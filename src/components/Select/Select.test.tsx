@@ -65,4 +65,40 @@ describe('Select', () => {
     expect(select).toHaveAttribute('aria-invalid', 'true')
     expect(select).toHaveAccessibleDescription('Choose a type')
   })
+
+  // The grouping is the same information a sectioned list carries on a wider
+  // screen; a select that drops it when the list collapses loses it.
+  it('renders grouped options as optgroups', () => {
+    render(
+      <Select
+        label="Settings section"
+        options={[
+          {
+            label: 'User',
+            options: [
+              { value: 'profile', label: 'Profile' },
+              { value: 'account', label: 'Account' },
+            ],
+          },
+          { label: 'Admin', options: [{ value: 'billing', label: 'Billing' }] },
+        ]}
+      />,
+    )
+
+    const groups = screen.getAllByRole('group')
+    expect(groups).toHaveLength(2)
+    expect(groups[0]).toHaveAttribute('label', 'User')
+    expect(screen.getAllByRole('option')).toHaveLength(3)
+  })
+
+  it('still accepts a plain list', () => {
+    render(
+      <Select
+        label="Card type"
+        options={[{ value: 'work', label: 'Work' }]}
+      />,
+    )
+    expect(screen.queryAllByRole('group')).toHaveLength(0)
+    expect(screen.getByRole('option', { name: 'Work' })).toBeInTheDocument()
+  })
 })
