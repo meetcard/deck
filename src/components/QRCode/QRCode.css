@@ -1,27 +1,10 @@
-.deck-qrcode {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--deck-space-12);
-  font-family: var(--deck-font-sans);
-}
-
-.deck-qrcode__caption {
-  margin: 0;
-  font-size: var(--deck-font-size-label-md);
-  line-height: var(--deck-line-height-label-md);
-  font-weight: var(--deck-font-weight-medium);
-  color: var(--deck-color-text-default);
-  text-align: center;
-}
-
 /**
  * The plate is intentionally fixed light in BOTH themes. Scanners need a
  * light quiet zone and maximum contrast; inverting it in dark mode makes
  * codes unreliable to scan. Do not swap these for theme tokens.
  */
-.deck-qrcode__plate {
-  display: flex;
+.deck-qrcode {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
@@ -37,50 +20,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
 }
 
 .deck-qrcode__image,
+.deck-qrcode__inline,
 .deck-qrcode__inline > svg {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-.deck-qrcode__inline {
-  width: 100%;
-  height: 100%;
-}
-
-/* Sits in the code's error-correction zone. Keep small. */
+/* 14%, measured off the composite the UI kit exports: its mark spans ~26 of
+   the code's 184 units. That is the size of the centre a generator reserves
+   for a logo, which is why nothing sits behind the mark — the space is
+   already clear. The previous 22% overhung the reservation, and its own
+   comment said to keep it under 20%, which is how a mark ends up printed
+   over live modules and the code stops scanning. */
 .deck-qrcode__logo {
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22%;
-  height: 22%;
-  padding: 4px;
-  background-color: #ffffff;
-  border-radius: var(--deck-radius-md);
+  width: 14%;
+  height: 14%;
 }
 
 .deck-qrcode__logo > * {
   display: block;
   width: 100%;
   height: 100%;
-}
-
-.deck-qrcode__value {
-  margin: 0;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  text-align: center;
-  font-family: var(--deck-font-mono);
-  font-size: var(--deck-font-size-body-sm);
-  line-height: var(--deck-line-height-body-sm);
-  color: var(--deck-color-text-muted);
 }
 
 .deck-qrcode--sm .deck-qrcode__code {

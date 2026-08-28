@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { Mark } from '../../foundations/brand'
 import { Button } from '../Button/Button'
 import { CopyField } from '../CopyField/CopyField'
 import { QRCode } from '../QRCode/QRCode'
@@ -115,13 +114,7 @@ export function ShareSheet({
       className="deck-share-sheet"
     >
       <div className="deck-share-sheet__body">
-        <QRCode
-          value={value}
-          src={qrSrc}
-          size="lg"
-          showValue={false}
-          logo={<Mark />}
-        >
+        <QRCode value={value} src={qrSrc} size="lg">
           {children}
         </QRCode>
 

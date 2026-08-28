@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn, waitFor, within } from 'storybook/test'
-import { Mark } from '../../foundations/brand'
 import { Button } from '../Button/Button'
 import { CopyField } from '../CopyField/CopyField'
 import { QRCode } from '../QRCode/QRCode'
@@ -191,7 +190,7 @@ export const ShowMyCard: Story = {
           <QRCode
             value="https://metcard.io/ben"
             size="lg"
-            caption="Scan to save my card"
+          
           >
             <SampleMatrix />
           </QRCode>
@@ -224,12 +223,7 @@ export const ShareCard: Story = {
           open={open}
           onClose={() => setOpen(false)}
         >
-          <QRCode
-            value="meetcard.io/ben@meetcard"
-            showValue={false}
-            size="lg"
-            logo={<Mark />}
-          >
+          <QRCode value="meetcard.io/ben@meetcard" size="lg">
             <SampleMatrix />
           </QRCode>
           <CopyField
@@ -281,12 +275,7 @@ export const ShareEvent: Story = {
           open={open}
           onClose={() => setOpen(false)}
         >
-          <QRCode
-            value="meetcard.io/events/boulder-startup-week-2026-05-04"
-            showValue={false}
-            size="lg"
-            logo={<Mark />}
-          >
+          <QRCode value="meetcard.io/events/boulder-startup-week-2026-05-04" size="lg">
             <SampleMatrix />
           </QRCode>
           <CopyField
