@@ -1,6 +1,8 @@
-/* The frame is a three-row grid so the content column is the only thing that
-   scrolls — the bar and nav stay put without needing fixed positioning, which
-   would take them out of flow and leave the content to guess at their size. */
+/* The frame is a grid in both modes so nothing needs fixed positioning:
+   below `md` it is three rows (bar / content / bar), from `md` it is a
+   two-column layout with the app bar spanning the top. Because the bar owns
+   row one, the rail starts exactly where the bar ends — no hard-coded offset
+   to fall out of step with a notch, a longer title, or a second line. */
 .app-shell {
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -9,10 +11,54 @@
   background-color: var(--deck-color-background-default);
 }
 
+/* The rail is desktop-only; the bar takes over below the breakpoint. */
+.app-shell__side {
+  display: none;
+}
+
 .app-shell__content {
   overflow-y: auto;
-  /* Room for the nav's elevated center action, which overhangs its own bar. */
+  /* Clears the bottom nav's elevated center action, which overhangs its
+     own bar. Removed with the bar itself at `md`. */
   padding-block-end: var(--deck-space-16);
+}
+
+/* 768px is `breakpoints.md`. Written out because a custom property cannot be
+   used in a media condition — `mediaQuery('md')` in foundations/tokens is the
+   JS-side twin of this line, and the two must move together. */
+@media (min-width: 768px) {
+  .app-shell {
+    grid-template-columns: 256px 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'bar  bar'
+      'side content';
+  }
+
+  .app-shell__bar {
+    grid-area: bar;
+  }
+
+  .app-shell__side {
+    display: flex;
+    grid-area: side;
+    /* Load-bearing, and the first thing that looks redundant: a grid item's
+       default `min-block-size: auto` refuses to shrink below its content, so
+       without this the rail's own `overflow-y` never engages and a long
+       destination list stretches the whole page instead of scrolling. */
+    min-block-size: 0;
+  }
+
+  .app-shell__content {
+    grid-area: content;
+    min-block-size: 0;
+    /* Nothing overhangs the content now — the bottom bar is gone. */
+    padding-block-end: 0;
+  }
+
+  .app-shell__nav {
+    display: none;
+  }
 }
 
 .app-shell__exchange {

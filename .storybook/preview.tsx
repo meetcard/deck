@@ -68,10 +68,12 @@ const preview: Preview = {
      * mobile rule and shows the narrow layout, which is the opposite of what
      * someone reaching for "sm" expects. 639/641 shows each side honestly.
      *
-     * The pairs cover the widths actually queried in the codebase — 640
-     * (11 rules) and 1024 (8) — not the full token scale. `md` 768 and `xl`
-     * 1280 have no `@media` rule anywhere, so they appear as device widths
-     * only; there is nothing at those numbers for an edge test to catch.
+     * The pairs cover the widths actually queried in the codebase — 640, 768
+     * and 1024 — not the full token scale. `md` 768 is where the app shell
+     * swaps its navigation entirely (rail above, bar below), which makes it
+     * the most consequential edge here: the two sides render different
+     * destinations, not just a different arrangement. `xl` 1280 still has no
+     * `@media` rule anywhere and appears as a device width only.
      *
      * NOTE: at exactly 640px, Sheet's `min-width: 640px` rule and every other
      * component's `max-width: 640px` rule both apply, so the canvas shows
@@ -123,6 +125,16 @@ const preview: Preview = {
         smAbove: {
           name: 'Edge · sm + 1px (641px, wide)',
           styles: { width: '641px', height: '900px' },
+          type: 'tablet',
+        },
+        mdBelow: {
+          name: 'Edge · md − 1px (767px, bottom nav)',
+          styles: { width: '767px', height: '1024px' },
+          type: 'tablet',
+        },
+        mdAbove: {
+          name: 'Edge · md + 1px (769px, side rail)',
+          styles: { width: '769px', height: '1024px' },
           type: 'tablet',
         },
         lgBelow: {

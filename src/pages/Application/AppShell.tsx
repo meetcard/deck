@@ -1,4 +1,16 @@
-import { useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
+import {
+  ArrowLeftRight,
+  Calendar,
+  House,
+  IdCard,
+  Plus,
+  QrCode,
+  ScanLine,
+  Settings,
+  Users,
+  type LucideIcon,
+} from 'lucide-react'
 import { Mark } from '../../foundations/brand'
 import { AppBar } from '../../components/AppBar/AppBar'
 import { Avatar } from '../../components/Avatar/Avatar'
@@ -7,103 +19,68 @@ import type { BottomNavItemProps } from '../../components/BottomNav/BottomNav'
 import { Button } from '../../components/Button/Button'
 import { IconButton } from '../../components/IconButton/IconButton'
 import { Sheet } from '../../components/Sheet/Sheet'
+import { SideNav } from '../../components/SideNav/SideNav'
 import './AppShell.css'
 
 /* ---- Icons ------------------------------------------------------------ */
 
-const iconProps = {
-  viewBox: '0 0 16 16',
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 1.4,
-  strokeLinecap: 'round' as const,
-  strokeLinejoin: 'round' as const,
-}
-
-const HomeIcon = (
-  <svg {...iconProps}>
-    <path d="M2.5 7 8 2.5 13.5 7v6a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1V7Z" />
-  </svg>
-)
-
-const ConnectionsIcon = (
-  <svg {...iconProps}>
-    <circle cx="6" cy="5.5" r="2.5" />
-    <path d="M1.5 13.5a4.5 4.5 0 0 1 9 0" />
-    <path d="M11 3.2a2.5 2.5 0 0 1 0 4.6M12.5 13.5a4.5 4.5 0 0 0-2-3.7" />
-  </svg>
-)
-
-const EventsIcon = (
-  <svg {...iconProps}>
-    <rect x="2" y="3" width="12" height="11" rx="1.5" />
-    <path d="M2 6.5h12M5 1.5v3M11 1.5v3" />
-  </svg>
-)
-
-/* Sliders rather than a cog: at 16px a toothed gear's teeth collapse into a
-   ring of dashes and read as a sun. Controls-on-a-track survives the size. */
-const SettingsIcon = (
-  <svg {...iconProps}>
-    <path d="M2.5 5h11M2.5 11h11" />
-    <circle cx="6" cy="5" r="1.7" />
-    <circle cx="10" cy="11" r="1.7" />
-  </svg>
-)
-
-const ExchangeIcon = (
-  <svg {...iconProps}>
-    <path d="M2.5 5.5h8M8.5 3 11 5.5 8.5 8M13.5 10.5h-8M7.5 8 5 10.5 7.5 13" />
-  </svg>
-)
-
-const QrIcon = (
-  <svg {...iconProps}>
-    <rect x="2" y="2" width="5" height="5" rx="1" />
-    <rect x="9" y="2" width="5" height="5" rx="1" />
-    <rect x="2" y="9" width="5" height="5" rx="1" />
-    <path d="M9 9h2v2H9zM13 13h1M11.5 13.5h.01" />
-  </svg>
-)
-
-const ScanIcon = (
-  <svg {...iconProps}>
-    <path d="M2 5.5V3a1 1 0 0 1 1-1h2.5M10.5 2H13a1 1 0 0 1 1 1v2.5M14 10.5V13a1 1 0 0 1-1 1h-2.5M5.5 14H3a1 1 0 0 1-1-1v-2.5" />
-    <path d="M2 8h12" />
-  </svg>
-)
-
-const PlusIcon = (
-  <svg {...iconProps}>
-    <path d="M8 3.5v9M3.5 8h9" />
-  </svg>
+/**
+ * Icons come from `lucide-react` here, not hand-drawn inline as they are
+ * inside `src/components`. That split is deliberate and load-bearing:
+ * components accept `icon: ReactNode` and import no icon set, which is what
+ * keeps `dist/deck.js` free of runtime dependencies. Composition layers like
+ * this one are not published, so they can use a library.
+ *
+ * Weight carries the active state, not just colour. lucide draws on a 24
+ * grid, so at the 20-22px these render the stroke lands near 1.5px at rest
+ * and near 1.9px active — a step you can see without reading the label.
+ */
+const icon = (Glyph: LucideIcon, active = false) => (
+  <Glyph strokeWidth={active ? 2.25 : 1.75} aria-hidden="true" focusable="false" />
 )
 
 /* ---- Destinations ------------------------------------------------------ */
 
 /**
- * Four destinations, matching the app's bottom bar. Exchange is deliberately
- * absent: it is the elevated center action below, because it is something you
- * do rather than a place you go.
+ * The two navigations carry different destinations on purpose — they are not
+ * one list rendered two ways.
  *
- * Two destinations carry a terser label here than their page title, and only
- * here — the pages, their headings, and their Storybook entries are unchanged.
- * A slot gives 61px of label room at 375px wide, the tightest common phone.
- * "Connections" measures 68 and ellipsised to "Connecti…"; "Dashboard"
- * measures 59, clearing by 2px, which is one font tweak or one translation
- * from the same bug. The slots are `flex: 1`, so neither is something the
- * other labels or the destination count can fix — dropping to three
- * destinations buys a single pixel. "People" (37) and "Home" (32) both leave
- * real headroom, and "Home" is what the house icon was already saying.
- * A terser nav label than page title is ordinary; a truncated primary
- * destination is not.
+ * The rail leads with managing what you own: your cards, then the people and
+ * events behind them. Exchange is absent, because trading cards is a thing
+ * you do with a phone in your hand in front of someone, not at a desk.
+ *
+ * The bar inverts that. Exchange takes the elevated center slot as the
+ * product's highest-frequency moment, and "My cards" gives up its place to
+ * make room — editing how you present yourself is desk work.
+ *
+ * Settings appears in both, but only the rail separates it: the bar has five
+ * peers, the rail pins it to the foot as the low-frequency destination it is.
  */
-const DESTINATIONS: BottomNavItemProps[] = [
-  { id: '/', label: 'Home', icon: HomeIcon, href: '/' },
-  { id: '/connections', label: 'People', icon: ConnectionsIcon, href: '/connections' },
-  { id: '/events', label: 'Events', icon: EventsIcon, href: '/events' },
-  { id: '/settings', label: 'Settings', icon: SettingsIcon, href: '/settings' },
-]
+const useDestinations = (currentId: string) =>
+  useMemo(() => {
+    const a = (id: string) => id === currentId
+
+    const dashboard = { id: '/', label: 'Dashboard', href: '/' }
+    const connections = { id: '/connections', label: 'Connections', href: '/connections' }
+    const events = { id: '/events', label: 'Events', href: '/events' }
+    const settings = { id: '/settings', label: 'Settings', href: '/settings' }
+
+    return {
+      rail: [
+        { ...dashboard, icon: icon(House, a('/')) },
+        { id: '/cards', label: 'My cards', href: '/cards', icon: icon(IdCard, a('/cards')) },
+        { ...connections, icon: icon(Users, a('/connections')) },
+        { ...events, icon: icon(Calendar, a('/events')) },
+      ],
+      railFooter: [{ ...settings, icon: icon(Settings, a('/settings')) }],
+      bar: [
+        { ...dashboard, icon: icon(House, a('/')) },
+        { ...connections, icon: icon(Users, a('/connections')) },
+        { ...events, icon: icon(Calendar, a('/events')) },
+        { ...settings, icon: icon(Settings, a('/settings')) },
+      ] satisfies BottomNavItemProps[],
+    }
+  }, [currentId])
 
 export interface AppShellProps {
   /** The screen rendered between the bar and the nav. */
@@ -119,21 +96,29 @@ export interface AppShellProps {
 /**
  * The persistent shell every authenticated screen renders inside.
  *
- * Composes the two halves of the app frame — `AppBar` at the top for brand
- * and account access, `BottomNav` at the bottom for the four destinations —
- * around a scrolling content slot. Pages supply only their own content and
- * say which destination they sit under; the frame is identical everywhere,
- * which is what makes it read as one app rather than a set of screens.
+ * Composes `AppBar` at the top with one of two navigations beneath it: the
+ * `SideNav` rail from `md` (768px) up, the `BottomNav` bar below. Only one is
+ * ever rendered visibly — the other is `display: none` and so is out of the
+ * accessibility tree too — and the swap is pure CSS, so there is no viewport
+ * JS to disagree with the server about.
  *
- * Exchange is the elevated center action rather than a fifth destination,
- * and it opens a `Sheet` instead of navigating. That follows both components'
- * stated intent: `BottomNav` describes the center slot as "the thing you do,"
- * and `Sheet` calls itself "the home of the Exchange action." Keeping it modal
- * means the exchange happens without losing the screen behind it — you are
- * mid-conversation when you reach for it.
+ * The two navigations are not the same list at two sizes. The rail carries
+ * "My cards" and no Exchange; the bar carries Exchange and no "My cards".
+ * See `useDestinations` for why. That means the shell's navigation changes
+ * *content*, not just arrangement, at the breakpoint — unusual, and worth
+ * knowing before adding a destination to one and not the other.
  *
- * Mobile-first, matching the installed PWA this documents. A desktop side rail
- * is a separate composition and is not attempted here.
+ * A consequence worth stating plainly: **Exchange has no desktop entry
+ * point.** The center action is the only way into the sheet, and it exists
+ * only in the bar. That mirrors the product's own model, where exchanging is
+ * an in-person moment, and the desktop path is expected to come from page
+ * content — Dashboard's "Share via QR" — rather than from the frame. If that
+ * turns out to be wrong, an `AppBar` action is the place to fix it.
+ *
+ * The layout is a grid in both modes rather than a fixed rail with a
+ * hard-coded top offset: the bar spans row one, so the rail begins exactly
+ * where the bar ends whatever the bar's height turns out to be with a notch,
+ * a longer title, or a second line.
  *
  * @example
  * <AppShell currentId="/connections" title="Connections">
@@ -147,6 +132,7 @@ export function AppShell({
   accountName = 'Alex Rivera',
 }: AppShellProps) {
   const [exchangeOpen, setExchangeOpen] = useState(false)
+  const destinations = useDestinations(currentId)
 
   return (
     <div className="app-shell">
@@ -164,15 +150,22 @@ export function AppShell({
         }
       />
 
+      <SideNav
+        className="app-shell__side"
+        items={destinations.rail}
+        footerItems={destinations.railFooter}
+        currentId={currentId}
+      />
+
       <main className="app-shell__content">{children}</main>
 
       <BottomNav
         className="app-shell__nav"
-        items={DESTINATIONS}
+        items={destinations.bar}
         currentId={currentId}
         centerAction={{
           label: 'Exchange',
-          icon: ExchangeIcon,
+          icon: icon(ArrowLeftRight),
           onClick: () => setExchangeOpen(true),
         }}
       />
@@ -187,13 +180,13 @@ export function AppShell({
         description="Share your card or capture someone else's."
       >
         <div className="app-shell__exchange">
-          <Button fullWidth iconStart={QrIcon}>
+          <Button fullWidth iconStart={icon(QrCode)}>
             Show my card
           </Button>
-          <Button fullWidth variant="secondary" iconStart={ScanIcon}>
+          <Button fullWidth variant="secondary" iconStart={icon(ScanLine)}>
             Scan a card
           </Button>
-          <Button fullWidth variant="ghost" iconStart={PlusIcon}>
+          <Button fullWidth variant="ghost" iconStart={icon(Plus)}>
             Add manually
           </Button>
         </div>

@@ -31,43 +31,102 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** The frame every authenticated screen renders inside. */
+/**
+ * Desktop. Storybook's browser runner renders at 1200px unless a story pins
+ * a viewport, so this is above the `md` breakpoint and shows the rail.
+ */
 export const Default: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('banner')).toBeVisible()
-    await expect(canvas.getByRole('navigation', { name: 'Primary' })).toBeVisible()
+    await expect(
+      canvas.getByRole('navigation', { name: 'Global' }),
+    ).toBeVisible()
+
+    // The assertion that proves the swap happened rather than that both
+    // rendered: the bar is display:none here, so it is out of the a11y tree.
+    await expect(
+      canvas.queryByRole('navigation', { name: 'Primary' }),
+    ).toBeNull()
+
+    // "My cards" is a rail-only destination.
+    await expect(canvas.getByRole('link', { name: 'My cards' })).toBeVisible()
   },
 }
 
-/** A title appears when the mark alone isn't enough context for the screen. */
+/** A title in the bar, and the matching rail destination marked current. */
 export const WithTitle: Story = {
   args: { currentId: '/connections', title: 'Connections' },
   play: async ({ canvas }) => {
-    // Nav label is "People"; the bar's label is terser than the page title.
-    const active = canvas.getByRole('link', { name: 'People' })
-    await expect(active).toHaveAttribute('aria-current', 'page')
+    await expect(
+      canvas.getByRole('link', { name: 'Connections' }),
+    ).toHaveAttribute('aria-current', 'page')
   },
 }
 
 /**
- * Exchange is the center action, not a destination: it opens a sheet over the
- * screen rather than navigating away from it.
+ * The breakpoint's own value. 768px is the first width that gets the rail,
+ * so this is the edge worth spending a story on.
+ */
+export const Tablet: Story = {
+  parameters: { viewport: { defaultViewport: 'tablet' } },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('navigation', { name: 'Global' }),
+    ).toBeVisible()
+    await expect(
+      canvas.queryByRole('navigation', { name: 'Primary' }),
+    ).toBeNull()
+  },
+}
+
+/**
+ * Phone. The bar replaces the rail, Exchange appears as the center action,
+ * and "My cards" gives up its slot to make room.
+ */
+export const Mobile: Story = {
+  parameters: { viewport: { defaultViewport: 'mobileS' } },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('navigation', { name: 'Primary' }),
+    ).toBeVisible()
+    await expect(
+      canvas.queryByRole('navigation', { name: 'Global' }),
+    ).toBeNull()
+    await expect(canvas.getByRole('button', { name: 'Exchange' })).toBeVisible()
+    await expect(canvas.queryByRole('link', { name: 'My cards' })).toBeNull()
+
+    // The regression test for the whole label-restoration premise, measured
+    // in real Chromium at the tightest common phone width. If the type scale,
+    // the padding, or the destination count changes such that a label no
+    // longer fits, this fails here rather than being noticed in a screenshot.
+    // Scoped to the bar: the rail is display:none but still in the DOM, and
+    // getByText does not filter on visibility the way getByRole does.
+    const bar = canvas.getByRole('navigation', { name: 'Primary' })
+    for (const name of ['Dashboard', 'Connections', 'Events', 'Settings']) {
+      const label = within(bar).getByText(name)
+      await expect(label.scrollWidth).toBeLessThanOrEqual(label.clientWidth)
+    }
+  },
+}
+
+/**
+ * Exchange opens a sheet rather than navigating. Pinned to a phone because
+ * the center action that opens it exists only in the bar.
  */
 export const ExchangeOpen: Story = {
-  play: async ({ canvas, canvasElement, step, userEvent }) => {
-    await step('Open Exchange from the center action', async () => {
-      await userEvent.click(canvas.getByRole('button', { name: 'Exchange' }))
-    })
+  parameters: { viewport: { defaultViewport: 'mobileS' } },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Exchange' }))
 
-    // <dialog> renders in the top layer, outside the canvas root.
+    // The sheet renders in the top layer, outside the story canvas.
     const dialog = canvasElement.ownerDocument.querySelector('dialog')
     await expect(dialog).toHaveAttribute('open')
 
-    // Retries until the entrance animation clears opacity: 0 — the buttons
-    // are in the DOM immediately, but not yet visible.
     await waitFor(() => {
       expect(
-        within(dialog as HTMLElement).getByRole('button', { name: 'Show my card' }),
+        within(dialog as HTMLElement).getByRole('button', {
+          name: 'Show my card',
+        }),
       ).toBeVisible()
     })
   },
