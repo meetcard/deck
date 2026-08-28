@@ -88,12 +88,18 @@
   line-height: var(--deck-line-height-body-sm);
   font-weight: var(--deck-font-weight-medium);
   color: var(--deck-color-text-default);
+  /* The label and the description set their own colour, so they would snap
+     to the selected ink while the fill behind them was still fading in —
+     dark text on a nearly-dark tile for the length of the transition. They
+     fade on the same clock as the control instead. */
+  transition: color var(--deck-duration-fast) var(--deck-ease-standard);
 }
 
 .deck-choice-group__option-description {
   font-size: var(--deck-font-size-body-xs);
   line-height: var(--deck-line-height-body-xs);
   color: var(--deck-color-text-muted);
+  transition: color var(--deck-duration-fast) var(--deck-ease-standard);
 }
 
 .deck-choice-group__option:hover
@@ -167,7 +173,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .deck-choice-group__control {
+  .deck-choice-group__control,
+  .deck-choice-group__label,
+  .deck-choice-group__option-description {
     transition-duration: 0ms;
   }
 }
