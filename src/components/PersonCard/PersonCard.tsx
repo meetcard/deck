@@ -138,14 +138,14 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
         ref={ref}
         as="article"
         surface="elevated"
-        padding={24}
+        padding={20}
         className={cx('deck-person-card', className)}
         {...cardProps}
       >
         <div className="deck-person-card__header">
           <div className="deck-person-card__avatar-wrap">
             <span className="deck-person-card__avatar-glow" aria-hidden="true" />
-            <Avatar name={name} src={avatarSrc} size="xl" decorative />
+            <Avatar name={name} src={avatarSrc} size="lg" decorative />
           </div>
 
           <div className="deck-person-card__identity">

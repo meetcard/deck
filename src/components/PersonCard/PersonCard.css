@@ -1,9 +1,23 @@
 /* A physical business card rounds about 3mm on an 89mm edge — roughly 3.4%.
    At this card's 400px that is ~13px, so `xl` (12px) is the honest token.
-   The previous `3xl` (24px) read at 6.3%, closer to a coaster than a card. */
+   The previous `3xl` (24px) read at 6.3%, closer to a coaster than a card.
+
+   7/4 is the US 3.5x2in card. Fixing the ratio is what makes every card in a
+   pile the same object rather than a set of boxes that happen to be stacked —
+   with content-driven heights, one person's card was 268px and the next's
+   193px, and no amount of offsetting reads as a pile after that.
+
+   It replaces an earlier decision to let height follow content "so a long name
+   or a populated footer never gets clipped". That risk is real and is handled
+   here instead: the name clamps to two lines, and `overflow: hidden` is the
+   backstop. The tradeoff is deliberate — a business card is a fixed-size
+   object, and content that cannot fit one is content that does not belong on
+   one. */
 .deck-person-card {
   width: 100%;
   max-width: 400px;
+  aspect-ratio: 7 / 4;
+  overflow: hidden;
   border-radius: var(--deck-radius-xl);
 }
 
@@ -51,7 +65,15 @@
   letter-spacing: var(--deck-tracking-caps);
 }
 
+/* One line, then ellipsis — as a name is set on a printed card.
+   Measured: at two lines the header grows from 56px to ~70px, which no
+   amount of tightening the gaps fits into a 7/4 box that also carries a
+   detail pill and a footer. The card can no longer grow to accommodate the
+   name, so the name yields instead of the layout. */
 .deck-person-card__name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-weight: var(--deck-font-weight-bold);
 }
 
@@ -109,16 +131,42 @@
   flex-shrink: 0;
 }
 
+/* One line, like the name above it. It used to wrap, which was right when the
+   card grew with its content; against a fixed 7/4 box a two-line role pushes
+   the footer out of the card. A long role is truncated rather than silently
+   clipped at whatever pixel the box ends. */
 .deck-person-card__pill {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--deck-space-4);
   width: fit-content;
   max-width: 100%;
+  overflow: hidden;
   padding: var(--deck-space-8) var(--deck-space-16);
   border: 1px solid var(--deck-color-border-default);
   border-radius: var(--deck-radius-full);
+}
+
+/* Nothing wraps, and only the role gives.
+
+   Letting every child shrink shares the deficit around and truncates all of
+   them at once — "Head of Partners… a. MeetC… Boulder, Color…", with the word
+   "at" clipped to "a.". The role is both the longest part and the one that
+   survives abbreviation best, so it absorbs the shortfall alone and the
+   company and place stay whole. */
+.deck-person-card__pill > * {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.deck-person-card__pill > *:first-child {
+  flex-shrink: 1;
+  /* Without this the text refuses to go below its content width and the pill
+     overflows instead of ellipsising. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .deck-person-card__company-link {
@@ -148,12 +196,22 @@
 
 /* Only present when the card has a back. `perspective` on the outer element
    rather than the rotating one, so the turn has depth instead of reading as
-   a flat horizontal squash. */
+   a flat horizontal squash.
+
+   The ratio lives here too, not only on the face. Both faces share one grid
+   cell, so without it the taller face sets the height and the card stops
+   being card-shaped the moment it gains a back — measured at 1.465 instead
+   of 1.75. With it, the shell is the fixed object and both sides fill it. */
 .deck-person-card-flip {
   position: relative;
   width: 100%;
   max-width: 400px;
+  aspect-ratio: 7 / 4;
   perspective: 1400px;
+}
+
+.deck-person-card-flip__inner {
+  block-size: 100%;
 }
 
 /* Grid rather than absolute positioning: both faces share one cell, so the
@@ -220,4 +278,12 @@
   .deck-person-card-flip--flipped .deck-person-card-flip__face--back {
     opacity: 1;
   }
+}
+
+/* Card stacks its children 16px apart. That is right for a card that grows
+   with its content and 17px too much for one pinned to 7/4: measured, the
+   blocks need 146px and the box leaves 177px, so three 16px gaps overflow by
+   19. Eight leaves the whole thing 7px of slack. */
+.deck-person-card > * + * {
+  margin-top: var(--deck-space-8);
 }

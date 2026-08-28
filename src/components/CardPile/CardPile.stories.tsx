@@ -233,3 +233,55 @@ export const SingleCard: Story = {
     ).not.toBeInTheDocument()
   },
 }
+
+/**
+ * Every card in the pile is the same object: identical box, at roughly a US
+ * business card's 3.5x2. Measured rather than asserted in prose, because the
+ * pile only reads as a pile while it holds — content-driven heights had one
+ * person's card 75px shorter than the next, and no amount of offsetting
+ * recovers from that.
+ */
+export const UniformCards: Story = {
+  render: (args) => (
+    <CardPile {...args}>
+      <PersonCard
+        name="Ada Lovelace"
+        title="Head of Partnerships"
+        company="MeetCard"
+        location="Boulder, Colorado"
+        tagline="Let's find the overlap."
+        footer={
+          <Button variant="secondary" size="sm">
+            Share
+          </Button>
+        }
+      />
+      {/* Deliberately sparse — the card must not shrink to fit less. */}
+      <PersonCard name="Ada Lovelace" />
+      <PersonCard
+        name="Augusta Ada King-Noel, Countess of Lovelace"
+        title="Head of Strategic Partnerships and Developer Relations"
+        company="MeetCard"
+      />
+    </CardPile>
+  ),
+  play: async ({ canvasElement }) => {
+    const cards = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>('.deck-person-card'),
+    )
+    await expect(cards.length).toBeGreaterThan(1)
+
+    const [first] = cards
+    for (const card of cards) {
+      await expect(card.offsetWidth).toBe(first.offsetWidth)
+      await expect(card.offsetHeight).toBe(first.offsetHeight)
+      // Nothing spills out of a box that can no longer grow.
+      await expect(card.scrollHeight).toBeLessThanOrEqual(card.clientHeight + 1)
+    }
+
+    // 7/4 = 1.75, allowing a pixel of rounding at this width.
+    const ratio = first.offsetWidth / first.offsetHeight
+    await expect(ratio).toBeGreaterThan(1.72)
+    await expect(ratio).toBeLessThan(1.78)
+  },
+}

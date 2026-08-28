@@ -153,7 +153,7 @@ export function PrivateNote({
         label="How do you remember them?"
         hideLabel
         placeholder="How do you remember them?"
-        rows={3}
+        rows={2}
         resize="none"
         value={value}
         onChange={(event) => onValueChange?.(event.target.value)}
