@@ -1,0 +1,90 @@
+/**
+ * Styles for the Vite playground demo in `src/App.tsx` — not part of Deck.
+ *
+ * Everything here is scoped to `.deck-playground` (the wrapper App renders)
+ * so it cannot reach anything else. It used to sit on `:root` and on bare
+ * element selectors in `index.css`, which meant Storybook — which imported
+ * `index.css` — documented every story against a 18px root font, a
+ * `max-width: 1024px` root-font override, and global `h1`/`h2`/`p`/`code`
+ * rules that Deck itself does not ship. Storybook now loads
+ * `styles/deck.css` alone; this file rides along with the demo instead.
+ */
+
+.deck-playground {
+  /**
+   * Legacy aliases. The demo app still reads these names; pointing them at
+   * Deck tokens means it inherits the MeetCard brand (and dark mode)
+   * without touching its CSS. Remove these when the demo goes.
+   */
+  --text: var(--deck-color-text-muted);
+  --text-h: var(--deck-color-text-default);
+  --bg: var(--deck-color-background-default);
+  --border: var(--deck-color-border-default);
+  --code-bg: var(--deck-color-background-subtle);
+  --accent: var(--deck-color-text-brand);
+  --accent-bg: var(--deck-color-background-brand-subtle);
+  --accent-border: var(--deck-color-border-brand);
+  --social-bg: var(--deck-color-background-subtle);
+  --shadow: var(--deck-shadow-md);
+
+  --sans: var(--deck-font-sans);
+  --heading: var(--deck-font-sans);
+  --mono: var(--deck-font-mono);
+
+  /* `display: contents` keeps the wrapper out of the layout — `#root`'s
+     flex column still sees the demo's sections as its own children — while
+     the custom properties above still inherit through it. Page-level type
+     (the 18px base) stays on `:root` in `index.css`: it belongs to the
+     standalone document, and in Storybook `.deck-root` sets the base size. */
+  display: contents;
+}
+
+.deck-playground h1,
+.deck-playground h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.deck-playground h1 {
+  font-size: 56px;
+  letter-spacing: -1.68px;
+  margin: 32px 0;
+}
+
+.deck-playground h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+}
+
+.deck-playground p {
+  margin: 0;
+}
+
+.deck-playground code,
+.deck-playground .counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+.deck-playground code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
+
+@media (max-width: 1024px) {
+  .deck-playground h1 {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+
+  .deck-playground h2 {
+    font-size: 20px;
+  }
+}

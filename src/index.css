@@ -2,39 +2,21 @@
  * Local dev entry for the Vite playground app.
  *
  * Deck itself ships `src/styles/deck.css` — this file only exists so the
- * demo app in `src/App.tsx` renders, and to keep the pre-Deck demo
- * components (Header, Page, Autocomplete) working while they are folded
- * into the system.
+ * demo app in `src/App.tsx` renders. It is the Vite entry alone: Storybook
+ * imports `styles/deck.css` directly, so nothing below is ever documented
+ * as part of the system. Demo-specific rules live in `playground.css`,
+ * scoped to `.deck-playground` and imported by `App.tsx` itself; what
+ * stays here is the page shell, which only makes sense for the standalone
+ * `index.html` document.
  */
 
 @import './styles/deck.css';
 
 :root {
-  /**
-   * Legacy aliases. The demo app and the three pre-Deck components still
-   * read these names; pointing them at Deck tokens means they inherit the
-   * MeetCard brand (and dark mode) without touching their CSS.
-   * Remove these once those components move into `components/`.
-   */
-  --text: var(--deck-color-text-muted);
-  --text-h: var(--deck-color-text-default);
-  --bg: var(--deck-color-background-default);
-  --border: var(--deck-color-border-default);
-  --code-bg: var(--deck-color-background-subtle);
-  --accent: var(--deck-color-text-brand);
-  --accent-bg: var(--deck-color-background-brand-subtle);
-  --accent-border: var(--deck-color-border-brand);
-  --social-bg: var(--deck-color-background-subtle);
-  --shadow: var(--deck-shadow-md);
-
-  --sans: var(--deck-font-sans);
-  --heading: var(--deck-font-sans);
-  --mono: var(--deck-font-mono);
-
-  font: 18px/145% var(--sans);
+  font: 18px/145% var(--deck-font-sans);
   letter-spacing: 0.18px;
-  color: var(--text);
-  background: var(--bg);
+  color: var(--deck-color-text-muted);
+  background: var(--deck-color-background-default);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -52,7 +34,7 @@
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
-  border-inline: 1px solid var(--border);
+  border-inline: 1px solid var(--deck-color-border-default);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -61,53 +43,4 @@
 
 body {
   margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-}
-
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-}
-
-@media (max-width: 1024px) {
-  h1 {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-  h2 {
-    font-size: 20px;
-  }
-}
-
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
 }

@@ -5,6 +5,7 @@ import { Mark } from '../../foundations/brand'
 import { Button } from '../Button/Button'
 import { CopyField } from '../CopyField/CopyField'
 import { QRCode } from '../QRCode/QRCode'
+import { Text } from '../Text/Text'
 import { Sheet } from './Sheet'
 
 const QrIcon = () => (
@@ -129,7 +130,7 @@ export const ClosesOnEscape: Story = {
         <Sheet {...args} open={open} onClose={() => setOpen(false)}>
           <Button fullWidth>Show my card</Button>
         </Sheet>
-        {!open ? <p>Sheet closed</p> : null}
+        {!open ? <Text>Sheet closed</Text> : null}
       </div>
     )
   },
