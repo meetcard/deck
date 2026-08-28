@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import { Button } from '../Button/Button'
 import { IconButton } from '../IconButton/IconButton'
+import { PrivateNote } from '../PrivateNote/PrivateNote'
+import type { ConnectionFeeling } from '../PrivateNote/PrivateNote'
 import { PersonCard } from './PersonCard'
 
 const EmailIcon = () => (
@@ -156,5 +159,79 @@ export const LongName: Story = {
   args: {
     name: 'Augusta Ada King-Noel, Countess of Lovelace',
     title: 'Head of Strategic Partnerships and Developer Relations',
+  },
+}
+
+function FlipHarness() {
+  const [flipped, setFlipped] = useState(false)
+  const [feeling, setFeeling] = useState<ConnectionFeeling>()
+  const [note, setNote] = useState('')
+
+  return (
+    <PersonCard
+      name="Ben Ackles"
+      eyebrow="Verified professional"
+      tagline="What a lovable guy"
+      title="Builder"
+      company="MeetCard"
+      location="Boulder, Colorado"
+      privateNote={{ hasContent: Boolean(feeling || note) }}
+      contactActions={
+        <>
+          <IconButton size="sm" round label="Email" icon={<EmailIcon />} />
+          <IconButton size="sm" round label="LinkedIn" icon={<LinkedInIcon />} />
+          <IconButton size="sm" round label="Share" icon={<ShareIcon />} />
+        </>
+      }
+      footer={
+        <>
+          <Button size="sm">Book with me</Button>
+          <Button size="sm" variant="secondary">
+            Exchange cards
+          </Button>
+        </>
+      }
+      flipped={flipped}
+      onFlippedChange={setFlipped}
+      back={
+        <PrivateNote
+          feeling={feeling}
+          onFeelingChange={setFeeling}
+          value={note}
+          onValueChange={setNote}
+          onHide={() => setFlipped(false)}
+        />
+      }
+    />
+  )
+}
+
+/**
+ * A card has two sides. Opening the private note turns this one over, because
+ * what you write about someone belongs on the back of their card rather than
+ * in a panel somewhere else — and the dot on the front tells you there is
+ * something written there without showing it.
+ */
+export const NoteOnTheBack: Story = {
+  render: () => <FlipHarness />,
+  play: async ({ canvas, userEvent }) => {
+    const control = canvas.getByRole('button', { name: /Your private note/ })
+    await expect(control).toHaveAttribute('aria-expanded', 'false')
+
+    await userEvent.click(control)
+
+    await waitFor(async () => {
+      await expect(
+        canvas.getByRole('heading', { name: 'How did this connection feel?' }),
+      ).toBeVisible()
+    })
+
+    // Turning back leaves the card as it was.
+    await userEvent.click(canvas.getByRole('button', { name: 'Hide' }))
+    await waitFor(async () => {
+      await expect(
+        canvas.getByRole('button', { name: /Your private note/ }),
+      ).toHaveAttribute('aria-expanded', 'false')
+    })
   },
 }

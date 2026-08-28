@@ -119,6 +119,12 @@ export type {
 export { SideNav } from './components/SideNav'
 export type { SideNavProps, SideNavItemProps } from './components/SideNav'
 
+export { PrivateNote } from './components/PrivateNote'
+export type {
+  PrivateNoteProps,
+  ConnectionFeeling,
+} from './components/PrivateNote'
+
 /* ---- Navigation & progress -------------------------------------------- */
 export { Stepper } from './components/Stepper'
 export type { StepperProps, Step } from './components/Stepper'

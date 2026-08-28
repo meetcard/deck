@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { cx } from '../../lib/cx'
 import { Avatar } from '../Avatar/Avatar'
@@ -60,6 +60,19 @@ export interface PersonCardProps
   contactActions?: ReactNode
   /** Primary/secondary actions along the bottom edge. */
   footer?: ReactNode
+  /**
+   * The card's other face — normally a `PrivateNote`. Supplying it turns the
+   * private-note control into a flip: a business card has two sides, and the
+   * things you write about someone belong on the back of theirs rather than
+   * in a panel somewhere else.
+   *
+   * Without this the card renders exactly as before, unwrapped, and
+   * `privateNote.onClick` is left to the caller.
+   */
+  back?: ReactNode
+  /** Controlled flip state. Omit to let the card manage its own. */
+  flipped?: boolean
+  onFlippedChange?: (flipped: boolean) => void
 }
 
 /**
@@ -100,6 +113,9 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
       privateNote,
       contactActions,
       footer,
+      back,
+      flipped,
+      onFlippedChange,
       className,
       ...cardProps
     },
@@ -108,7 +124,16 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
     const hasMetaRow = Boolean(tagline || privateNote)
     const hasDetailPill = Boolean(title || company || location)
 
-    return (
+    const [selfFlipped, setSelfFlipped] = useState(false)
+    const isControlled = flipped !== undefined
+    const isFlipped = isControlled ? flipped : selfFlipped
+
+    const setFlipped = (next: boolean) => {
+      if (!isControlled) setSelfFlipped(next)
+      onFlippedChange?.(next)
+    }
+
+    const face = (
       <Card
         ref={ref}
         as="article"
@@ -168,7 +193,12 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
               <button
                 type="button"
                 className="deck-person-card__note"
-                onClick={privateNote.onClick}
+                aria-expanded={back ? isFlipped : undefined}
+                onClick={
+                  back
+                    ? () => setFlipped(true)
+                    : privateNote.onClick
+                }
               >
                 <LockIcon />
                 <span>{privateNote.label ?? 'Your private note'}</span>
@@ -232,6 +262,40 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
           <div className="deck-person-card__footer">{footer}</div>
         ) : null}
       </Card>
+    )
+
+    // Unwrapped when there is no other side, so every existing use keeps its
+    // exact markup and the article stays the card's own root element.
+    if (!back) return face
+
+    return (
+      <div
+        className={cx(
+          'deck-person-card-flip',
+          isFlipped && 'deck-person-card-flip--flipped',
+        )}
+      >
+        <div className="deck-person-card-flip__inner">
+          {/* Both faces occupy one grid cell, so the shell is as tall as the
+              taller of the two and the card does not resize mid-turn. The
+              hidden face is inert as well as hidden: `backface-visibility`
+              only stops it being painted, it would still take focus. */}
+          <div
+            className="deck-person-card-flip__face"
+            aria-hidden={isFlipped ? true : undefined}
+            inert={isFlipped ? true : undefined}
+          >
+            {face}
+          </div>
+          <div
+            className="deck-person-card-flip__face deck-person-card-flip__face--back"
+            aria-hidden={isFlipped ? undefined : true}
+            inert={isFlipped ? undefined : true}
+          >
+            {back}
+          </div>
+        </div>
+      </div>
     )
   },
 )

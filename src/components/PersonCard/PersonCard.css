@@ -143,3 +143,81 @@
 .deck-person-card__footer > * {
   flex: 1;
 }
+
+/* ---- The turn ---------------------------------------------------------- */
+
+/* Only present when the card has a back. `perspective` on the outer element
+   rather than the rotating one, so the turn has depth instead of reading as
+   a flat horizontal squash. */
+.deck-person-card-flip {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  perspective: 1400px;
+}
+
+/* Grid rather than absolute positioning: both faces share one cell, so the
+   shell is as tall as the taller face and the card does not change height
+   halfway through turning over. */
+.deck-person-card-flip__inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform var(--deck-duration-slow) var(--deck-ease-standard);
+}
+
+.deck-person-card-flip--flipped .deck-person-card-flip__inner {
+  transform: rotateY(180deg);
+}
+
+.deck-person-card-flip__face {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  /* Safari still wants the prefix, and without it both faces paint at once. */
+  -webkit-backface-visibility: hidden;
+}
+
+.deck-person-card-flip__face > * {
+  block-size: 100%;
+}
+
+/* Pre-turned, so it faces the viewer once the shell rotates. */
+.deck-person-card-flip__face--back {
+  transform: rotateY(180deg);
+}
+
+/* A turn that conveys "same object, other side" is meaningless at 0ms — it
+   would just swap. Cross-fade instead, which keeps the two faces distinct
+   without spinning anything. */
+@media (prefers-reduced-motion: reduce) {
+  .deck-person-card-flip__inner {
+    transition: none;
+  }
+
+  .deck-person-card-flip--flipped .deck-person-card-flip__inner {
+    transform: none;
+  }
+
+  .deck-person-card-flip__face {
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+    transition: opacity var(--deck-duration-fast) var(--deck-ease-standard);
+  }
+
+  .deck-person-card-flip__face--back {
+    transform: none;
+    opacity: 0;
+  }
+
+  .deck-person-card-flip:not(.deck-person-card-flip--flipped)
+    .deck-person-card-flip__face--back {
+    opacity: 0;
+  }
+
+  .deck-person-card-flip--flipped .deck-person-card-flip__face {
+    opacity: 0;
+  }
+
+  .deck-person-card-flip--flipped .deck-person-card-flip__face--back {
+    opacity: 1;
+  }
+}

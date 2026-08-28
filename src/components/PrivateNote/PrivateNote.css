@@ -1,0 +1,93 @@
+/* Dashed throughout: the card's face is set type, this is a pencil mark.
+   The dashes are what say "written by you, not published". */
+.deck-private-note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-12);
+  box-sizing: border-box;
+  block-size: 100%;
+  padding: var(--deck-space-20);
+  background-color: var(--deck-color-background-elevated);
+  border: 1px dashed var(--deck-color-border-default);
+  border-radius: var(--deck-radius-xl);
+}
+
+.deck-private-note__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--deck-space-8);
+}
+
+.deck-private-note__privacy {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-8);
+  margin: 0;
+  font-size: var(--deck-font-size-label-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.deck-private-note__lock {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.deck-private-note__lock > svg {
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+.deck-private-note__heading {
+  margin: 0;
+  font-size: var(--deck-font-size-label-lg);
+  line-height: var(--deck-line-height-label-lg);
+  font-weight: var(--deck-font-weight-semibold);
+  color: var(--deck-color-text-default);
+}
+
+.deck-private-note__feeling {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--deck-space-6);
+}
+
+.deck-private-note__feeling-icon {
+  display: inline-flex;
+}
+
+.deck-private-note__feeling-icon > svg {
+  inline-size: 15px;
+  block-size: 15px;
+}
+
+/* The note is the surface's main event once a feeling is picked, so it takes
+   whatever height is left rather than sitting at a fixed three rows. */
+.deck-private-note__field {
+  display: flex;
+  flex: 1;
+  min-block-size: 0;
+}
+
+.deck-private-note__field textarea {
+  block-size: 100%;
+  border-style: dashed;
+}
+
+/* Warmth reads as colour, not only position, so the answer is legible at a
+   glance on a card you are flipping past. Tinted via a class this component
+   owns rather than by reaching into ChoiceGroup's markup — that coupling
+   would break silently the next time ChoiceGroup changes shape. Only the
+   icon is tinted; the label and the control keep the system's colours so
+   contrast is unaffected. */
+.deck-private-note__feeling-icon--hot {
+  color: var(--deck-color-solid-error);
+}
+
+.deck-private-note__feeling-icon--warm {
+  color: var(--deck-color-status-warning-text);
+}
+
+.deck-private-note__feeling-icon--cold {
+  color: var(--deck-color-text-brand);
+}
