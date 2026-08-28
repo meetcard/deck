@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { PersonCard } from '../PersonCard/PersonCard'
@@ -257,5 +257,82 @@ describe('CardPile', () => {
     expect(
       screen.queryByRole('button', { name: 'Next card' }),
     ).not.toBeInTheDocument()
+  })
+
+  describe('controlled position', () => {
+    const three = ['Ada', 'Grace', 'Katherine'].map((name) => (
+      <PersonCard key={name} name={name} />
+    ))
+
+    it('shows the index it is given', () => {
+      render(
+        <CardPile activeIndex={1} label="Cards">
+          {three}
+        </CardPile>,
+      )
+      // The front card is the only one not hidden from assistive tech.
+      expect(screen.getByRole('heading', { name: 'Grace' })).toBeVisible()
+    })
+
+    // The point of the contract: a controlled pile asks rather than moves,
+    // so a caller that ignores the request sees nothing change.
+    it('does not move itself', async () => {
+      const onActiveIndexChange = vi.fn()
+      render(
+        <CardPile
+          activeIndex={0}
+          onActiveIndexChange={onActiveIndexChange}
+          label="Cards"
+        >
+          {three}
+        </CardPile>,
+      )
+
+      await userEvent.click(screen.getByRole('button', { name: 'Next card' }))
+
+      // The fly-out is on a timer, so wait for the request before checking
+      // that nothing followed it.
+      await waitFor(() =>
+        expect(onActiveIndexChange).toHaveBeenCalledWith(1),
+      )
+      expect(screen.getByRole('heading', { name: 'Ada' })).toBeVisible()
+    })
+
+    it('follows the prop when it changes', () => {
+      const { rerender } = render(
+        <CardPile activeIndex={0} label="Cards">
+          {three}
+        </CardPile>,
+      )
+      expect(screen.getByRole('heading', { name: 'Ada' })).toBeVisible()
+
+      rerender(
+        <CardPile activeIndex={2} label="Cards">
+          {three}
+        </CardPile>,
+      )
+      expect(screen.getByRole('heading', { name: 'Katherine' })).toBeVisible()
+    })
+
+    // The pile loops, so a caller can hand over a raw counter without
+    // having to know that.
+    it('wraps an out-of-range index', () => {
+      render(
+        <CardPile activeIndex={4} label="Cards">
+          {three}
+        </CardPile>,
+      )
+      expect(screen.getByRole('heading', { name: 'Grace' })).toBeVisible()
+    })
+
+    it('still keeps its own position when uncontrolled', async () => {
+      render(<CardPile label="Cards">{three}</CardPile>)
+
+      await userEvent.click(screen.getByRole('button', { name: 'Next card' }))
+
+      expect(
+        await screen.findByRole('heading', { name: 'Grace' }),
+      ).toBeVisible()
+    })
   })
 })

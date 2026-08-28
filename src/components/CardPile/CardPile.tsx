@@ -29,6 +29,15 @@ export interface CardPileProps
   maxVisible?: number
   /** Uncontrolled starting position. Default 0. */
   defaultActiveIndex?: number
+  /**
+   * Controlled position. Supply it and the pile stops keeping its own,
+   * leaving `onActiveIndexChange` as the only way it asks to move — for a
+   * surface that also selects cards from somewhere else, a list beside the
+   * pile or a card it has just created.
+   *
+   * Omit it for the uncontrolled behaviour seeded by `defaultActiveIndex`.
+   */
+  activeIndex?: number
   /** Fires after a swipe, button press, or arrow key completes. */
   onActiveIndexChange?: (index: number) => void
   /** Accessible name for the pile, e.g. "Ada's saved cards". */
@@ -122,6 +131,7 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
       children,
       maxVisible = 3,
       defaultActiveIndex = 0,
+      activeIndex: controlledIndex,
       onActiveIndexChange,
       label,
       className,
@@ -132,9 +142,15 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
     const items = useMemo(() => Children.toArray(children), [children])
     const count = items.length
 
-    const [activeIndex, setActiveIndex] = useState(
+    const [uncontrolledIndex, setUncontrolledIndex] = useState(
       count > 0 ? mod(defaultActiveIndex, count) : 0,
     )
+
+    const isControlled = controlledIndex !== undefined
+    // Wrapped either way, so a controlled caller can hand over a raw index
+    // without having to know the pile loops.
+    const activeIndex =
+      count > 0 ? mod(isControlled ? controlledIndex : uncontrolledIndex, count) : 0
     const [dragX, setDragX] = useState(0)
     const [isDragging, setIsDragging] = useState(false)
     const [isAnimating, setIsAnimating] = useState(false)
@@ -172,7 +188,10 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
       const duration = reducedMotion ? 0 : 220
 
       timeoutRef.current = setTimeout(() => {
-        setActiveIndex(newIndex)
+        // A controlled pile does not move itself; it asks, and the answer
+        // arrives as a new prop. The rest — the fly-out and the reset — is
+        // presentation and runs either way.
+        if (!isControlled) setUncontrolledIndex(newIndex)
         onActiveIndexChange?.(newIndex)
         setDragX(0)
         setIsAnimating(false)
