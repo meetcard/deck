@@ -4,14 +4,21 @@
   gap: var(--deck-space-12);
   box-sizing: border-box;
   width: 100%;
-  min-height: 56px;
-  padding: var(--deck-space-8) var(--deck-space-16);
+  min-height: 60px;
+  padding: var(--deck-space-12) var(--deck-space-16);
   font-family: var(--deck-font-sans);
   background-color: var(--deck-color-background-default);
   border-bottom: 1px solid
     color-mix(in srgb, var(--deck-color-border-default) 60%, transparent);
   /* Respects the notch / status bar in an installed PWA. */
-  padding-top: max(var(--deck-space-8), env(safe-area-inset-top));
+  padding-top: max(var(--deck-space-12), env(safe-area-inset-top));
+}
+
+/* Roomier gutters once there is room for them, matching the rail's own. */
+@media (min-width: 768px) {
+  .deck-app-bar {
+    padding-inline: var(--deck-space-24);
+  }
 }
 /* Content scrolls beneath the bar, so it goes slightly translucent and blurs
    what passes under — the cue that there is more above the fold.
@@ -50,10 +57,15 @@
   flex-shrink: 0;
 }
 
+/* 32px, which is the height the product's own lockup is set at — the full
+   mark-plus-type logo, not the mark alone. `width: auto` lets it keep its
+   3.33:1 proportion, landing at 107x32. A caller passing something else can
+   still size it inline. */
 .deck-app-bar__brand > svg,
-.deck-app-bar__brand > img {
+.deck-app-bar__brand > img,
+.deck-app-bar__brand > a > svg {
   display: block;
-  height: 24px;
+  height: 32px;
   width: auto;
 }
 

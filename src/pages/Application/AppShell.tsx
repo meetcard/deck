@@ -11,7 +11,7 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react'
-import { Mark } from '../../foundations/brand'
+import { Wordmark } from '../../foundations/brand'
 import { AppBar } from '../../components/AppBar/AppBar'
 import { Avatar } from '../../components/Avatar/Avatar'
 import { BottomNav } from '../../components/BottomNav/BottomNav'
@@ -87,8 +87,6 @@ export interface AppShellProps {
   children?: ReactNode
   /** Which destination is active. Matches a `BottomNavItemProps['id']`. */
   currentId?: string
-  /** Shown in the bar when the mark alone isn't enough context. */
-  title?: ReactNode
   /** The signed-in person, for the account avatar. */
   accountName?: string
 }
@@ -121,14 +119,13 @@ export interface AppShellProps {
  * a longer title, or a second line.
  *
  * @example
- * <AppShell currentId="/connections" title="Connections">
+ * <AppShell currentId="/connections">
  *   <Connections />
  * </AppShell>
  */
 export function AppShell({
   children,
   currentId = '/',
-  title,
   accountName = 'Alex Rivera',
 }: AppShellProps) {
   const [exchangeOpen, setExchangeOpen] = useState(false)
@@ -136,16 +133,27 @@ export function AppShell({
 
   return (
     <div className="app-shell">
+      {/*
+        The full lockup rather than the mark alone, and a link home rather than
+        an ornament — the logo in a product's bar is the way back to the start,
+        and people try it. No page title beside it: every screen carries its
+        own heading, and repeating it in the bar spends the one piece of
+        chrome that is on screen at all times saying something already said.
+      */}
       <AppBar
         sticky
         className="app-shell__bar"
-        brand={<Mark style={{ height: 24, width: 24 }} />}
-        title={title}
+        brand={
+          <a className="app-shell__home" href="/" aria-label="MeetCard home">
+            <Wordmark aria-hidden="true" />
+          </a>
+        }
         actions={
           <IconButton
-            label="Me"
+            label="Account"
             variant="ghost"
-            icon={<Avatar name={accountName} size="xs" decorative />}
+            size="sm"
+            icon={<Avatar name={accountName} size="sm" decorative />}
           />
         }
       />

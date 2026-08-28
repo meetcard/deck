@@ -66,3 +66,17 @@
   flex-direction: column;
   gap: var(--deck-space-8);
 }
+
+/* The logo is the way back to the start. Sized by AppBar; this only removes
+   the link's own decoration. */
+.app-shell__home {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  border-radius: var(--deck-radius-md);
+}
+
+.app-shell__home:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: 2px;
+}

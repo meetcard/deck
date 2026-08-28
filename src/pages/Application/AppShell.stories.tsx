@@ -53,13 +53,25 @@ export const Default: Story = {
   },
 }
 
-/** A title in the bar, and the matching rail destination marked current. */
-export const WithTitle: Story = {
-  args: { currentId: '/connections', title: 'Connections' },
+/**
+ * A different destination current. The bar does not name it — the page does,
+ * in its own heading — so the only thing that moves is the rail's fill.
+ */
+export const OnAnotherSection: Story = {
+  args: { currentId: '/connections' },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole('link', { name: 'Connections' }),
     ).toHaveAttribute('aria-current', 'page')
+
+    // The bar carries the brand and the account, and nothing else.
+    const bar = canvas.getByRole('banner')
+    await expect(
+      within(bar).getByRole('link', { name: 'MeetCard home' }),
+    ).toBeVisible()
+    await expect(
+      within(bar).getByRole('button', { name: 'Account' }),
+    ).toBeVisible()
   },
 }
 
