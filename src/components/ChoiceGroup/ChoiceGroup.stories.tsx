@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 import { ChoiceGroup } from './ChoiceGroup'
 
 const meta = {
@@ -39,6 +40,30 @@ export const Tiles: Story = {
       { value: '30', label: '30 min', description: 'Most popular' },
       { value: '45', label: '45 min', description: 'Deep dive' },
     ],
+  },
+}
+
+/**
+ * A selected tile, which is the one place a description sits on the brand
+ * fill rather than the page. That pairing has its own contrast floor and no
+ * other story renders it — `Tiles` starts with nothing chosen, and `Selected`
+ * is a pill, which has no description. The a11y check on this story is the
+ * point of it.
+ */
+export const SelectedTile: Story = {
+  args: {
+    label: 'How long do you need?',
+    variant: 'tile',
+    value: '15',
+    options: [
+      { value: '15', label: '15 min', description: 'Quick question' },
+      { value: '30', label: '30 min', description: 'Most popular' },
+      { value: '45', label: '45 min', description: 'Deep dive' },
+    ],
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('radio', { name: /15 min/ })).toBeChecked()
+    await expect(canvas.getByText('Quick question')).toBeVisible()
   },
 }
 

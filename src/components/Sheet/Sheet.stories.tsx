@@ -4,6 +4,7 @@ import { expect, fn, waitFor, within } from 'storybook/test'
 import { Button } from '../Button/Button'
 import { CopyField } from '../CopyField/CopyField'
 import { QRCode } from '../QRCode/QRCode'
+import { findOpenDialog } from '../../test/dialog'
 import { Sheet } from './Sheet'
 
 const QrIcon = () => (
@@ -111,8 +112,7 @@ export const Exchange: Story = {
 
     // <dialog> renders in the top layer; query the whole document.
     const doc = canvasElement.ownerDocument
-    const dialog = await doc.querySelector('dialog')
-    await expect(dialog).toHaveAttribute('open')
+    await findOpenDialog(canvasElement)
     await expect(
       doc.querySelector('.deck-sheet__title')?.textContent,
     ).toBe('Exchange')
@@ -246,15 +246,13 @@ export const ShareCard: Story = {
   play: async ({ canvas, canvasElement, userEvent }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Share this card' }))
 
-    const doc = canvasElement.ownerDocument
-    const dialog = doc.querySelector('dialog')
-    await expect(dialog).toHaveAttribute('open')
+    const dialog = await findOpenDialog(canvasElement)
 
     // Retries until the entrance animation clears opacity: 0 — the element
     // is in the DOM immediately, but not yet visible.
     await waitFor(() => {
       expect(
-        within(dialog as HTMLElement).getByRole('img', { name: /QR code/ }),
+        within(dialog).getByRole('img', { name: /QR code/ }),
       ).toBeVisible()
     })
   },

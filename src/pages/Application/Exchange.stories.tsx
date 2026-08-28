@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
+import { findOpenDialog } from '../../test/dialog'
 import { Exchange } from './Exchange'
 
 const meta = {
@@ -29,14 +30,13 @@ export const Exchanging: Story = {
   play: async ({ canvas, canvasElement, userEvent }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Exchange cards' }))
 
-    const dialog = canvasElement.ownerDocument.querySelector('dialog')
-    await expect(dialog).toHaveAttribute('open')
+    const dialog = await findOpenDialog(canvasElement)
 
     // The identity is assumed rather than asked for; the correction is the
     // escape hatch, not the default path.
     await waitFor(() => {
       expect(
-        within(dialog as HTMLElement).getByText(/Signed in as/),
+        within(dialog).getByText(/Signed in as/),
       ).toBeVisible()
     })
   },
@@ -49,8 +49,8 @@ export const Exchanging: Story = {
 export const Complete: Story = {
   args: { defaultOpen: true, skipAnimation: true },
   play: async ({ canvasElement }) => {
-    const dialog = canvasElement.ownerDocument.querySelector('dialog')
-    const ui = within(dialog as HTMLElement)
+    const dialog = await findOpenDialog(canvasElement)
+    const ui = within(dialog)
 
     await waitFor(() => {
       expect(ui.getByText('Exchange complete')).toBeVisible()
@@ -70,8 +70,8 @@ export const Complete: Story = {
 export const FullSequence: Story = {
   args: { defaultOpen: true },
   play: async ({ canvasElement }) => {
-    const dialog = canvasElement.ownerDocument.querySelector('dialog')
-    const ui = within(dialog as HTMLElement)
+    const dialog = await findOpenDialog(canvasElement)
+    const ui = within(dialog)
 
     await waitFor(() => expect(ui.getByRole('heading', { name: 'Shaking hands…' })).toBeVisible())
     await waitFor(() => expect(ui.getByRole('heading', { name: 'Exchanging cards…' })).toBeVisible(), {
