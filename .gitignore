@@ -28,3 +28,6 @@ storybook-static
 
 # Astro's generated types cache (regenerated on every `astro build`)
 .astro
+
+# Coverage output from `npm run test:coverage`
+coverage
