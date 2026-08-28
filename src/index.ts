@@ -156,6 +156,12 @@ export type {
   BookingSummaryItem,
 } from './components/BookingSummary'
 
+export { BookingCelebration } from './components/BookingCelebration'
+export type {
+  BookingCelebrationProps,
+  CelebrationStage,
+} from './components/BookingCelebration'
+
 /* ---- Data display ---------------------------------------------------- */
 export { StatTile } from './components/StatTile'
 export type { StatTileProps, TrendDirection } from './components/StatTile'
