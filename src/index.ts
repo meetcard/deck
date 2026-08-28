@@ -103,6 +103,9 @@ export type { SpinnerProps, SpinnerSize } from './components/Spinner'
 export { Sheet } from './components/Sheet'
 export type { SheetProps } from './components/Sheet'
 
+export { ShareSheet } from './components/ShareSheet'
+export type { ShareSheetProps } from './components/ShareSheet'
+
 /* ---- Application shell ------------------------------------------------ */
 export { AppBar } from './components/AppBar'
 export type { AppBarProps } from './components/AppBar'

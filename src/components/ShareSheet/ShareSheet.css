@@ -1,0 +1,38 @@
+/* Centred, unlike `Sheet`'s default left-aligned header. This dialog is one
+   focal object — a code you hold up — rather than a form you read down, and
+   a left-aligned title above a centred code reads as a mistake. Scoped here
+   so every other sheet keeps the default. */
+.deck-share-sheet .deck-sheet__heading {
+  text-align: center;
+}
+
+/* Centres the code and stacks the three parts: scan it, copy it, or send it. */
+.deck-share-sheet__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--deck-space-20);
+}
+
+.deck-share-sheet__body > * {
+  inline-size: 100%;
+}
+
+/* The code is the one thing here that is looked at rather than read, so it
+   keeps its intrinsic width instead of stretching with the dialog. */
+.deck-share-sheet__body > .deck-qrcode {
+  inline-size: auto;
+}
+
+/* Equal halves. `minmax(0, 1fr)` rather than `1fr` so a longer label in
+   translation shrinks its column instead of pushing the row wider. */
+.deck-share-sheet__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--deck-space-8);
+}
+
+/* A single action should not stretch to the full width and read as primary. */
+.deck-share-sheet__actions:has(> :only-child) {
+  grid-template-columns: minmax(0, 1fr);
+}

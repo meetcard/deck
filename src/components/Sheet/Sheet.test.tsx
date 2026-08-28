@@ -1,27 +1,9 @@
 import { useState } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { Sheet } from './Sheet'
 
-// jsdom does not implement the native dialog modal methods.
-beforeAll(() => {
-  if (!HTMLDialogElement.prototype.showModal) {
-    HTMLDialogElement.prototype.showModal = function showModal(
-      this: HTMLDialogElement,
-    ) {
-      this.open = true
-    }
-  }
-  if (!HTMLDialogElement.prototype.close) {
-    HTMLDialogElement.prototype.close = function close(
-      this: HTMLDialogElement,
-    ) {
-      this.open = false
-      this.dispatchEvent(new Event('close'))
-    }
-  }
-})
 
 function Harness({ onClose }: { onClose?: () => void }) {
   const [open, setOpen] = useState(false)
