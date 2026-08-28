@@ -67,6 +67,9 @@ function serveStatic(dir) {
   })
 }
 
+/** How long to wait for a story to finish rendering and playing. */
+const STORY_READY_TIMEOUT = 15_000
+
 const staticFlag = process.argv.indexOf('--static')
 const staticDir = staticFlag !== -1 ? process.argv[staticFlag + 1] : null
 
@@ -119,14 +122,44 @@ async function main() {
   for (const scheme of ['light', 'dark']) {
     const context = await browser.newContext({ colorScheme: scheme })
     const page = await context.newPage()
+    // Installed before any navigation so the flag is armed before the
+    // preview boots and emits.
+    await page.addInitScript(() => {
+      window.__deckStoryFinished = false
+      const attach = () => {
+        const channel = window.__STORYBOOK_ADDONS_CHANNEL__
+        if (!channel) return false
+        channel.on('storyFinished', () => {
+          window.__deckStoryFinished = true
+        })
+        return true
+      }
+      if (!attach()) {
+        const poll = setInterval(() => {
+          if (attach()) clearInterval(poll)
+        }, 10)
+      }
+    })
 
     for (const story of stories) {
       await page.goto(
         `${BASE}/iframe.html?id=${story.id}&viewMode=story`,
         { waitUntil: 'load' },
       )
-      // Let the story's play function and any transitions settle.
-      await page.waitForTimeout(250)
+      // Stories with a play function are still mid-flow at load, and a
+      // control caught mid-transition reports the colours of neither end.
+      // Storybook emits `storyFinished` after play has run and its own
+      // wait-for-animations phase has settled, so that is the real
+      // ready signal; the timeout keeps a hung story from hanging CI.
+      await page
+        .waitForFunction(() => window.__deckStoryFinished === true, null, {
+          timeout: STORY_READY_TIMEOUT,
+        })
+        .catch(() => {
+          console.log(
+            `~ SLOW ${story.id} [${scheme}] — checked before it settled`,
+          )
+        })
       await page.addScriptTag({ path: AXE_PATH })
 
       // The a11y addon runs its own axe pass on story load, and axe refuses
