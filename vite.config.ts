@@ -7,6 +7,15 @@ import { playwright } from '@vitest/browser-playwright'
 
 const dirname = import.meta.dirname
 
+/*
+ * True when Vitest was invoked with `--project`, i.e. `test:unit` or
+ * `test:storybook`. Such a run measures only half the code, so its coverage
+ * report is sent somewhere other than `coverage/` — see `reportsDirectory`.
+ */
+const isSingleProjectRun = process.argv.some(
+  (arg) => arg === '--project' || arg.startsWith('--project='),
+)
+
 /**
  * Root config: local playground app plus the two test projects.
  *
@@ -48,6 +57,21 @@ export default defineConfig({
         'src/vite-env.d.ts',
       ],
       reporter: ['text-summary', 'html', 'json-summary'],
+      /*
+       * `coverage/` is the report people actually read — `open
+       * coverage/index.html`, or through the Storybook dev server, which
+       * serves the project root and so answers
+       * http://localhost:6006/coverage/. Only a full run may write there.
+       * A `--project` run's report is honest about the project it ran but
+       * lies about the codebase: `foundations/icons/atomicKind.ts` reads 0%
+       * under `--project storybook` purely because no story imports it and
+       * that project never loads `atomicKind.test.ts`, which covers it
+       * fully. Landing that in `coverage/` leaves a file on disk that says
+       * "untested" about tested code, and it stays there until someone runs
+       * the full suite again. Diverting it keeps the canonical path
+       * trustworthy at all times.
+       */
+      reportsDirectory: isSingleProjectRun ? 'coverage-partial' : 'coverage',
     },
     projects: [
       {
