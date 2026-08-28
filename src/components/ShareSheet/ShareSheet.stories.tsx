@@ -1,24 +1,35 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, waitFor, within } from 'storybook/test'
+import { expect, fn, waitFor, within } from 'storybook/test'
 import { Button } from '../Button/Button'
+import { sampleQrMatrixSvg } from '../QRCode/sampleQrMatrix'
 import { ShareSheet } from './ShareSheet'
 import type { ShareSheetProps } from './ShareSheet'
 
-/**
- * A stand-in matrix. `QRCode` draws the plate and never generates a code —
- * Deck has no QR library, and adding one would be the first runtime
- * dependency in `src/components`. Real codes are generated upstream.
- */
-const SampleMatrix = () => (
-  <svg viewBox="0 0 21 21" aria-hidden="true">
-    <rect width="21" height="21" fill="#fff" />
-    <path
-      d="M0 0h7v7H0zM2 2h3v3H2zM14 0h7v7h-7zM16 2h3v3h-3zM0 14h7v7H0zM2 16h3v3H2zM9 0h1v1H9zM9 2h1v3H9zM11 1h1v2h-1zM13 9h1v1h-1zM9 9h2v1H9zM9 11h1v2H9zM11 12h2v1h-2zM15 9h1v2h-1zM17 10h2v1h-2zM19 12h1v2h-1zM9 15h1v2H9zM11 16h2v1h-2zM14 15h1v1h-1zM16 17h1v2h-1zM18 15h2v1h-2zM13 19h3v1h-3zM17 13h1v1h-1z"
-      fill="#1a1a1a"
-    />
-  </svg>
+/** A real code. Deck encodes nothing — see `sampleQrMatrix`. */
+const Matrix = () => (
+  <span
+    style={{ display: 'block', width: '100%', height: '100%' }}
+    dangerouslySetInnerHTML={{ __html: sampleQrMatrixSvg }}
+  />
 )
+
+/**
+ * Every story opens from a trigger rather than rendering open.
+ *
+ * `Sheet` is a native `<dialog>` opened with `showModal`, so several open at
+ * once stack in the top layer and cover each other — which is exactly what
+ * the docs page did when the stories defaulted to `open`.
+ */
+function Harness({ label, ...args }: ShareSheetProps & { label: string }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ padding: 'var(--deck-space-32)' }}>
+      <Button onClick={() => setOpen(true)}>{label}</Button>
+      <ShareSheet {...args} open={open} onClose={() => setOpen(false)} />
+    </div>
+  )
+}
 
 const meta = {
   component: ShareSheet,
@@ -26,36 +37,49 @@ const meta = {
   tags: ['organism'],
   parameters: { layout: 'fullscreen' },
   args: {
-    open: true,
-    onClose: () => {},
+    open: false,
+    onClose: fn(),
     value: 'meetcard.io/ben@meetcard',
-    children: <SampleMatrix />,
-    onDownloadQr: () => {},
-    onShareLinkedIn: () => {},
+    children: <Matrix />,
+    onDownloadQr: fn(),
+    onShareLinkedIn: fn(),
   },
 } satisfies Meta<typeof ShareSheet>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
+const openIt = async (
+  canvas: ReturnType<typeof within>,
+  canvasElement: HTMLElement,
+  userEvent: { click: (el: Element) => Promise<void> },
+  label: string,
+) => {
+  await userEvent.click(canvas.getByRole('button', { name: label }))
+  const dialog = canvasElement.ownerDocument.querySelector('dialog')
+  await waitFor(() => expect(dialog).toHaveAttribute('open'))
+  return within(dialog as HTMLElement)
+}
+
 /** Sharing a person's card — the most common of the four surfaces. */
 export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const dialog = canvasElement.ownerDocument.querySelector('dialog')
-    await expect(dialog).toHaveAttribute('open')
+  render: (args) => <Harness {...args} label="Share card" />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const ui = await openIt(canvas, canvasElement, userEvent, 'Share card')
 
-    const ui = within(dialog as HTMLElement)
     await waitFor(() => expect(ui.getByText(/Share this card/)).toBeVisible())
-
     // The link reaches someone who cannot scan, via the code's own name.
     await expect(
       ui.getByRole('img', { name: 'QR code for meetcard.io/ben@meetcard' }),
     ).toBeVisible()
+    await expect(ui.getByLabelText('Share link')).toHaveValue(
+      'meetcard.io/ben@meetcard',
+    )
   },
 }
 
 /**
- * An event. The only surface that changes the noun — a company profile and a
+ * An event — the only surface that changes the noun. A company profile and a
  * booking flow both still say "card".
  */
 export const Event: Story = {
@@ -63,51 +87,32 @@ export const Event: Story = {
     subject: 'event',
     value: 'meetcard.io/events/boulder-startup-week-2026-05-04',
   },
-  play: async ({ canvasElement }) => {
-    const ui = within(
-      canvasElement.ownerDocument.querySelector('dialog') as HTMLElement,
-    )
+  render: (args) => <Harness {...args} label="Share event" />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const ui = await openIt(canvas, canvasElement, userEvent, 'Share event')
+
     await waitFor(() => expect(ui.getByText(/Share this event/)).toBeVisible())
 
-    // A long link must stay inside the field rather than widen the dialog.
-    const field = ui.getByLabelText('Share link') as HTMLInputElement
-    await expect(field.scrollWidth).toBeGreaterThan(0)
+    // A long link stays inside its field rather than widening the dialog.
+    const field = ui.getByLabelText('Share link')
+    const dialog = canvasElement.ownerDocument.querySelector('dialog')!
+    await expect(field.getBoundingClientRect().right).toBeLessThanOrEqual(
+      dialog.getBoundingClientRect().right,
+    )
   },
 }
 
 /** Both actions are optional — with neither handled, the row is absent. */
 export const LinkOnly: Story = {
   args: { onDownloadQr: undefined, onShareLinkedIn: undefined },
-  play: async ({ canvasElement }) => {
-    const ui = within(
-      canvasElement.ownerDocument.querySelector('dialog') as HTMLElement,
+  render: (args) => <Harness {...args} label="Share card" />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const ui = await openIt(canvas, canvasElement, userEvent, 'Share card')
+
+    await waitFor(() =>
+      expect(ui.getByLabelText('Share link')).toBeVisible(),
     )
-    // waitFor, not a bare expect: the sheet animates in, so the field is in
-    // the DOM before it is visible.
-    await waitFor(() => expect(ui.getByLabelText('Share link')).toBeVisible())
     await expect(ui.queryByRole('button', { name: 'QR' })).toBeNull()
     await expect(ui.queryByRole('button', { name: 'LinkedIn' })).toBeNull()
-  },
-}
-
-function TriggerHarness(args: ShareSheetProps) {
-  const [open, setOpen] = useState(false)
-  return (
-    <div style={{ padding: 'var(--deck-space-32)' }}>
-      <Button onClick={() => setOpen(true)}>Share card</Button>
-      <ShareSheet {...args} open={open} onClose={() => setOpen(false)} />
-    </div>
-  )
-}
-
-/** Opened from a trigger, as a surface actually uses it. */
-export const FromTrigger: Story = {
-  args: { open: false },
-  render: (args) => <TriggerHarness {...args} />,
-  play: async ({ canvas, canvasElement, userEvent }) => {
-    await userEvent.click(canvas.getByRole('button', { name: 'Share card' }))
-
-    const dialog = canvasElement.ownerDocument.querySelector('dialog')
-    await waitFor(() => expect(dialog).toHaveAttribute('open'))
   },
 }

@@ -6,6 +6,23 @@
   text-align: center;
 }
 
+/* Serif, as the product sets it. Deck reserves the serif for display moments
+   — a person's name on their card, a page's own title — and handing someone
+   your code is one of those rather than a piece of chrome. */
+.deck-share-sheet .deck-sheet__title {
+  font-family: var(--deck-font-serif);
+}
+
+/* Narrower than a sheet's default 480px. There is one object in here and a
+   link beneath it; at 480 the code floats in a field of white and the dialog
+   reads like a page. Measured off the product's own at ~384. */
+@media (min-width: 640px) {
+  .deck-share-sheet.deck-sheet--sheet,
+  .deck-share-sheet.deck-sheet--center {
+    width: min(400px, calc(100vw - var(--deck-space-32)));
+  }
+}
+
 /* Centres the code and stacks the three parts: scan it, copy it, or send it. */
 .deck-share-sheet__body {
   display: flex;
