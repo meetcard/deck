@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
+import { findOpenDialog } from '../../test/dialog'
 import { AppShell } from './AppShell'
 import { MyCards } from './MyCards'
 
@@ -61,18 +62,19 @@ export const SelectingFromTheList: Story = {
 
 /*
  * The page mounts two dialogs — the share sheet and the new-card sheet — so
- * these query `dialog[open]` rather than `dialog`. Taking the first match
- * silently scopes assertions to the closed one.
+ * these need the open one rather than the first one; taking the first match
+ * silently scopes assertions to the closed one. `findOpenDialog` retries the
+ * query itself, because the sheet opens from an effect that has not
+ * necessarily run by the time `play` starts.
  */
 
 /** Sharing hands over the active card's own link. */
 export const Sharing: Story = {
   args: { shareOpen: true },
   play: async ({ canvasElement }) => {
-    const dialog = canvasElement.ownerDocument.querySelector('dialog[open]')
-    await expect(dialog).toHaveAttribute('open')
+    const dialog = await findOpenDialog(canvasElement)
 
-    const ui = within(dialog as HTMLElement)
+    const ui = within(dialog)
     await waitFor(async () => {
       await expect(ui.getByLabelText('Share link')).toHaveValue(
         'meetcard.io/alex@northwind',
@@ -89,8 +91,8 @@ export const CreatingACard: Story = {
   play: async ({ canvas, canvasElement, userEvent }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'New' }))
 
-    const dialog = canvasElement.ownerDocument.querySelector('dialog[open]')
-    const ui = within(dialog as HTMLElement)
+    const dialog = await findOpenDialog(canvasElement)
+    const ui = within(dialog)
     await waitFor(async () => {
       await expect(ui.getByLabelText('Name')).toBeVisible()
     })
@@ -122,7 +124,8 @@ export const InAppShell: Story = {
 
 /** Phone. The page is desk-first, but it is reachable by link. */
 export const Mobile: Story = {
-  parameters: { viewport: { defaultViewport: 'mobileS' } },
+  globals: { viewport: { value: 'mobileS' } },
+  parameters: { chromatic: { viewports: [375] } },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole('heading', { level: 1, name: 'My cards' }),

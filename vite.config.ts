@@ -7,6 +7,15 @@ import { playwright } from '@vitest/browser-playwright'
 
 const dirname = import.meta.dirname
 
+/*
+ * True when Vitest was invoked with `--project`, i.e. `test:unit` or
+ * `test:storybook`. Such a run measures only half the code, so its coverage
+ * report is sent somewhere other than `coverage/` — see `reportsDirectory`.
+ */
+const isSingleProjectRun = process.argv.some(
+  (arg) => arg === '--project' || arg.startsWith('--project='),
+)
+
 /**
  * Root config: local playground app plus the two test projects.
  *
@@ -20,6 +29,50 @@ const dirname = import.meta.dirname
 export default defineConfig({
   plugins: [react()],
   test: {
+    /*
+     * Coverage must be collected across BOTH projects at once. The two halves
+     * measure different code: the story runs exercise components as they
+     * render, the unit specs exercise the pure helpers no component calls.
+     * Running one alone reports the other's code as dead — `--project
+     * storybook` alone puts `foundations/tokens` at 33% functions, because
+     * only `spaceVar` is reached from a component and `mediaQuery` and
+     * `colorVar` are tested in `tokens.test.ts`, which that project never
+     * loads. `npm run test:coverage` is the only invocation that reports a
+     * true number; a bare `--project` run is for iterating, not for reading
+     * coverage off.
+     */
+    coverage: {
+      provider: 'v8',
+      // A fixed denominator, so the totals mean the same thing on every run
+      // rather than shifting with whichever modules a given project imported.
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.stories.tsx',
+        'src/**/*.test.{ts,tsx}',
+        'src/**/index.ts',
+        'src/test/**',
+        'src/site/**',
+        'src/docs/**',
+        'src/main.tsx',
+        'src/vite-env.d.ts',
+      ],
+      reporter: ['text-summary', 'html', 'json-summary'],
+      /*
+       * `coverage/` is the report people actually read — `open
+       * coverage/index.html`, or through the Storybook dev server, which
+       * serves the project root and so answers
+       * http://localhost:6006/coverage/. Only a full run may write there.
+       * A `--project` run's report is honest about the project it ran but
+       * lies about the codebase: `foundations/icons/atomicKind.ts` reads 0%
+       * under `--project storybook` purely because no story imports it and
+       * that project never loads `atomicKind.test.ts`, which covers it
+       * fully. Landing that in `coverage/` leaves a file on disk that says
+       * "untested" about tested code, and it stays there until someone runs
+       * the full suite again. Diverting it keeps the canonical path
+       * trustworthy at all times.
+       */
+      reportsDirectory: isSingleProjectRun ? 'coverage-partial' : 'coverage',
+    },
     projects: [
       {
         extends: true,

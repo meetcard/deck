@@ -28,3 +28,8 @@ storybook-static
 
 # Astro's generated types cache (regenerated on every `astro build`)
 .astro
+
+# Coverage output from `npm run test:coverage`, and from the single-project
+# runs that are diverted out of it (see `reportsDirectory` in vite.config.ts)
+coverage
+coverage-partial
