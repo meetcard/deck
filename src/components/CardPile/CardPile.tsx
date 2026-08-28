@@ -37,10 +37,23 @@ export interface CardPileProps
 
 const DRAG_THRESHOLD = 80
 const EXIT_DISTANCE = 480
-const DEPTH_OFFSET_X = 9
-const DEPTH_OFFSET_Y = -6
-const DEPTH_ROTATE_BASE = 5
-const DEPTH_ROTATE_STEP = 2
+/*
+ * Depth cues for the cards behind the front one.
+ *
+ * Tuned to read as a *stack* rather than a fan. The previous values rotated
+ * the layers 5 and 7 degrees, which scatters them like a hand of playing
+ * cards; a pile of business cards on a desk is near-aligned, and what tells
+ * you there is more than one is the sliver of edge showing below and the
+ * slight loss of size going back — not the angle.
+ *
+ * The offset is downward so the layers peek from beneath the front card's
+ * bottom edge, which is where you would see them in a real pile.
+ */
+const DEPTH_OFFSET_X = 6
+const DEPTH_OFFSET_Y = 9
+const DEPTH_ROTATE_BASE = 1.2
+const DEPTH_ROTATE_STEP = 0.8
+const DEPTH_SCALE_STEP = 0.015
 
 function mod(value: number, length: number) {
   return ((value % length) + length) % length
@@ -50,9 +63,12 @@ function mod(value: number, length: number) {
 function getLayerTransform(depth: number) {
   const x = depth * DEPTH_OFFSET_X
   const y = depth * DEPTH_OFFSET_Y
+  // Alternating so a stack of three does not lean uniformly, which reads as
+  // a skewed card rather than a hand-stacked pile.
   const sign = depth % 2 === 1 ? 1 : -1
   const rotate = sign * (DEPTH_ROTATE_BASE + (depth - 1) * DEPTH_ROTATE_STEP)
-  return `translate(${x}px, ${y}px) rotate(${rotate}deg)`
+  const scale = 1 - depth * DEPTH_SCALE_STEP
+  return `translate(${x}px, ${y}px) rotate(${rotate}deg) scale(${scale})`
 }
 
 const ChevronLeftIcon = () => (
@@ -224,7 +240,7 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
                 )}
                 style={{
                   transform: isFront
-                    ? `translateX(${dragX}px) rotate(${dragX / 18}deg)`
+                    ? `translateX(${dragX}px) rotate(${dragX / 24}deg)`
                     : getLayerTransform(depth),
                   transition: isFront && isDragging ? 'none' : undefined,
                   zIndex: visibleCount - depth,

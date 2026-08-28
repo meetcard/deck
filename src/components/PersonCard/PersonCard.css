@@ -1,7 +1,10 @@
+/* A physical business card rounds about 3mm on an 89mm edge — roughly 3.4%.
+   At this card's 400px that is ~13px, so `xl` (12px) is the honest token.
+   The previous `3xl` (24px) read at 6.3%, closer to a coaster than a card. */
 .deck-person-card {
   width: 100%;
   max-width: 400px;
-  border-radius: var(--deck-radius-3xl);
+  border-radius: var(--deck-radius-xl);
 }
 
 .deck-person-card__header {

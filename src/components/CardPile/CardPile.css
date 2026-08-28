@@ -13,20 +13,33 @@
 }
 
 /* Peeking layers: absolutely positioned so they don't affect the stage's
-   size, offset per-depth via an inline transform computed in JS. */
+   size, offset per-depth via an inline transform computed in JS.
+
+   `inset: 0` rather than `top/left` alone, so a layer takes the front card's
+   whole box instead of its own content height. Every card in a pile is the
+   same physical object, and without this a shorter card behind a taller one
+   ends *above* the front card's bottom edge and cannot peek at all — which
+   is what happens as soon as two people's cards carry different amounts of
+   detail. The layers are inert and aria-hidden, so stretching them costs
+   nothing but the illusion of depth it buys. */
 .deck-card-pile__layer {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   will-change: transform;
   transition: transform var(--deck-duration-base) var(--deck-ease-standard);
 }
 
+.deck-card-pile__layer:not(.deck-card-pile__layer--front) > * {
+  block-size: 100%;
+}
+
 /* The front card stays in normal flow — its natural (content-driven) height
-   is what sizes the stage, since PersonCard has no fixed aspect ratio. */
+   is what sizes the stage, since PersonCard has no fixed aspect ratio, and
+   therefore what the stretched layers behind it inherit. */
 .deck-card-pile__layer--front {
   position: relative;
+  inset: auto;
   cursor: grab;
   touch-action: pan-y;
   user-select: none;
