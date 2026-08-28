@@ -84,12 +84,20 @@ export const BookingEndToEnd: Story = {
     await userEvent.click(confirm)
 
     /* Booked. The confirmation names the address it was sent to, and repeats
-       the summary with the edit affordances stripped out. */
-    await waitFor(async () => {
-      await expect(
-        canvas.getByRole('heading', { name: /You.re booked/ }),
-      ).toBeVisible()
-    })
+       the summary with the edit affordances stripped out.
+
+       The wait is generous on purpose: the booked step plays a 1.2s
+       celebration before the headline exists, which outruns `waitFor`'s
+       default second. Waiting for the settled state is the right assertion —
+       checking part-way through is what made earlier story runs flaky. */
+    await waitFor(
+      async () => {
+        await expect(
+          canvas.getByRole('heading', { name: /You.re booked/ }),
+        ).toBeVisible()
+      },
+      { timeout: 4000 },
+    )
     await expect(canvas.getByText(/alex@northwind\.com/)).toBeVisible()
     await expect(
       canvas.queryByRole('button', { name: /Change date and time/ }),

@@ -1,0 +1,211 @@
+/* ---- Root ------------------------------------------------------------- */
+
+.deck-booking-celebration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--deck-space-24);
+  padding-block: var(--deck-space-16);
+  text-align: center;
+}
+
+.deck-booking-celebration__status {
+  width: 100%;
+}
+
+.deck-booking-celebration__summary {
+  width: 100%;
+  text-align: start;
+}
+
+/* ---- The plate --------------------------------------------------------- */
+
+/*
+ * `__mark` has no size of its own — it wraps the plate so the ring and the
+ * particles have something to be absolute against. Everything decorative
+ * overflows it, so the settled layout is exactly the plate on its own.
+ */
+.deck-booking-celebration__mark {
+  position: relative;
+  display: inline-flex;
+}
+
+.deck-booking-celebration__check {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  color: var(--deck-color-status-success-text);
+  background-color: var(--deck-color-status-success-background);
+  border: 1px solid var(--deck-color-status-success-border);
+  border-radius: var(--deck-radius-full);
+}
+
+/*
+ * The plate arrives fractionally under size and grows into place. Entrance
+ * easing overshoots nothing — this should read as settling, not bouncing.
+ */
+.deck-booking-celebration--confirm .deck-booking-celebration__check {
+  animation: deck-celebration-plate var(--deck-duration-base) var(--deck-ease-entrance);
+}
+
+/* ---- The pulse rings --------------------------------------------------- */
+
+/*
+ * Two rings, the second delayed, so the pulse reads as one thing expanding
+ * rather than a single line crossing the screen. They are centred on the
+ * plate and sized to it.
+ */
+.deck-booking-celebration__ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--deck-color-status-success-border);
+  border-radius: var(--deck-radius-full);
+  opacity: 0;
+}
+
+.deck-booking-celebration--pulse .deck-booking-celebration__ring,
+.deck-booking-celebration--burst .deck-booking-celebration__ring {
+  animation: deck-celebration-ring var(--deck-duration-slow) var(--deck-ease-exit) forwards;
+}
+
+.deck-booking-celebration--pulse .deck-booking-celebration__ring--late,
+.deck-booking-celebration--burst .deck-booking-celebration__ring--late {
+  animation-delay: var(--deck-duration-fast);
+}
+
+/* ---- The burst --------------------------------------------------------- */
+
+.deck-booking-celebration__particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  width: var(--deck-space-16);
+  height: var(--deck-space-16);
+  margin-block-start: calc(var(--deck-space-16) / -2);
+  margin-inline-start: calc(var(--deck-space-16) / -2);
+  opacity: 0;
+  /* Composited: eight pieces moving at once is the one place in Deck where
+     this earns its keep. */
+  will-change: transform, opacity;
+}
+
+.deck-booking-celebration__particle svg {
+  width: 100%;
+  height: 100%;
+}
+
+.deck-booking-celebration__particle--brand {
+  color: var(--deck-color-solid-brand);
+}
+
+.deck-booking-celebration__particle--accent {
+  color: var(--deck-color-text-display);
+}
+
+.deck-booking-celebration__particle--muted {
+  color: var(--deck-color-text-muted);
+}
+
+/* A piece with no glyph is a plain dot, for rhythm between the icons. */
+.deck-booking-celebration__particle--dot {
+  width: var(--deck-space-6);
+  height: var(--deck-space-6);
+  margin-block-start: calc(var(--deck-space-6) / -2);
+  margin-inline-start: calc(var(--deck-space-6) / -2);
+  background-color: currentcolor;
+  border-radius: var(--deck-radius-full);
+}
+
+/*
+ * Out fast, then drift. Two animations over two beats rather than one long
+ * one, so the burst can be quick and the cascade slow — which is what makes
+ * it read as thrown rather than pushed.
+ */
+.deck-booking-celebration--burst .deck-booking-celebration__particle {
+  animation: deck-celebration-burst var(--deck-duration-slow) var(--deck-ease-exit) forwards;
+  animation-delay: calc(var(--deck-celebration-delay) * var(--deck-duration-fast));
+}
+
+.deck-booking-celebration--cascade .deck-booking-celebration__particle {
+  animation: deck-celebration-cascade var(--deck-duration-slow) var(--deck-ease-standard) forwards;
+  animation-delay: calc(var(--deck-celebration-delay) * var(--deck-duration-fast));
+}
+
+/* ---- Keyframes --------------------------------------------------------- */
+
+@keyframes deck-celebration-plate {
+  from {
+    transform: scale(0.86);
+    opacity: 0;
+  }
+}
+
+@keyframes deck-celebration-ring {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+@keyframes deck-celebration-burst {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.4) rotate(0turn);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(var(--deck-celebration-dx), var(--deck-celebration-dy), 0)
+      scale(1) rotate(var(--deck-celebration-spin));
+    opacity: 1;
+  }
+}
+
+@keyframes deck-celebration-cascade {
+  from {
+    transform: translate3d(var(--deck-celebration-dx), var(--deck-celebration-dy), 0)
+      scale(1) rotate(var(--deck-celebration-spin));
+    opacity: 1;
+  }
+  to {
+    /* Drifts a little further out and down, and fades. Gravity, lightly. */
+    transform: translate3d(
+        calc(var(--deck-celebration-dx) * 1.25),
+        calc(var(--deck-celebration-dy) * 1.25 + 0.6em),
+        0
+      )
+      scale(0.9) rotate(calc(var(--deck-celebration-spin) * 1.6));
+    opacity: 0;
+  }
+}
+
+/* ---- Reduced motion ---------------------------------------------------- */
+
+/*
+ * The component already starts at `settled` under this preference, so the
+ * decorative pieces are never rendered. This is the belt-and-braces case:
+ * a caller forcing a stage, or the preference changing mid-sequence. Deck's
+ * duration tokens collapse to 0ms here, but a 0ms animation still applies
+ * its final transform — so these have to be turned off by name.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .deck-booking-celebration__check,
+  .deck-booking-celebration__ring,
+  .deck-booking-celebration__particle {
+    animation: none;
+  }
+
+  .deck-booking-celebration__ring,
+  .deck-booking-celebration__particle {
+    display: none;
+  }
+}
