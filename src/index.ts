@@ -113,6 +113,9 @@ export type {
   BottomNavItemProps,
 } from './components/BottomNav'
 
+export { SideNav } from './components/SideNav'
+export type { SideNavProps, SideNavItemProps } from './components/SideNav'
+
 /* ---- Navigation & progress -------------------------------------------- */
 export { Stepper } from './components/Stepper'
 export type { StepperProps, Step } from './components/Stepper'
