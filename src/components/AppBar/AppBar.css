@@ -7,11 +7,29 @@
   min-height: 56px;
   padding: var(--deck-space-8) var(--deck-space-16);
   font-family: var(--deck-font-sans);
-  background-color: var(--deck-color-background-elevated);
-  border-bottom: 1px solid var(--deck-color-border-default);
+  background-color: var(--deck-color-background-default);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--deck-color-border-default) 60%, transparent);
   /* Respects the notch / status bar in an installed PWA. */
   padding-top: max(var(--deck-space-8), env(safe-area-inset-top));
 }
+/* Content scrolls beneath the bar, so it goes slightly translucent and blurs
+   what passes under — the cue that there is more above the fold.
+   Guarded: without `backdrop-filter` a translucent bar would just let content
+   show through it legibly-badly, so the opaque background above stays the
+   default and this only applies where the blur can actually back it. */
+@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
+  .deck-app-bar {
+    background-color: color-mix(
+      in srgb,
+      var(--deck-color-background-default) 90%,
+      transparent
+    );
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+}
+
 
 .deck-app-bar--sticky {
   position: sticky;

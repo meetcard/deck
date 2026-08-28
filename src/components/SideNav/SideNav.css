@@ -6,8 +6,9 @@
   padding: var(--deck-space-16) var(--deck-space-12);
   overflow-y: auto;
   font-family: var(--deck-font-sans);
-  background-color: var(--deck-color-background-elevated);
-  border-inline-end: 1px solid var(--deck-color-border-default);
+  background-color: var(--deck-color-background-default);
+  border-inline-end: 1px solid
+    color-mix(in srgb, var(--deck-color-border-default) 60%, transparent);
 }
 
 .deck-side-nav__list {
