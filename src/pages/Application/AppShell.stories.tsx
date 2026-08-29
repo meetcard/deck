@@ -4,6 +4,7 @@ import { Card } from '../../components/Card/Card'
 import { Heading } from '../../components/Heading/Heading'
 import { Stack } from '../../components/Stack/Stack'
 import { Text } from '../../components/Text/Text'
+import { findOpenDialog } from '../../test/dialog'
 import { AppShell } from './AppShell'
 
 /** Stand-in screen content, so the shell is shown framing something real. */
@@ -80,7 +81,8 @@ export const OnAnotherSection: Story = {
  * so this is the edge worth spending a story on.
  */
 export const Tablet: Story = {
-  parameters: { viewport: { defaultViewport: 'tablet' } },
+  globals: { viewport: { value: 'tablet' } },
+  parameters: { chromatic: { viewports: [768] } },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole('navigation', { name: 'Global' }),
@@ -96,7 +98,8 @@ export const Tablet: Story = {
  * and "My cards" gives up its slot to make room.
  */
 export const Mobile: Story = {
-  parameters: { viewport: { defaultViewport: 'mobileS' } },
+  globals: { viewport: { value: 'mobileS' } },
+  parameters: { chromatic: { viewports: [375] } },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole('navigation', { name: 'Primary' }),
@@ -126,20 +129,51 @@ export const Mobile: Story = {
  * the center action that opens it exists only in the bar.
  */
 export const ExchangeOpen: Story = {
-  parameters: { viewport: { defaultViewport: 'mobileS' } },
+  globals: { viewport: { value: 'mobileS' } },
+  parameters: { chromatic: { viewports: [375] } },
   play: async ({ canvas, canvasElement, userEvent }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Exchange' }))
 
     // The sheet renders in the top layer, outside the story canvas.
-    const dialog = canvasElement.ownerDocument.querySelector('dialog')
-    await expect(dialog).toHaveAttribute('open')
+    const dialog = await findOpenDialog(canvasElement)
 
     await waitFor(() => {
       expect(
-        within(dialog as HTMLElement).getByRole('button', {
+        within(dialog).getByRole('button', {
           name: 'Show my card',
         }),
       ).toBeVisible()
     })
+  },
+}
+
+/**
+ * The avatar in the bar opens the account drawer. Pinned to a phone because
+ * this is the only route to your own cards at that width — the bar gives the
+ * "My cards" slot up to Exchange, so the drawer carries it instead.
+ */
+export const AccountOpen: Story = {
+  globals: { viewport: { value: 'mobileS' } },
+  parameters: { chromatic: { viewports: [375] } },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Account' }))
+
+    const dialog = await findOpenDialog(canvasElement)
+    const panel = within(dialog)
+
+    // The shell and the page it frames agree about who is signed in.
+    await expect(panel.getByText('Alex Rivera')).toBeVisible()
+    await expect(
+      panel.getByRole('button', { name: /Business card/ }),
+    ).toBeVisible()
+
+    // Nothing in the drawer is a link, because nothing in this prototype is
+    // routed. The regression this guards against is a card row quietly
+    // regaining an `href` to a `/cards/<slug>` page that does not exist.
+    await expect(panel.queryByRole('link')).not.toBeInTheDocument()
+
+    // Selecting a row does the one thing the shell can honestly do.
+    await userEvent.click(panel.getByRole('button', { name: /Personal card/ }))
+    await waitFor(() => expect(dialog.open).toBe(false))
   },
 }

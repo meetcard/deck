@@ -113,7 +113,18 @@ export const Switching: Story = {
  * groups intact as `<optgroup>`s.
  */
 export const Mobile: Story = {
-  parameters: { viewport: { defaultViewport: 'mobileS' } },
+  /*
+   * `globals`, not `parameters.viewport.defaultViewport` — that parameter was
+   * removed in Storybook 10. The Vitest runner still reads it as a fallback,
+   * which is why this story passed locally while erroring in Chromatic: there
+   * is no Vitest runner there, so the story captured at Chromatic's default
+   * 1200px and the list this asserts is hidden was showing.
+   *
+   * Chromatic ignores the viewport global and captures at its own widths, so
+   * the width has to be stated for it separately. Both say 375px.
+   */
+  globals: { viewport: { value: 'mobileS' } },
+  parameters: { chromatic: { viewports: [375] } },
   play: async ({ canvas, canvasElement }) => {
     const list = canvasElement.querySelector('.deck-settings-nav__list-view')
     await expect(getComputedStyle(list as Element).display).toBe('none')
@@ -128,7 +139,8 @@ export const Mobile: Story = {
 
 /** The breakpoint's own value — 768px is the first width that gets the list. */
 export const Tablet: Story = {
-  parameters: { viewport: { defaultViewport: 'tablet' } },
+  globals: { viewport: { value: 'tablet' } },
+  parameters: { chromatic: { viewports: [768] } },
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole('navigation', { name: 'Settings' }),

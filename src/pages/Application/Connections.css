@@ -1,0 +1,22 @@
+/* Heading in the top-left, pile floating in the middle of whatever is left.
+   The page is deliberately not a centred reading column: there is one thing
+   on it, and the point of the pile is that it sits on the desk in front of
+   you rather than at the top of a document. */
+.connections {
+  display: flex;
+  min-height: 100%;
+  padding: var(--deck-space-32) var(--deck-space-24);
+  box-sizing: border-box;
+  font-family: var(--deck-font-sans);
+}
+
+.connections__container {
+  width: 100%;
+}
+
+/* `margin-block: auto` rather than `justify-content: center`, so the heading
+   stays pinned to the top while the pile takes the slack above and below. */
+.connections__pile {
+  align-self: center;
+  margin-block: auto;
+}

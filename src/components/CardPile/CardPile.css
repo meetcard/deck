@@ -4,12 +4,28 @@
   align-items: center;
   gap: var(--deck-space-16);
   width: 100%;
-  max-width: 380px;
+  /* Matches `PersonCard`'s own max-width, so the stage and the card it holds
+     end at the same edge and the pile stays centred on that edge rather than
+     on 20px of empty stage. */
+  max-width: 400px;
 }
 
+/* Turned on its short edge the card is narrower, and a pile that kept the
+   landscape width would leave the layers floating in the middle of a box
+   nothing fills. */
+.deck-card-pile[data-card-orientation='portrait'] {
+  max-width: 260px;
+}
+
+/* The peeking layers sit outside the front card's box — up and right, then
+   down and left — so the stage reserves room for them instead of letting them
+   collide with whatever the page put above the pile or with the pile's own
+   controls below. Kept in step with `DEPTH_STEP` in CardPile.tsx: one layer's
+   worth above, two below, plus a couple of pixels for the rotation. */
 .deck-card-pile__stage {
   position: relative;
   width: 100%;
+  margin-block: var(--deck-space-24) var(--deck-space-40);
 }
 
 /* Peeking layers: absolutely positioned so they don't affect the stage's

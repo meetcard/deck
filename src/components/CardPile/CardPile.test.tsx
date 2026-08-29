@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { PersonCard } from '../PersonCard/PersonCard'
@@ -219,6 +219,71 @@ describe('CardPile', () => {
       )
 
       expect(document.querySelector('.deck-card-pile__badge')).toBeNull()
+    })
+  })
+
+  /*
+   * The pile publishes its orientation as `data-card-orientation`, which is
+   * what `PersonCard` lays itself out against — so the attribute is the
+   * contract, not an implementation detail. The layout it produces is
+   * measured in CardPile.stories.tsx, which runs in real Chromium; jsdom has
+   * no layout and its `matchMedia` does not evaluate queries.
+   */
+  describe('orientation', () => {
+    const pile = () => screen.getByRole('group')
+
+    it('publishes a resolved orientation, never "responsive"', () => {
+      render(
+        <CardPile>
+          <PersonCard name="Ada Lovelace" />
+        </CardPile>,
+      )
+      expect(pile()).toHaveAttribute('data-card-orientation', 'landscape')
+    })
+
+    it('honours a pinned orientation', () => {
+      render(
+        <CardPile orientation="portrait">
+          <PersonCard name="Ada Lovelace" />
+        </CardPile>,
+      )
+      expect(pile()).toHaveAttribute('data-card-orientation', 'portrait')
+    })
+
+    it('follows the viewport when responsive', () => {
+      const listeners = new Set<() => void>()
+      let narrow = true
+
+      vi.stubGlobal(
+        'matchMedia',
+        vi.fn((query: string) => ({
+          // Only the "narrower than sm" query varies; everything else
+          // (prefers-reduced-motion) stays false.
+          get matches() {
+            return query.includes('min-width') ? narrow : false
+          },
+          addEventListener: (_: string, fn: () => void) => listeners.add(fn),
+          removeEventListener: (_: string, fn: () => void) =>
+            listeners.delete(fn),
+        })),
+      )
+
+      render(
+        <CardPile>
+          <PersonCard name="Ada Lovelace" />
+        </CardPile>,
+      )
+      expect(pile()).toHaveAttribute('data-card-orientation', 'portrait')
+
+      // Widening the window turns the pile back on its side, without a
+      // remount — the same pile, in a different room.
+      act(() => {
+        narrow = false
+        listeners.forEach((fn) => fn())
+      })
+      expect(pile()).toHaveAttribute('data-card-orientation', 'landscape')
+
+      vi.unstubAllGlobals()
     })
   })
 

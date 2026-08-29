@@ -92,8 +92,11 @@ export interface MyCardsProps {
  * - The "All cards" rows select the card in the pile rather than linking to
  *   `/cards/<slug>`. That route does not exist here, and a dead link is worse
  *   than a working selection.
- * - No portrait/landscape toggle. `PersonCard` is a fixed 7/4 box — the size
- *   of the physical thing — and a second orientation would be a second card.
+ * - No portrait/landscape toggle. Orientation is not a property of a card
+ *   here; the pile picks it from the space it has — portrait on a phone,
+ *   landscape from `sm` up — and both are the same 3.5x2in object turned.
+ *   A control that let you pin one would be offering a choice the room has
+ *   already made.
  */
 export function MyCards({ cards: seed = INITIAL, shareOpen = false }: MyCardsProps) {
   const [cards, setCards] = useState<MyCard[]>(seed)

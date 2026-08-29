@@ -2,6 +2,16 @@
   padding: 0;
   border: none;
   background: transparent;
+  /* `showModal()` puts this in the top layer, so painting order is already
+     settled and this value changes nothing on screen. It is here for the
+     tools: axe-core does not model the top layer, so it orders the dialog by
+     plain CSS stacking and concludes that any positioned page content with a
+     higher z-index — a `CardPile` layer, the app bar — paints over the sheet.
+     It then reports the sheet's own text as `color-contrast` "incomplete:
+     background could not be determined", which is a false result that hides
+     real findings behind it. Above every z-index Deck itself uses (bar and
+     nav at 20, the pile's badge at 100). */
+  z-index: 200;
   max-width: 100vw;
   max-height: 100dvh;
   font-family: var(--deck-font-sans);
@@ -32,6 +42,36 @@
 
 .deck-sheet--center .deck-sheet__panel {
   border-radius: var(--deck-radius-xl);
+}
+
+/*
+ * Side drawer: full height, pinned to the inline-end edge.
+ *
+ * `margin-inline-start: auto` does the pinning rather than `position: fixed`.
+ * A modal `<dialog>` is already taken out of the page and centred in the
+ * viewport by the UA, so pushing it to one edge is a margin problem, and
+ * keeping it in the top layer's own positioning is what preserves the
+ * backdrop and the inertness behind it.
+ *
+ * Percentage width rather than a hard 400px on the small end: the sliver of
+ * page left showing at the start edge is what says the drawer is over the
+ * app rather than a screen the app navigated to.
+ */
+.deck-sheet--side {
+  margin: 0 0 0 auto;
+  block-size: 100dvh;
+  inline-size: min(400px, 85vw);
+}
+
+.deck-sheet--side .deck-sheet__panel {
+  block-size: 100%;
+  max-block-size: none;
+  border-radius: 0;
+  /* The three edges that meet the viewport carry no border — a hairline
+     against the screen edge reads as a rendering seam, not as an edge. */
+  border-block: none;
+  border-inline-end: none;
+  padding-block-end: max(var(--deck-space-20), env(safe-area-inset-bottom));
 }
 
 .deck-sheet__panel {
@@ -120,8 +160,30 @@
   }
 }
 
+/*
+ * The drawer comes in from its own edge, and travels its full width rather
+ * than the 12px nudge the other placements use. The distance is the point:
+ * it says the panel was always there, just off-screen, which is the model a
+ * persistent account menu wants. Stated as a full shorthand rather than
+ * overriding `animation-name`, so it does not depend on source order.
+ *
+ * The one physical value in a placement written with logical properties:
+ * there is no logical translate, and Deck has no RTL story yet. If one
+ * arrives, this needs flipping and the panel's edges do not.
+ */
+.deck-sheet--side[open] .deck-sheet__panel {
+  animation: deck-sheet-in-side var(--deck-duration-base) var(--deck-ease-entrance);
+}
+
+@keyframes deck-sheet-in-side {
+  from {
+    transform: translateX(100%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .deck-sheet[open] .deck-sheet__panel {
+  .deck-sheet[open] .deck-sheet__panel,
+  .deck-sheet--side[open] .deck-sheet__panel {
     animation: none;
   }
 }

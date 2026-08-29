@@ -8,6 +8,16 @@ const meta = {
   component: CardPile,
   title: 'Build/Organisms/CardPile',
   tags: ['organism'],
+  /*
+   * Centred, unlike most Build stories, which inherit the preview's
+   * `fullscreen` and sit against the top-left corner. A pile is the one
+   * component whose layout runs *outside* its own box — the layers behind
+   * the front card peek up and to the sides — so in a corner the top layer
+   * is clipped by the canvas edge and the card the story is about is the
+   * one thing you cannot see whole. Every surface that uses a pile centres
+   * it (`MyCards`, `Connections`); the story should show it the same way.
+   */
+  parameters: { layout: 'centered' },
   args: {
     label: "Ada's saved cards",
     onActiveIndexChange: fn(),
@@ -231,6 +241,52 @@ export const SingleCard: Story = {
     await expect(
       canvas.queryByRole('button', { name: 'Next card' }),
     ).not.toBeInTheDocument()
+  },
+}
+
+/**
+ * Stood on its short edge — how the pile lays itself out on a phone, and
+ * what `orientation="responsive"` (the default) resolves to below `sm`.
+ * Pinned here so the portrait layout is reviewable at any canvas size.
+ *
+ * The card is the same object turned: 4/7 instead of 7/4, same content,
+ * re-ordered so the eye runs down it — portrait, ways to reach them, name.
+ */
+export const Portrait: Story = {
+  args: { orientation: 'portrait' },
+  render: (args) => (
+    <CardPile {...args}>
+      <PersonCard
+        name="Ada Lovelace"
+        title="Head of Partnerships"
+        company="MeetCard"
+        location="Boulder, Colorado"
+        tagline="Let's find the overlap."
+        privateNote={{ hasContent: true }}
+        footer={
+          <>
+            <Button size="sm">Book with me</Button>
+            <Button variant="secondary" size="sm">
+              Exchange cards
+            </Button>
+          </>
+        }
+      />
+      <PersonCard name="Grace Hopper" title="Principal Engineer" />
+      <PersonCard name="Katherine Johnson" title="Research Mathematician" />
+    </CardPile>
+  ),
+  play: async ({ canvasElement }) => {
+    const card = canvasElement.querySelector<HTMLElement>(
+      '.deck-card-pile__layer--front .deck-person-card',
+    )!
+
+    // 4/7 = 0.571, allowing a pixel of rounding.
+    const ratio = card.offsetWidth / card.offsetHeight
+    await expect(ratio).toBeGreaterThan(0.55)
+    await expect(ratio).toBeLessThan(0.59)
+    // Nothing spills out of a box that cannot grow, in either orientation.
+    await expect(card.scrollHeight).toBeLessThanOrEqual(card.clientHeight + 1)
   },
 }
 

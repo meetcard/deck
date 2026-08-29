@@ -88,12 +88,18 @@
   line-height: var(--deck-line-height-body-sm);
   font-weight: var(--deck-font-weight-medium);
   color: var(--deck-color-text-default);
+  /* The label and the description set their own colour, so they would snap
+     to the selected ink while the fill behind them was still fading in —
+     dark text on a nearly-dark tile for the length of the transition. They
+     fade on the same clock as the control instead. */
+  transition: color var(--deck-duration-fast) var(--deck-ease-standard);
 }
 
 .deck-choice-group__option-description {
   font-size: var(--deck-font-size-body-xs);
   line-height: var(--deck-line-height-body-xs);
   color: var(--deck-color-text-muted);
+  transition: color var(--deck-duration-fast) var(--deck-ease-standard);
 }
 
 .deck-choice-group__option:hover
@@ -116,7 +122,13 @@
 .deck-choice-group__input:checked + .deck-choice-group__control
   .deck-choice-group__option-description {
   color: var(--deck-color-action-primary-text);
-  opacity: 0.8;
+  /* Recessed from the label above it, but not past AA. This composites over
+     the selected fill rather than blending toward the page, so the floor is
+     real: paper on signal green is 5.66:1 at full strength, and 0.8 lands at
+     4.26:1 — a WCAG AA failure at this 12px size. 0.85 clears 4.5 by 0.09,
+     which is too fine a margin to survive a future change to the green;
+     0.9 holds 4.94:1 and still reads as secondary. */
+  opacity: 0.9;
 }
 
 .deck-choice-group__input:disabled + .deck-choice-group__control {
@@ -161,7 +173,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .deck-choice-group__control {
+  .deck-choice-group__control,
+  .deck-choice-group__label,
+  .deck-choice-group__option-description {
     transition-duration: 0ms;
   }
 }

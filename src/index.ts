@@ -106,6 +106,13 @@ export type { SheetProps } from './components/Sheet'
 export { ShareSheet } from './components/ShareSheet'
 export type { ShareSheetProps } from './components/ShareSheet'
 
+export { AccountSheet, AccountSheetRow } from './components/AccountSheet'
+export type {
+  AccountSheetProps,
+  AccountSheetRowProps,
+  AccountCard,
+} from './components/AccountSheet'
+
 /* ---- Application shell ------------------------------------------------ */
 export { AppBar } from './components/AppBar'
 export type { AppBarProps } from './components/AppBar'
@@ -155,6 +162,9 @@ export type {
   BookingSummaryProps,
   BookingSummaryItem,
 } from './components/BookingSummary'
+
+export { BookingCelebration } from './components/BookingCelebration'
+export type { BookingCelebrationProps } from './components/BookingCelebration'
 
 /* ---- Data display ---------------------------------------------------- */
 export { StatTile } from './components/StatTile'
@@ -215,7 +225,7 @@ export type { SwitchProps } from './components/Switch'
 
 /* ---- MeetCard patterns ------------------------------------------------ */
 export { CardPile } from './components/CardPile'
-export type { CardPileProps } from './components/CardPile'
+export type { CardPileProps, CardPileOrientation } from './components/CardPile'
 
 export { PersonCard } from './components/PersonCard'
 export type { PersonCardProps } from './components/PersonCard'

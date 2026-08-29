@@ -33,6 +33,7 @@
     "build:site": "astro build",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "test:storybook": "vitest run --project storybook",
     "test:unit": "vitest run --project unit",
     "test:a11y": "node scripts/a11y-sweep.mjs",

@@ -41,6 +41,68 @@ export const Complete: Story = {
   args: { currentStepId: 'booked' },
 }
 
+/**
+ * A step marked `terminal` is complete the moment it is reached. The marker
+ * settles from white through the success tint to the filled disc, drawing its
+ * check — the resting style is the finished one, so with motion off the same
+ * check is simply already there.
+ */
+export const TerminalStep: Story = {
+  args: {
+    currentStepId: 'booked',
+    steps: bookingSteps.map((step) =>
+      step.id === 'booked' ? { ...step, terminal: true } : step,
+    ),
+  },
+  play: async ({ canvas, args }) => {
+    const booked = canvas.getByText('Confirmed').closest('li')
+    // Complete to look at, but still the current step, and still inert.
+    await expect(booked).toHaveTextContent('(completed)')
+    await expect(booked).toHaveAttribute('aria-current', 'step')
+    await expect(
+      canvas.queryByRole('button', { name: /Confirmed/ }),
+    ).not.toBeInTheDocument()
+    await expect(args.onSelect).not.toHaveBeenCalled()
+  },
+}
+
+/**
+ * Phone. Every step keeps its label, stacked under its own marker — a row of
+ * bare numbers tells you where you are and nothing about what it is out of,
+ * which is most of the point of a progress indicator.
+ *
+ * Five steps is the widest the booking flow gets (`Book with Team` adds a
+ * `Team` step), so it is the case worth pinning.
+ */
+export const Mobile: Story = {
+  args: {
+    currentStepId: 'availability',
+    steps: [
+      { id: 'purpose', label: 'Purpose' },
+      { id: 'availability', label: 'Availability' },
+      { id: 'team', label: 'Team' },
+      { id: 'details', label: 'Details' },
+      { id: 'booked', label: 'Booked', terminal: true },
+    ],
+  },
+  // Same pairing as SettingsNav: the global drives the local runner, and
+  // Chromatic ignores it, so the width is stated for each. Both say 375px.
+  globals: { viewport: { value: 'mobileS' } },
+  parameters: { chromatic: { viewports: [375] } },
+  render: (args) => <Stepper {...args} />,
+  play: async ({ canvas }) => {
+    // The labels a narrow screen used to drop.
+    for (const label of ['Purpose', 'Team', 'Details', 'Booked']) {
+      await expect(canvas.getByText(label)).toBeVisible()
+    }
+
+    // Stacked, not inline — the marker sits above its label rather than
+    // beside it, which is the whole of the layout change.
+    const action = canvas.getByText('Team').closest('.deck-stepper__action')
+    await expect(getComputedStyle(action as Element).flexDirection).toBe('column')
+  },
+}
+
 /** Completed steps are navigable so a visitor can revise an earlier choice. */
 export const CompletedStepsAreNavigable: Story = {
   args: { currentStepId: 'details' },
