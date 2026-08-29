@@ -1,0 +1,340 @@
+/* Written phone-first, because the phone is the layout with less in it: the
+   dots alone, with the selected event named underneath. The line, the labels
+   under each dot, and the visible legend all arrive at `sm` — the same
+   breakpoint `CardPile` turns its cards landscape at, so the pile and the
+   timeline above it change shape together rather than one at a time. */
+.deck-event-timeline {
+  font-family: var(--deck-font-sans);
+  /* A fieldset's own chrome, off. The grouping is for semantics. */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+  inline-size: 100%;
+
+  /* Named because the connector has to meet the middle of a dot, and the
+     dots have to hold a common centre while changing size. A literal 8px in
+     the `top` of the line would be a number that silently stops being half
+     of anything the day a dot grows. */
+  --deck-event-timeline-dot: 8px;
+  --deck-event-timeline-dot-selected: 16px;
+
+  /* The narrowest a column can get before its label stops being readable:
+     "September 9, 2027" on one line, and a city on the next. Below this the
+     line scrolls sideways rather than shredding every label into four lines
+     — a year of events is a long line, and squeezing it is not the same as
+     showing it. */
+  --deck-event-timeline-column-min: 152px;
+}
+
+/* Clipped rather than removed on a phone: the mockup has nothing there — the
+   page's own heading has already said what this is — but the group still
+   needs its name. */
+.deck-event-timeline__legend {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.deck-event-timeline__track {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--deck-space-8);
+}
+
+.deck-event-timeline__event {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--deck-radius-md);
+  /* The dot is 8px; the thing you tap is not. Padding takes the target past
+     24px without moving the dot off the line. */
+  padding: var(--deck-space-8);
+}
+
+.deck-event-timeline__event:has(.deck-event-timeline__input:focus-visible) {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: calc(var(--deck-focus-ring-offset) * -1);
+}
+
+.deck-event-timeline__dot {
+  inline-size: var(--deck-event-timeline-dot);
+  block-size: var(--deck-event-timeline-dot);
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-color-border-strong);
+  transition:
+    background-color var(--deck-duration-base) var(--deck-ease-standard),
+    border-color var(--deck-duration-base) var(--deck-ease-standard),
+    inline-size var(--deck-duration-base) var(--deck-ease-standard),
+    block-size var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+/* An event that hasn't happened yet is hollow — there is nothing in it. The
+   ring keeps it visible against the line rather than fading it out of the
+   layout, and the "(still to come)" in its label is what carries the same
+   fact where colour and fill don't reach. */
+.deck-event-timeline__event--upcoming .deck-event-timeline__dot {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--deck-color-border-strong);
+}
+
+.deck-event-timeline__event--selected .deck-event-timeline__dot {
+  background-color: var(--deck-color-action-primary);
+  box-shadow: none;
+  inline-size: var(--deck-space-10);
+  block-size: var(--deck-space-10);
+}
+
+.deck-event-timeline__event:hover .deck-event-timeline__dot {
+  background-color: var(--deck-color-border-brand);
+}
+
+.deck-event-timeline__event--selected:hover .deck-event-timeline__dot {
+  background-color: var(--deck-color-action-primary);
+}
+
+/* Size says which event is selected; fill says whether it has happened. Kept
+   apart — and last, so hover doesn't fill one in either — because selecting
+   an event still ahead shouldn't make it look like one you've been to. */
+.deck-event-timeline__event--selected.deck-event-timeline__event--upcoming
+  .deck-event-timeline__dot,
+.deck-event-timeline__event--selected.deck-event-timeline__event--upcoming:hover
+  .deck-event-timeline__dot {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 2px var(--deck-color-action-primary);
+}
+
+/* Off-screen on a phone, where `__current` below says the same thing with
+   room to spare — but still in the accessibility tree, since this text is
+   what gives each radio its name. */
+.deck-event-timeline__text {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.deck-event-timeline__name {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  font-weight: var(--deck-font-weight-semibold);
+  color: var(--deck-color-text-default);
+}
+
+.deck-event-timeline__meta {
+  display: block;
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+}
+
+/* The place stays in one piece — a line ending on the globe, with the city
+   below it, reads as a mistake. The date before it is free to wrap away.
+   Inline rather than inline-flex for the same reason: a flex box breaks
+   after the icon and leaves it stranded at the end of a line. */
+.deck-event-timeline__place {
+  white-space: nowrap;
+}
+
+.deck-event-timeline__place > svg {
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  margin-inline-end: var(--deck-space-4);
+  /* Sits the glyph on the text's baseline rather than hanging it below. */
+  vertical-align: -0.125em;
+}
+
+/* The selected event, named where the phone has room for it. */
+.deck-event-timeline__current {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--deck-space-2);
+  margin-block-start: var(--deck-space-12);
+  padding: var(--deck-space-12) var(--deck-space-16);
+  border-radius: var(--deck-radius-lg);
+  background-color: var(--deck-color-background-elevated);
+  text-align: center;
+}
+
+/* ---- From `sm` up: the line ------------------------------------------- */
+
+@media (min-width: 640px) {
+  .deck-event-timeline__legend {
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    margin: 0 0 var(--deck-space-16);
+    clip-path: none;
+    font-size: var(--deck-font-size-label-md);
+    line-height: var(--deck-line-height-label-md);
+    font-weight: var(--deck-font-weight-semibold);
+    color: var(--deck-color-text-default);
+  }
+
+  /* One column per event, so the dots land at even intervals along the line
+     and each label sits under its own dot. */
+  .deck-event-timeline__track {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(
+      var(--deck-event-timeline-count, 1),
+      minmax(var(--deck-event-timeline-column-min), 1fr)
+    );
+    align-items: start;
+    gap: 0;
+    /* Fills the width while it can, scrolls once it can't. The line and the
+       dots scroll together, since they are one drawing. */
+    overflow-x: auto;
+  }
+
+  /* The line itself, drawn behind the dots and running the full width — it
+     is time, not a connector between two of these events, so it does not
+     stop at the outermost dot. */
+  .deck-event-timeline__track::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    /* The dot row is as tall as the largest dot; half of that is its
+       centre, and the padding above it belongs to the label. */
+    inset-block-start: calc(
+      var(--deck-space-8) + var(--deck-event-timeline-dot-selected) / 2
+    );
+    block-size: 1px;
+    background-color: var(--deck-color-border-default);
+  }
+
+  .deck-event-timeline__event {
+    position: relative;
+    flex-direction: column;
+    gap: var(--deck-space-12);
+    padding: var(--deck-space-8) var(--deck-space-8) 0;
+  }
+
+  /* Every dot keeps the largest dot's box, so growing the selected one moves
+     it off the line in neither direction. */
+  .deck-event-timeline__dot {
+    display: flex;
+    block-size: var(--deck-event-timeline-dot-selected);
+    inline-size: var(--deck-event-timeline-dot-selected);
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .deck-event-timeline__dot::after {
+    content: '';
+    inline-size: var(--deck-event-timeline-dot);
+    block-size: var(--deck-event-timeline-dot);
+    border-radius: var(--deck-radius-full);
+    background-color: var(--deck-color-border-strong);
+    transition:
+      background-color var(--deck-duration-base) var(--deck-ease-standard),
+      inline-size var(--deck-duration-base) var(--deck-ease-standard),
+      block-size var(--deck-duration-base) var(--deck-ease-standard);
+  }
+
+  .deck-event-timeline__event--upcoming .deck-event-timeline__dot {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .deck-event-timeline__event--upcoming .deck-event-timeline__dot::after {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1px var(--deck-color-border-strong);
+  }
+
+  .deck-event-timeline__event--selected .deck-event-timeline__dot {
+    inline-size: var(--deck-event-timeline-dot-selected);
+    block-size: var(--deck-event-timeline-dot-selected);
+    background-color: transparent;
+  }
+
+  .deck-event-timeline__event--selected .deck-event-timeline__dot::after {
+    inline-size: var(--deck-event-timeline-dot-selected);
+    block-size: var(--deck-event-timeline-dot-selected);
+    background-color: var(--deck-color-action-primary);
+    box-shadow: none;
+  }
+
+  .deck-event-timeline__event:hover .deck-event-timeline__dot::after {
+    background-color: var(--deck-color-border-brand);
+  }
+
+  .deck-event-timeline__event--selected:hover
+    .deck-event-timeline__dot::after {
+    background-color: var(--deck-color-action-primary);
+  }
+
+  /* Selected but not yet happened: the grown dot, still hollow. Size is the
+     selection; fill is whether you have been. Last, so hover leaves it be. */
+  .deck-event-timeline__event--selected.deck-event-timeline__event--upcoming
+    .deck-event-timeline__dot::after,
+  .deck-event-timeline__event--selected.deck-event-timeline__event--upcoming:hover
+    .deck-event-timeline__dot::after {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 2px var(--deck-color-action-primary);
+  }
+
+  /* The labels, back on screen and under their own dot. */
+  .deck-event-timeline__text {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: var(--deck-space-2);
+    inline-size: auto;
+    block-size: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    text-align: center;
+    /* Two even lines rather than a full one and an orphaned "CA", for the
+       columns narrow enough to wrap at all. */
+    text-wrap: balance;
+  }
+
+  /* An event still ahead is quieter than one already behind — the same
+     hierarchy the dots draw, in type. */
+  .deck-event-timeline__event--upcoming .deck-event-timeline__name {
+    color: var(--deck-color-text-muted);
+    font-weight: var(--deck-font-weight-medium);
+  }
+
+  .deck-event-timeline__event:not(.deck-event-timeline__event--selected)
+    .deck-event-timeline__name {
+    font-weight: var(--deck-font-weight-medium);
+  }
+
+  .deck-event-timeline__event--selected .deck-event-timeline__name {
+    color: var(--deck-color-text-default);
+    font-weight: var(--deck-font-weight-semibold);
+  }
+
+  /* The phone's summary card has served its purpose. */
+  .deck-event-timeline__current {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-event-timeline__dot,
+  .deck-event-timeline__dot::after {
+    transition: none;
+  }
+}
