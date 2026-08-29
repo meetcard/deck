@@ -185,7 +185,7 @@ export function BookingFlow({
         { id: 'availability', label: 'Availability' },
         ...(isTeam ? [{ id: 'team', label: 'Team' }] : []),
         { id: 'details', label: 'Details' },
-        { id: 'booked', label: 'Booked' },
+        { id: 'booked', label: 'Booked', terminal: true },
       ] as Step[],
     [isTeam],
   )

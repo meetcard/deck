@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, fn, waitFor } from 'storybook/test'
+import { expect } from 'storybook/test'
 import { BookingSummary } from '../BookingSummary/BookingSummary'
 import { BookingCelebration } from './BookingCelebration'
 
@@ -26,15 +26,15 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** The full sequence: plate, pulse, burst, cascade, then the confirmation. */
+/** The confirmation, with the confetti popping over it. */
 export const Default: Story = {}
 
 /**
- * The state the animation lands on, and the whole component when motion is
- * off. This is what `prefers-reduced-motion` and `skipAnimation` render — one
- * design, started at the end, rather than a separate static variant.
+ * Without the confetti — what `skipAnimation` and `prefers-reduced-motion`
+ * both render. The pieces are the only difference from `Default`: the
+ * confirmation underneath is the same screen, not a static substitute.
  */
-export const Settled: Story = {
+export const NoConfetti: Story = {
   args: { skipAnimation: true },
 }
 
@@ -56,28 +56,21 @@ export const CustomHeadline: Story = {
 }
 
 /**
- * The beats are decorative, so the outcome has to be spoken. The live region
- * carries a working message first and the confirmation second.
+ * The booking is done before this renders, so the outcome is readable
+ * immediately and the live region carries it — no working message, and
+ * nothing to wait for.
  */
 export const AnnouncesTheOutcome: Story = {
-  args: { onSettled: fn() },
-  play: async ({ canvas, args }) => {
+  play: async ({ canvas }) => {
     const status = canvas.getByRole('status')
-    await expect(status).toHaveTextContent('Confirming your booking')
-
-    // Assert once it has settled rather than at a fixed offset into the
-    // sequence — a timing race is what made earlier story runs flaky. The
-    // beats total 1.2s, which outruns `waitFor`'s default second.
-    await waitFor(() => expect(args.onSettled).toHaveBeenCalled(), { timeout: 4000 })
     await expect(status).toHaveTextContent('You’re booked.')
-    await expect(
-      canvas.getByRole('heading', { name: 'You’re booked.' }),
-    ).toBeVisible()
+    await expect(status).not.toHaveTextContent(/confirming/i)
+    await expect(canvas.getByRole('heading', { name: 'You’re booked.' })).toBeVisible()
   },
 }
 
-/** The burst is decoration: none of it reaches the accessibility tree. */
-export const BurstIsDecorative: Story = {
+/** The confetti is decoration: none of it reaches the accessibility tree. */
+export const ConfettiIsDecorative: Story = {
   play: async ({ canvasElement }) => {
     const mark = canvasElement.querySelector('.deck-booking-celebration__mark')
     await expect(mark).toHaveAttribute('aria-hidden', 'true')

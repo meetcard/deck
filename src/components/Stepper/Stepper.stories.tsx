@@ -41,6 +41,31 @@ export const Complete: Story = {
   args: { currentStepId: 'booked' },
 }
 
+/**
+ * A step marked `terminal` is complete the moment it is reached. The marker
+ * settles from white through the success tint to the filled disc, drawing its
+ * check — the resting style is the finished one, so with motion off the same
+ * check is simply already there.
+ */
+export const TerminalStep: Story = {
+  args: {
+    currentStepId: 'booked',
+    steps: bookingSteps.map((step) =>
+      step.id === 'booked' ? { ...step, terminal: true } : step,
+    ),
+  },
+  play: async ({ canvas, args }) => {
+    const booked = canvas.getByText('Confirmed').closest('li')
+    // Complete to look at, but still the current step, and still inert.
+    await expect(booked).toHaveTextContent('(completed)')
+    await expect(booked).toHaveAttribute('aria-current', 'step')
+    await expect(
+      canvas.queryByRole('button', { name: /Confirmed/ }),
+    ).not.toBeInTheDocument()
+    await expect(args.onSelect).not.toHaveBeenCalled()
+  },
+}
+
 /** Completed steps are navigable so a visitor can revise an earlier choice. */
 export const CompletedStepsAreNavigable: Story = {
   args: { currentStepId: 'details' },

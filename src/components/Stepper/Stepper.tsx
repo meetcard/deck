@@ -9,6 +9,12 @@ export interface Step {
   label: ReactNode
   /** Link for a completed step, enabling back-navigation. */
   href?: string
+  /**
+   * A step that is complete simply by being reached — a confirmation with
+   * nothing left to fill in. Wears the completed marker while it is current,
+   * but stays inert: there is nowhere to go back to from the end.
+   */
+  terminal?: boolean
 }
 
 export interface StepperProps
@@ -33,12 +39,16 @@ export interface StepperProps
  * with text and `aria-current`, not only the marker's color, and the whole
  * list is a `<nav>` with an ordered list so the sequence is announced.
  *
+ * A step marked `terminal` is complete on arrival — the end of a flow asks
+ * for nothing, so it shows a check rather than a number it will never move
+ * past. It stays inert, since there is no step after it to return from.
+ *
  * @example
  * <Stepper currentStepId="availability" steps={[
  *   { id: 'purpose', label: 'Purpose', href: './purpose' },
  *   { id: 'availability', label: 'Time' },
  *   { id: 'details', label: 'Details' },
- *   { id: 'booked', label: 'Confirmed' },
+ *   { id: 'booked', label: 'Confirmed', terminal: true },
  * ]} />
  */
 export const Stepper = forwardRef<HTMLElement, StepperProps>(function Stepper(
@@ -63,14 +73,20 @@ export const Stepper = forwardRef<HTMLElement, StepperProps>(function Stepper(
                 ? 'current'
                 : 'upcoming'
           const interactive = state === 'complete' && (step.href || onSelect)
+          /* A terminal step is done the moment it is reached, so it wears the
+             completed marker while still being the current step. Kept separate
+             from `state` so position and appearance stay independent: this
+             changes what the marker draws, never where the flow is. */
+          const settled = state === 'complete' || (state === 'current' && step.terminal)
 
           const content = (
             <>
               <span className="deck-stepper__marker" aria-hidden="true">
-                {state === 'complete' ? (
+                {settled ? (
                   <svg viewBox="0 0 16 16" focusable="false">
                     <path
                       d="M3.5 8.5l3 3 6-6.5"
+                      pathLength="1"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
@@ -86,7 +102,7 @@ export const Stepper = forwardRef<HTMLElement, StepperProps>(function Stepper(
                 {step.label}
                 {/* Spells out state so it is not carried by color alone. */}
                 <span className="deck-visually-hidden">
-                  {state === 'complete'
+                  {settled
                     ? ' (completed)'
                     : state === 'current'
                       ? ' (current step)'
@@ -99,7 +115,11 @@ export const Stepper = forwardRef<HTMLElement, StepperProps>(function Stepper(
           return (
             <li
               key={step.id}
-              className={cx('deck-stepper__step', `deck-stepper__step--${state}`)}
+              className={cx(
+                'deck-stepper__step',
+                `deck-stepper__step--${state}`,
+                state === 'current' && step.terminal && 'deck-stepper__step--terminal',
+              )}
               aria-current={state === 'current' ? 'step' : undefined}
             >
               {interactive ? (
