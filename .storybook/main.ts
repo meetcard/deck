@@ -5,6 +5,15 @@ const config: StorybookConfig = {
   // alphabetical or explicit sort — this is Design System, then Experience,
   // then Build on purpose: learn it, see it working, then build with it.
   "stories": [
+    // Same reasoning one level down, inside Design System: what this is,
+    // then what it is made of, then the rules it is held to. Named one by
+    // one because the glob that follows would discover them by filename and
+    // open the section on Foundations — the middle of the argument. The
+    // glob stays after them so a new page still appears without being
+    // listed; matching a file twice collapses to one entry in the index.
+    "../src/docs/Introduction.mdx",
+    "../src/docs/Foundations.mdx",
+    "../src/docs/Principles.mdx",
     "../src/**/*.mdx",
     "../src/pages/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../src/*.stories.@(js|jsx|mjs|ts|tsx)",
