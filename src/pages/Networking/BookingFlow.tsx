@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
+import { BookingCelebration } from '../../components/BookingCelebration/BookingCelebration'
 import { BookingSummary } from '../../components/BookingSummary/BookingSummary'
 import { Button } from '../../components/Button/Button'
 import { Card } from '../../components/Card/Card'
@@ -139,6 +140,12 @@ export interface BookingFlowProps {
   /** Person being booked, for `individual`. */
   personName?: string
   companyName?: string
+  /**
+   * Play the celebration on the booked step. Off lands straight on the same
+   * confirmation without the motion — which is also what
+   * `prefers-reduced-motion` does regardless of this setting.
+   */
+  celebrate?: boolean
 }
 
 type StepId = 'purpose' | 'availability' | 'team' | 'details' | 'booked'
@@ -156,6 +163,7 @@ export function BookingFlow({
   mode = 'individual',
   personName = 'Ben Ackles',
   companyName = 'MeetCard',
+  celebrate = true,
 }: BookingFlowProps) {
   const isTeam = mode === 'team'
 
@@ -177,7 +185,7 @@ export function BookingFlow({
         { id: 'availability', label: 'Availability' },
         ...(isTeam ? [{ id: 'team', label: 'Team' }] : []),
         { id: 'details', label: 'Details' },
-        { id: 'booked', label: 'Booked' },
+        { id: 'booked', label: 'Booked', terminal: true },
       ] as Step[],
     [isTeam],
   )
@@ -420,31 +428,15 @@ export function BookingFlow({
 
   if (stepId === 'booked') {
     body = (
-      <Stack gap={24} align="center" className="deck-booking__confirmation">
-        <span className="deck-booking__check" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
-            <path
-              d="m6 12.5 4 4 8-9"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-        <Stack gap={8} align="center">
-          <Heading level={2} size="lg">
-            You&rsquo;re booked.
-          </Heading>
-          <Text tone="muted">
-            A calendar invite is on its way to {email || 'your inbox'}.
-          </Text>
-        </Stack>
-        <BookingSummary
-          className="deck-booking__confirmation-summary"
-          items={summaryItems.map(({ onEdit: _onEdit, ...item }) => item)}
-        />
-      </Stack>
+      <BookingCelebration
+        skipAnimation={!celebrate}
+        caption={`A calendar invite is on its way to ${email || 'your inbox'}.`}
+        summary={
+          // The recap loses its edit controls here: the booking is made, so a
+          // "Change" button would offer something this step cannot do.
+          <BookingSummary items={summaryItems.map(({ onEdit: _onEdit, ...item }) => item)} />
+        }
+      />
     )
   }
 

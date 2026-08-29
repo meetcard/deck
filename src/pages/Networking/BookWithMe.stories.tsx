@@ -84,7 +84,9 @@ export const BookingEndToEnd: Story = {
     await userEvent.click(confirm)
 
     /* Booked. The confirmation names the address it was sent to, and repeats
-       the summary with the edit affordances stripped out. */
+       the summary with the edit affordances stripped out. It is on screen as
+       soon as the step is — the confetti is laid over a finished screen, so
+       there is no sequence to outwait here. */
     await waitFor(async () => {
       await expect(
         canvas.getByRole('heading', { name: /You.re booked/ }),

@@ -1,0 +1,155 @@
+/* ---- Root ------------------------------------------------------------- */
+
+.deck-booking-celebration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--deck-space-24);
+  padding-block: var(--deck-space-16);
+  text-align: center;
+}
+
+.deck-booking-celebration__status {
+  width: 100%;
+}
+
+.deck-booking-celebration__summary {
+  width: 100%;
+  text-align: start;
+}
+
+/* ---- The plate --------------------------------------------------------- */
+
+/*
+ * `__mark` has no size of its own — it wraps the plate so the confetti has
+ * something to be absolute against. Every piece overflows it, so the layout
+ * is exactly the plate on its own whether or not they are there.
+ */
+.deck-booking-celebration__mark {
+  position: relative;
+  display: inline-flex;
+}
+
+/*
+ * No entrance animation. The plate is part of the confirmation, and the
+ * confirmation does not arrive — it is already here.
+ */
+.deck-booking-celebration__check {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  color: var(--deck-color-status-success-text);
+  background-color: var(--deck-color-status-success-background);
+  border: 1px solid var(--deck-color-status-success-border);
+  border-radius: var(--deck-radius-full);
+}
+
+/* ---- The confetti ------------------------------------------------------ */
+
+.deck-booking-celebration__particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  opacity: 0;
+  /* Composited: twelve pieces moving at once is the one place in Deck where
+     this earns its keep. */
+  will-change: transform, opacity;
+}
+
+.deck-booking-celebration__particle--brand {
+  color: var(--deck-color-solid-brand);
+}
+
+.deck-booking-celebration__particle--accent {
+  color: var(--deck-color-text-display);
+}
+
+.deck-booking-celebration__particle--muted {
+  color: var(--deck-color-text-muted);
+}
+
+/* A short ribbon, the shape a real piece of confetti reads as when it
+   tumbles. Squared off rather than rounded — a rounded rectangle at this size
+   is just a lozenge. */
+.deck-booking-celebration__particle--ribbon {
+  width: var(--deck-space-6);
+  height: var(--deck-space-12);
+  margin-block-start: calc(var(--deck-space-12) / -2);
+  margin-inline-start: calc(var(--deck-space-6) / -2);
+  background-color: currentcolor;
+  border-radius: var(--deck-radius-sm);
+}
+
+.deck-booking-celebration__particle--dot {
+  width: var(--deck-space-6);
+  height: var(--deck-space-6);
+  margin-block-start: calc(var(--deck-space-6) / -2);
+  margin-inline-start: calc(var(--deck-space-6) / -2);
+  background-color: currentcolor;
+  border-radius: var(--deck-radius-full);
+}
+
+/*
+ * One animation, one throw. The pieces leave together, arc out, and fall —
+ * there is no second beat and nothing to wait for, which is the difference
+ * between punctuation and a progress indicator.
+ *
+ * The stagger is small on purpose: enough that they do not march in lockstep,
+ * short enough that the whole thing still reads as a single pop.
+ */
+.deck-booking-celebration__particle {
+  /* Derived from the slow token rather than a literal ~640ms: a throw needs
+     longer than any of Deck's UI durations, and deriving it means it still
+     collapses to 0ms with the rest of them under reduced motion.
+
+     Decelerating, not accelerating: thrown things leave fast and slow down.
+     Exit easing does the reverse, which spends the whole visible part of the
+     animation barely clear of the plate and then rushes the pieces out as
+     they fade — a sprinkle where this wants a pop. */
+  animation: deck-celebration-pop calc(var(--deck-duration-slow) * 2)
+    var(--deck-ease-standard) forwards;
+  animation-delay: calc(var(--deck-celebration-delay) * var(--deck-duration-fast));
+}
+
+@keyframes deck-celebration-pop {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.6) rotate(0turn);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  to {
+    /* Out, and further down than it went up: it falls rather than
+       dissipating. */
+    transform: translate3d(
+        var(--deck-celebration-dx),
+        calc(var(--deck-celebration-dy) + 4em),
+        0
+      )
+      scale(0.9) rotate(var(--deck-celebration-spin));
+    opacity: 0;
+  }
+}
+
+/* ---- Reduced motion ---------------------------------------------------- */
+
+/*
+ * The confirmation is complete without the confetti, so this removes it
+ * rather than substituting anything. Deck's duration tokens collapse to 0ms
+ * here, but a 0ms animation still applies its final frame — so the pieces
+ * have to be turned off by name as well as hidden.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .deck-booking-celebration__particle {
+    animation: none;
+    display: none;
+  }
+}

@@ -24,27 +24,8 @@
   gap: var(--deck-space-16);
 }
 
-.deck-booking__confirmation {
-  padding-block: var(--deck-space-16);
-  text-align: center;
-}
-
-.deck-booking__check {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  color: var(--deck-color-status-success-text);
-  background-color: var(--deck-color-status-success-background);
-  border: 1px solid var(--deck-color-status-success-border);
-  border-radius: var(--deck-radius-full);
-}
-
-.deck-booking__confirmation-summary {
-  width: 100%;
-  text-align: start;
-}
+/* The booked step's confirmation, its check plate and its recap all belong
+   to `BookingCelebration` now — see BookingCelebration.css. */
 
 @media (max-width: 640px) {
   .deck-booking {

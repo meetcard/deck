@@ -16,8 +16,16 @@ export interface SheetProps
   description?: ReactNode
   /** Pinned action row at the bottom. */
   footer?: ReactNode
-  /** `sheet` slides up from the bottom; `center` is a centered dialog. */
-  placement?: 'sheet' | 'center'
+  /**
+   * `sheet` slides up from the bottom; `center` is a centered dialog; `side`
+   * is a full-height drawer on the inline-end edge.
+   *
+   * `side` is for account and navigation surfaces, which are lists you run
+   * your eye down rather than a decision you make and dismiss. It keeps its
+   * edge at every width — a drawer that became a bottom sheet on a phone
+   * would put a long list of destinations under the thumb and off the screen.
+   */
+  placement?: 'sheet' | 'center' | 'side'
   /** Allow dismissal by backdrop click. Defaults to true. */
   dismissOnBackdrop?: boolean
   closeLabel?: string

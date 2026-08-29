@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import {
   ArrowLeftRight,
+  Briefcase,
   Calendar,
   House,
   IdCard,
@@ -12,6 +13,8 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { Wordmark } from '../../foundations/brand'
+import { AccountSheet } from '../../components/AccountSheet/AccountSheet'
+import type { AccountCard } from '../../components/AccountSheet/AccountSheet'
 import { AppBar } from '../../components/AppBar/AppBar'
 import { Avatar } from '../../components/Avatar/Avatar'
 import { BottomNav } from '../../components/BottomNav/BottomNav'
@@ -82,6 +85,37 @@ const useDestinations = (currentId: string) =>
     }
   }, [currentId])
 
+/**
+ * The signed-in person's cards, as the account drawer lists them.
+ *
+ * Alex Rivera and these two slugs are the same fixture `MyCards` seeds from —
+ * the shell and the page it frames should not disagree about who is signed
+ * in. Deck has no data layer; a real app passes its own.
+ *
+ * No `href`s, for the reason `MyCards` gives about the same two cards: the
+ * product routes to `/cards/<slug>` and there is no such route here, so a
+ * dead link is worse than a working control. `AccountSheet` renders a row
+ * without a route as a button, so what ships is a button rather than an
+ * address that 404s. The nav's own `href`s stay — a destination is a link,
+ * and demoting those to buttons would trade a prototype wart for an
+ * accessibility one.
+ */
+const ACCOUNT_CARDS: AccountCard[] = [
+  {
+    id: 'personal',
+    label: 'Personal card',
+    link: 'meetcard.io/alex',
+    icon: icon(IdCard),
+  },
+  {
+    id: 'business',
+    label: 'Business card',
+    link: 'meetcard.io/alex@northwind',
+    icon: icon(Briefcase),
+    isDefault: true,
+  },
+]
+
 export interface AppShellProps {
   /** The screen rendered between the bar and the nav. */
   children?: ReactNode
@@ -89,6 +123,12 @@ export interface AppShellProps {
   currentId?: string
   /** The signed-in person, for the account avatar. */
   accountName?: string
+  /** Public handle, shown under the name in the account drawer. */
+  accountHandle?: string
+  /** The cards the account drawer offers. */
+  accountCards?: AccountCard[]
+  /** Opens the account drawer on mount, for stories. */
+  accountOpen?: boolean
 }
 
 /**
@@ -127,8 +167,12 @@ export function AppShell({
   children,
   currentId = '/',
   accountName = 'Alex Rivera',
+  accountHandle = '/alex',
+  accountCards = ACCOUNT_CARDS,
+  accountOpen = false,
 }: AppShellProps) {
   const [exchangeOpen, setExchangeOpen] = useState(false)
+  const [accountSheetOpen, setAccountSheetOpen] = useState(accountOpen)
   const destinations = useDestinations(currentId)
 
   return (
@@ -153,6 +197,8 @@ export function AppShell({
             label="Account"
             variant="ghost"
             size="sm"
+            aria-expanded={accountSheetOpen}
+            onClick={() => setAccountSheetOpen(true)}
             icon={<Avatar name={accountName} size="sm" decorative />}
           />
         }
@@ -176,6 +222,33 @@ export function AppShell({
           icon: icon(ArrowLeftRight),
           onClick: () => setExchangeOpen(true),
         }}
+      />
+
+      {/*
+        The avatar's drawer. It hangs off the bar's own control, so it comes
+        in from that edge rather than up from the bottom — and it is the only
+        entry point to "My cards" the bar has, since the bar gives that slot
+        up to Exchange. On a phone this is the way to your own cards.
+      */}
+      {/*
+        Selecting a row closes the drawer and nothing else. The shell frames a
+        screen it is handed as `children` — it does not choose one — so there
+        is no honest way for it to go anywhere from here without a router.
+        Dismissing is the part it can actually do, and a control that does the
+        one true thing beats a link that does nothing.
+
+        `settingsHref` is left unset for the same reason, which makes Settings
+        a button here. Pass the product's `/settings/profile` once routing
+        exists and it becomes a link with no other change.
+      */}
+      <AccountSheet
+        open={accountSheetOpen}
+        onClose={() => setAccountSheetOpen(false)}
+        name={accountName}
+        handle={accountHandle}
+        cards={accountCards}
+        onSelectCard={() => setAccountSheetOpen(false)}
+        onSelectSettings={() => setAccountSheetOpen(false)}
       />
 
       {/* The three ways to trade a card, in the order you'd reach for them:
