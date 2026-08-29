@@ -1,67 +1,64 @@
-import { render, screen, waitFor } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
 import { BookingCelebration } from './BookingCelebration'
 
 describe('BookingCelebration', () => {
-  it('lands on the confirmation once the sequence finishes', async () => {
+  // The whole point of the component: booking is already done by the time it
+  // renders, so nothing about the outcome waits on a timer.
+  it('shows the confirmation in the first render, not on a timer', () => {
     render(<BookingCelebration caption="An invite is on its way." />)
 
-    // The headline does not exist until the beats have played, so the live
-    // region has to carry something in the meantime.
-    expect(screen.queryByRole('heading')).not.toBeInTheDocument()
-    expect(screen.getByRole('status')).toHaveTextContent('Confirming your booking')
-
-    await waitFor(
-      () => expect(screen.getByRole('heading', { level: 2 })).toBeVisible(),
-      { timeout: 3000 },
-    )
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('You’re booked.')
     expect(screen.getByText('An invite is on its way.')).toBeVisible()
   })
 
-  it('renders the confirmation immediately when animation is skipped', () => {
-    render(<BookingCelebration skipAnimation />)
+  // A working message here would describe work that is not happening.
+  it('announces the outcome rather than a pending state', () => {
+    render(<BookingCelebration caption="An invite is on its way." />)
 
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('You’re booked.')
+    const status = screen.getByRole('status')
+    expect(status).toHaveTextContent('You’re booked.')
+    expect(status).not.toHaveTextContent(/confirming/i)
   })
 
-  it('fires onSettled once, not on every render', async () => {
-    const onSettled = vi.fn()
-    const { rerender } = render(<BookingCelebration skipAnimation onSettled={onSettled} />)
+  it('renders the summary alongside the confirmation', () => {
+    render(<BookingCelebration summary={<p>Thursday, September 3</p>} />)
 
-    rerender(<BookingCelebration skipAnimation onSettled={onSettled} />)
-    rerender(<BookingCelebration skipAnimation onSettled={() => onSettled()} />)
-
-    await waitFor(() => expect(onSettled).toHaveBeenCalledOnce())
+    expect(screen.getByText('Thursday, September 3')).toBeVisible()
   })
 
-  it('keeps the animated decoration out of the accessibility tree', () => {
+  it('keeps the confetti out of the accessibility tree', () => {
     const { container } = render(<BookingCelebration />)
 
     const mark = container.querySelector('.deck-booking-celebration__mark')
     expect(mark).toHaveAttribute('aria-hidden', 'true')
-    // Particles exist while animating, and all of them sit inside the
-    // hidden mark rather than alongside it.
-    expect(container.querySelectorAll('.deck-booking-celebration__particle')).toHaveLength(8)
+    // Every piece sits inside the hidden mark rather than alongside it.
+    expect(mark?.querySelectorAll('.deck-booking-celebration__particle')).toHaveLength(12)
   })
 
-  it('starts settled under prefers-reduced-motion', () => {
-    // Skipped rather than shortened: Deck collapses durations to 0ms in this
-    // mode, which would flash every beat in a single frame.
-    // Assigned rather than spied on: jsdom does not implement `matchMedia` at
-    // all, which is why the component calls it optionally in the first place.
-    const original = window.matchMedia
-    window.matchMedia = vi.fn(() => ({ matches: true }) as MediaQueryList)
+  // `skipAnimation` drops the decoration from a finished screen; it does not
+  // fast-forward to a different one.
+  it('drops the confetti but keeps the confirmation when animation is skipped', () => {
+    const { container } = render(<BookingCelebration caption="An invite is on its way." />)
+    const decorated = container.innerHTML
 
-    try {
-      render(<BookingCelebration />)
+    const { container: plain } = render(<BookingCelebration skipAnimation caption="An invite is on its way." />)
 
-      expect(screen.getByRole('heading', { level: 2 })).toBeVisible()
-      expect(
-        document.querySelectorAll('.deck-booking-celebration__particle'),
-      ).toHaveLength(0)
-    } finally {
-      window.matchMedia = original
-    }
+    expect(plain.querySelectorAll('.deck-booking-celebration__particle')).toHaveLength(0)
+    expect(screen.getAllByRole('heading', { level: 2 })[0]).toHaveTextContent('You’re booked.')
+    // The confirmation markup is the same either way — the pieces are the
+    // only difference between the two.
+    expect(decorated).toContain('deck-booking-celebration__check')
+    expect(plain.innerHTML).toContain('deck-booking-celebration__check')
+  })
+
+  it('holds no state that could re-render the confirmation away', () => {
+    const { rerender } = render(<BookingCelebration />)
+
+    rerender(<BookingCelebration />)
+    rerender(<BookingCelebration headline="Your table is held." />)
+
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Your table is held.')
   })
 
   it('forwards a ref and passes through the caller’s className', () => {

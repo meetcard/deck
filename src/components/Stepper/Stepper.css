@@ -112,6 +112,67 @@ button.deck-stepper__action {
   color: var(--deck-color-text-muted);
 }
 
+/* ---- The terminal step ------------------------------------------------- */
+
+/*
+ * A step that is complete on arrival. Its resting style is the finished one —
+ * the same filled disc a completed step wears — and the animation plays up to
+ * it from white. Remove the motion and the correct end state is what's left,
+ * which is what makes the animation optional rather than load-bearing.
+ *
+ * The label keeps the current step's brand weight: this is still where the
+ * flow is, it just has nothing left to ask for.
+ */
+.deck-stepper__step--terminal .deck-stepper__marker {
+  background-color: var(--deck-color-action-primary);
+  border-color: var(--deck-color-action-primary);
+  border-width: 1px;
+  color: var(--deck-color-action-primary-text);
+  animation: deck-stepper-settle var(--deck-duration-slow) var(--deck-ease-standard);
+}
+
+/* White, to the success tint, to the filled disc. Three stops so it reads as
+   a state resolving rather than a single colour cross-fade. */
+@keyframes deck-stepper-settle {
+  0% {
+    background-color: var(--deck-color-background-elevated);
+    border-color: var(--deck-color-border-default);
+  }
+  45% {
+    background-color: var(--deck-color-status-success-background);
+    border-color: var(--deck-color-status-success-border);
+  }
+}
+
+/*
+ * The check draws itself just after the tint lands. `pathLength="1"` on the
+ * path makes the dash maths independent of the glyph's real length, and
+ * `backwards` holds it undrawn through the delay instead of flashing it.
+ */
+.deck-stepper__step--terminal .deck-stepper__marker path {
+  stroke-dasharray: 1;
+  animation: deck-stepper-draw var(--deck-duration-base) var(--deck-ease-standard)
+    var(--deck-duration-fast) backwards;
+}
+
+@keyframes deck-stepper-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+/*
+ * Deck collapses its duration tokens to 0ms here, and a 0ms animation still
+ * applies its frames — for `backwards` that can flash the undrawn check in a
+ * single frame. Turned off by name instead.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .deck-stepper__step--terminal .deck-stepper__marker,
+  .deck-stepper__step--terminal .deck-stepper__marker path {
+    animation: none;
+  }
+}
+
 /* On narrow screens only the current step keeps its label, so four steps
    still fit without wrapping. */
 @media (max-width: 640px) {

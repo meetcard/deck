@@ -157,10 +157,7 @@ export type {
 } from './components/BookingSummary'
 
 export { BookingCelebration } from './components/BookingCelebration'
-export type {
-  BookingCelebrationProps,
-  CelebrationStage,
-} from './components/BookingCelebration'
+export type { BookingCelebrationProps } from './components/BookingCelebration'
 
 /* ---- Data display ---------------------------------------------------- */
 export { StatTile } from './components/StatTile'

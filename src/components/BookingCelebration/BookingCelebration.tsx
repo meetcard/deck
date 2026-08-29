@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState } from 'react'
+import { forwardRef } from 'react'
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react'
 import { cx } from '../../lib/cx'
 import { Heading } from '../Heading/Heading'
@@ -6,45 +6,12 @@ import { Stack } from '../Stack/Stack'
 import { Text } from '../Text/Text'
 import './BookingCelebration.css'
 
-/* ---- Glyphs ----------------------------------------------------------- */
+/* ---- The plate --------------------------------------------------------- */
 
-/*
- * Hand-drawn rather than imported: components take no icon dependency, which
- * is what keeps `dist/deck.js` free of one. Same 16x16 / 1.4-stroke idiom the
- * booking flow already draws with.
+/**
+ * The plate's check. Hand-drawn rather than imported: components take no icon
+ * dependency, which is what keeps `dist/deck.js` free of one.
  */
-const glyphProps = {
-  viewBox: '0 0 16 16',
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 1.4,
-  strokeLinecap: 'round' as const,
-  strokeLinejoin: 'round' as const,
-  'aria-hidden': true,
-  focusable: 'false' as const,
-}
-
-const CalendarGlyph = (
-  <svg {...glyphProps}>
-    <rect x="2" y="3" width="12" height="11" rx="1.5" />
-    <path d="M2 6.5h12M5 1.5v3M11 1.5v3" />
-  </svg>
-)
-
-const ClockGlyph = (
-  <svg {...glyphProps}>
-    <circle cx="8" cy="8" r="6.2" />
-    <path d="M8 4.4V8l2.4 1.6" />
-  </svg>
-)
-
-const CheckGlyph = (
-  <svg {...glyphProps}>
-    <path d="m3.5 8.5 3 3 6-7" />
-  </svg>
-)
-
-/** The settled plate's check, at the size the booking flow already draws it. */
 const PlateCheck = (
   <svg viewBox="0 0 24 24" width="28" height="28" fill="none" aria-hidden="true" focusable="false">
     <path
@@ -57,24 +24,25 @@ const PlateCheck = (
   </svg>
 )
 
-/* ---- Particles -------------------------------------------------------- */
+/* ---- Confetti ---------------------------------------------------------- */
 
-type ParticleTone = 'brand' | 'accent' | 'muted'
+type PieceTone = 'brand' | 'accent' | 'muted'
 
-interface Particle {
-  /** Offset from the plate's centre, in em, at the end of the burst. */
+interface Piece {
+  /** Offset from the plate's centre, in em, at the top of the arc. */
   dx: number
   dy: number
-  /** Fraction of the burst to wait before leaving. 0–1. */
+  /** Fraction of the stagger to wait before leaving. 0–1. */
   delay: number
   /** How far through a full turn the piece tumbles. */
   spin: number
-  tone: ParticleTone
-  glyph: ReactNode | null
+  tone: PieceTone
+  /** Ribbons are rectangles; the rest are dots, for rhythm between them. */
+  ribbon: boolean
 }
 
 /*
- * A fixed arrangement, not a random scatter. Randomness would make the burst
+ * A fixed arrangement, not a random scatter. Randomness would make the pop
  * untestable and would hand Chromatic a different image on every run; the
  * spread is hand-placed instead so it reads as balanced at any size.
  *
@@ -82,80 +50,51 @@ interface Particle {
  * here and become `em` in the stylesheet — they scale with the plate instead
  * of being pinned to a spacing step.
  */
-const PARTICLES: readonly Particle[] = [
-  { dx: -3.6, dy: -2.1, delay: 0, spin: -0.12, tone: 'brand', glyph: CalendarGlyph },
-  { dx: 3.4, dy: -2.4, delay: 0.08, spin: 0.1, tone: 'brand', glyph: ClockGlyph },
-  { dx: -4.2, dy: 0.9, delay: 0.16, spin: 0.08, tone: 'muted', glyph: null },
-  { dx: 4.1, dy: 1.2, delay: 0.04, spin: -0.09, tone: 'brand', glyph: CheckGlyph },
-  { dx: -2.4, dy: 2.9, delay: 0.2, spin: 0.14, tone: 'accent', glyph: CalendarGlyph },
-  { dx: 2.6, dy: 3.1, delay: 0.12, spin: -0.11, tone: 'muted', glyph: null },
-  { dx: 0.4, dy: -3.6, delay: 0.24, spin: 0.06, tone: 'accent', glyph: null },
-  { dx: -0.8, dy: 3.8, delay: 0.28, spin: -0.07, tone: 'brand', glyph: ClockGlyph },
+const PIECES: readonly Piece[] = [
+  { dx: -6.6, dy: -4.5, delay: 0, spin: -0.45, tone: 'brand', ribbon: true },
+  { dx: 6.3, dy: -4.8, delay: 0.15, spin: 0.52, tone: 'accent', ribbon: true },
+  { dx: -3.2, dy: -6.5, delay: 0.35, spin: 0.38, tone: 'brand', ribbon: false },
+  { dx: 3.6, dy: -6.8, delay: 0.05, spin: -0.6, tone: 'muted', ribbon: true },
+  { dx: -8.0, dy: -1.8, delay: 0.5, spin: 0.7, tone: 'accent', ribbon: false },
+  { dx: 7.7, dy: -2.3, delay: 0.25, spin: -0.34, tone: 'brand', ribbon: true },
+  { dx: -5.1, dy: 0.9, delay: 0.7, spin: -0.55, tone: 'muted', ribbon: false },
+  { dx: 5.4, dy: 0.6, delay: 0.6, spin: 0.48, tone: 'accent', ribbon: true },
+  { dx: -1.4, dy: -7.7, delay: 0.45, spin: 0.66, tone: 'accent', ribbon: true },
+  { dx: 1.7, dy: -8.0, delay: 0.8, spin: -0.42, tone: 'brand', ribbon: false },
+  { dx: -9.0, dy: 2.1, delay: 0.9, spin: 0.3, tone: 'brand', ribbon: true },
+  { dx: 8.7, dy: 2.6, delay: 1, spin: -0.68, tone: 'muted', ribbon: false },
 ]
 
-/* ---- Beats ------------------------------------------------------------ */
-
-/**
- * The five beats of the celebration. `settled` is the terminal state and is
- * also the whole component when motion is off, which is why the sequence is
- * a state machine rather than a boolean and a timer: "no animation" is
- * expressible as "start at the end" instead of "run the same thing faster".
- */
-export type CelebrationStage = 'confirm' | 'pulse' | 'burst' | 'cascade' | 'settled'
-
-/** How long each beat holds, in ms. Totals 1200ms to the settled state. */
-const BEAT: Record<Exclude<CelebrationStage, 'settled'>, number> = {
-  confirm: 200,
-  pulse: 300,
-  burst: 300,
-  cascade: 400,
-}
-
-const NEXT: Record<Exclude<CelebrationStage, 'settled'>, CelebrationStage> = {
-  confirm: 'pulse',
-  pulse: 'burst',
-  burst: 'cascade',
-  cascade: 'settled',
-}
-
-/* ---- Component -------------------------------------------------------- */
+/* ---- Component --------------------------------------------------------- */
 
 export interface BookingCelebrationProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
-  /** Headline on the settled card. Defaults to “You’re booked.” */
+  /** Headline on the confirmation. Defaults to “You’re booked.” */
   headline?: ReactNode
   /** The line under it — usually where the invite went. */
   caption?: ReactNode
-  /** Read-only recap, rendered once settled. */
+  /** Read-only recap of what was booked. */
   summary?: ReactNode
   /**
-   * Announced while the beats play, before the headline exists to be read.
-   * Kept to one message for the whole sequence: a caption per beat would
-   * interrupt a screen reader four times to say nothing actionable.
-   */
-  pendingLabel?: string
-  /**
-   * Skip the beats and render the settled state immediately. Stories and
-   * tests set this directly; at runtime `prefers-reduced-motion` does the
-   * same thing.
+   * Render the confirmation without the confetti. The screen is otherwise
+   * identical; `prefers-reduced-motion` does the same thing in the
+   * stylesheet, whatever this is set to.
    */
   skipAnimation?: boolean
-  /** Fires once, when the sequence reaches `settled`. */
-  onSettled?: () => void
 }
 
 /**
  * The moment a meeting is booked.
  *
- * A confirmation that behaves like one. The beats are short and they end —
- * this is punctuation on a completed task, not a loading state, so nothing
- * here loops and nothing waits on a network. The settled state is the whole
- * component with the motion removed, which means turning the animation off
- * is not a second design to maintain: it is this one, started at the end.
+ * The confirmation is on screen in the first frame — headline, caption and
+ * recap all present, nothing revealed on a timer. Booking is finished by the
+ * time this renders, so anything that withholds the outcome is describing
+ * work that is not happening; a staged reveal reads as confirming rather than
+ * confirmed, on the one screen where that misread is expensive.
  *
- * The burst is decorative and marked `aria-hidden`. What a screen reader
- * gets is the live region: one “working” message while the beats play, then
- * the headline and caption when they land.
+ * The confetti is decoration laid over a complete screen, marked `aria-hidden`
+ * and holding no state. It pops once and it is gone. Turning it off removes
+ * pieces from a finished design rather than skipping to the end of one.
  *
  * @example
  * <BookingCelebration
@@ -165,124 +104,60 @@ export interface BookingCelebrationProps
  */
 export const BookingCelebration = forwardRef<HTMLDivElement, BookingCelebrationProps>(
   function BookingCelebration(
-    {
-      headline = 'You’re booked.',
-      caption,
-      summary,
-      pendingLabel = 'Confirming your booking',
-      skipAnimation = false,
-      onSettled,
-      className,
-      ...props
-    },
+    { headline = 'You’re booked.', caption, summary, skipAnimation = false, className, ...props },
     ref,
   ) {
     /*
-     * Read once rather than subscribed: the sequence is over in 1.2s, so a
-     * person changing the system setting mid-flight has nothing to gain from
-     * a re-render. Deck collapses its duration tokens to 0ms under reduce,
-     * which for a sequence that carries state would flash every beat in a
-     * single frame — so this skips the beats rather than shortening them.
+     * The only gate in JS, and a deterministic one. Reduced motion is handled
+     * entirely in the stylesheet: reading it here would branch rendering on a
+     * browser-only API, which is the sort of thing that renders one tree on a
+     * server and a different one on hydration.
      */
-    const prefersReducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-
-    const instant = skipAnimation || prefersReducedMotion
-
-    // Lazy, and seeded from `instant`, so a skipped sequence never renders a
-    // first frame of motion before the effect can stop it.
-    const [stage, setStage] = useState<CelebrationStage>(() =>
-      instant ? 'settled' : 'confirm',
-    )
-
-    // Advances one beat at a time. Re-running on each change means exactly
-    // one timer is ever outstanding, and unmounting clears it.
-    useEffect(() => {
-      if (stage === 'settled') return
-      const timer = setTimeout(() => setStage(NEXT[stage]), BEAT[stage])
-      return () => clearTimeout(timer)
-    }, [stage])
-
-    /*
-     * Held in a ref so the effect below can depend on the stage alone. An
-     * inline arrow from the caller changes identity every render, and as a
-     * dependency it would turn a once-per-booking callback into a loop.
-     */
-    const settledCallback = useRef(onSettled)
-
-    // Kept current in its own effect rather than assigned during render,
-    // and declared first so it has already updated when the effect below
-    // runs on the same commit.
-    useEffect(() => {
-      settledCallback.current = onSettled
-    })
-
-    useEffect(() => {
-      if (stage === 'settled') settledCallback.current?.()
-    }, [stage])
-
-    const settled = stage === 'settled'
+    const confetti = !skipAnimation
 
     return (
-      <div
-        ref={ref}
-        className={cx(
-          'deck-booking-celebration',
-          `deck-booking-celebration--${stage}`,
-          className,
-        )}
-        {...props}
-      >
+      <div ref={ref} className={cx('deck-booking-celebration', className)} {...props}>
         <span className="deck-booking-celebration__mark" aria-hidden="true">
-          {settled ? null : (
-            <>
-              <span className="deck-booking-celebration__ring" />
-              <span className="deck-booking-celebration__ring deck-booking-celebration__ring--late" />
-              {PARTICLES.map((particle, index) => (
+          {confetti
+            ? PIECES.map((piece, index) => (
                 <span
                   key={index}
                   className={cx(
                     'deck-booking-celebration__particle',
-                    `deck-booking-celebration__particle--${particle.tone}`,
-                    !particle.glyph && 'deck-booking-celebration__particle--dot',
+                    `deck-booking-celebration__particle--${piece.tone}`,
+                    piece.ribbon
+                      ? 'deck-booking-celebration__particle--ribbon'
+                      : 'deck-booking-celebration__particle--dot',
                   )}
                   style={
                     {
-                      '--deck-celebration-dx': `${particle.dx}em`,
-                      '--deck-celebration-dy': `${particle.dy}em`,
-                      '--deck-celebration-delay': `${particle.delay}`,
-                      '--deck-celebration-spin': `${particle.spin}turn`,
+                      '--deck-celebration-dx': `${piece.dx}em`,
+                      '--deck-celebration-dy': `${piece.dy}em`,
+                      '--deck-celebration-delay': `${piece.delay}`,
+                      '--deck-celebration-spin': `${piece.spin}turn`,
                     } as CSSProperties
                   }
-                >
-                  {particle.glyph}
-                </span>
-              ))}
-            </>
-          )}
+                />
+              ))
+            : null}
           <span className="deck-booking-celebration__check">{PlateCheck}</span>
         </span>
 
         {/*
-          One live region for the whole component. It carries the working
-          message first and the real confirmation second, so a screen reader
-          hears the outcome rather than a checkmark appearing silently.
+          The confetti is decorative and silent, so the outcome has to be
+          spoken. This carries the confirmation itself rather than a working
+          message: there is nothing in flight to narrate.
         */}
         <div role="status" aria-live="polite" className="deck-booking-celebration__status">
-          {settled ? (
-            <Stack gap={8} align="center">
-              <Heading level={2} size="lg">
-                {headline}
-              </Heading>
-              {caption ? <Text tone="muted">{caption}</Text> : null}
-            </Stack>
-          ) : (
-            <span className="deck-visually-hidden">{pendingLabel}</span>
-          )}
+          <Stack gap={8} align="center">
+            <Heading level={2} size="lg">
+              {headline}
+            </Heading>
+            {caption ? <Text tone="muted">{caption}</Text> : null}
+          </Stack>
         </div>
 
-        {settled && summary ? (
+        {summary ? (
           <div className="deck-booking-celebration__summary">{summary}</div>
         ) : null}
       </div>
