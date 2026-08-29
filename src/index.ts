@@ -225,7 +225,7 @@ export type { SwitchProps } from './components/Switch'
 
 /* ---- MeetCard patterns ------------------------------------------------ */
 export { CardPile } from './components/CardPile'
-export type { CardPileProps } from './components/CardPile'
+export type { CardPileProps, CardPileOrientation } from './components/CardPile'
 
 export { PersonCard } from './components/PersonCard'
 export type { PersonCardProps } from './components/PersonCard'
