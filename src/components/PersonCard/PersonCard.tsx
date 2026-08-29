@@ -250,7 +250,15 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
                     aria-hidden="true"
                   />
                 ) : null}
-                <Text as="span" size="sm" tone="muted">
+                {/* Named rather than matched as `:last-child`, because
+                    portrait gives the place a line of its own and the last
+                    child is the company whenever there is no place. */}
+                <Text
+                  as="span"
+                  size="sm"
+                  tone="muted"
+                  className="deck-person-card__place"
+                >
                   {location}
                 </Text>
               </>

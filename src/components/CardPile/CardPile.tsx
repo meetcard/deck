@@ -12,10 +12,22 @@ import type {
   PointerEvent as ReactPointerEvent,
   ReactNode,
 } from 'react'
+import { mediaQuery } from '../../foundations/tokens'
 import { cx } from '../../lib/cx'
+import { useMediaQuery } from '../../lib/useMediaQuery'
 import { Badge } from '../Badge/Badge'
 import { IconButton } from '../IconButton/IconButton'
 import './CardPile.css'
+
+/**
+ * Which way up the cards are piled.
+ *
+ * `responsive` — the default — is portrait on a phone and landscape from the
+ * `sm` breakpoint up. A landscape card wide enough to read leaves a phone
+ * screen mostly empty, and shrinking it to fit makes the type too small; on a
+ * desktop the reverse is true. Same object either way, turned 90 degrees.
+ */
+export type CardPileOrientation = 'landscape' | 'portrait' | 'responsive'
 
 export interface CardPileProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
@@ -42,39 +54,68 @@ export interface CardPileProps
   onActiveIndexChange?: (index: number) => void
   /** Accessible name for the pile, e.g. "Ada's saved cards". */
   label?: string
+  /**
+   * Which way up the cards sit. Default `responsive` — portrait on a phone,
+   * landscape from `sm` up. Pin it when the surface around the pile has
+   * already committed to a shape.
+   */
+  orientation?: CardPileOrientation
 }
 
 const DRAG_THRESHOLD = 80
 const EXIT_DISTANCE = 480
 /*
- * Depth cues for the cards behind the front one.
+ * Depth cues for the cards behind the front one, measured off the mockups.
  *
- * Tuned to read as a *stack* rather than a fan. The previous values rotated
- * the layers 5 and 7 degrees, which scatters them like a hand of playing
- * cards; a pile of business cards on a desk is near-aligned, and what tells
- * you there is more than one is the sliver of edge showing below and the
- * slight loss of size going back — not the angle.
+ * Two rules, and they are not the same rule. Sideways, each layer steps the
+ * *same* distance and alternates which side it steps to — the first peeks out
+ * to the right, the second to the left, neither further than the other.
+ * Vertically the step accumulates: the first sits above the front card, the
+ * second twice as far below it. That asymmetry is what stops the pile
+ * reading as a fan (every layer marching off one way) or as a shadow (every
+ * layer marching off two ways at once), and it is what a stack someone has
+ * squared up by the edges and then knocked actually looks like.
  *
- * The offset is downward so the layers peek from beneath the front card's
- * bottom edge, which is where you would see them in a real pile.
+ * Measured against the mockup's own card and scaled to ours: at 520px wide
+ * the layers sat 25/17px out and 21/39px up-and-down, which at 400px is
+ * ~17 and ~16/32.
+ *
+ * Rotation and scale stay tiny on purpose. Five- and seven-degree rotations
+ * scatter the layers like a hand of playing cards; what tells you there is
+ * more than one card here is the sliver of edge showing, not the angle.
+ *
+ * The step is per-orientation, so a portrait pile does not get the sideways
+ * nudge of a landscape one half again as wide. Kept in sync with the room
+ * `CardPile.css` reserves around the stage: the deepest of three layers sits
+ * `2 x y` below the front card.
  */
-const DEPTH_OFFSET_X = 6
-const DEPTH_OFFSET_Y = 9
-const DEPTH_ROTATE_BASE = 1.2
-const DEPTH_ROTATE_STEP = 0.8
-const DEPTH_SCALE_STEP = 0.015
+const DEPTH_STEP: Record<
+  Exclude<CardPileOrientation, 'responsive'>,
+  { x: number; y: number }
+> = {
+  landscape: { x: 17, y: 16 },
+  portrait: { x: 15, y: 18 },
+}
+const DEPTH_ROTATE_BASE = 1.1
+const DEPTH_ROTATE_STEP = 0.5
+const DEPTH_SCALE_STEP = 0.01
 
 function mod(value: number, length: number) {
   return ((value % length) + length) % length
 }
 
 /** Deterministic per-depth offset for the peeking cards behind the front one. */
-function getLayerTransform(depth: number) {
-  const x = depth * DEPTH_OFFSET_X
-  const y = depth * DEPTH_OFFSET_Y
-  // Alternating so a stack of three does not lean uniformly, which reads as
-  // a skewed card rather than a hand-stacked pile.
+function getLayerTransform(
+  depth: number,
+  orientation: Exclude<CardPileOrientation, 'responsive'>,
+) {
+  const step = DEPTH_STEP[orientation]
+  // Odd depths go up and right, even ones down and left.
   const sign = depth % 2 === 1 ? 1 : -1
+  // Sideways: same distance every layer, alternating side. Vertically: a
+  // step per layer, so the pile deepens downward as it goes back.
+  const x = sign * step.x
+  const y = -sign * depth * step.y
   const rotate = sign * (DEPTH_ROTATE_BASE + (depth - 1) * DEPTH_ROTATE_STEP)
   const scale = 1 - depth * DEPTH_SCALE_STEP
   return `translate(${x}px, ${y}px) rotate(${rotate}deg) scale(${scale})`
@@ -119,6 +160,12 @@ const ChevronRightIcon = () => (
  * a "Share" button) is left alone; only motion past the drag threshold is
  * treated as a swipe.
  *
+ * The pile also decides which way up its cards sit — portrait on a phone,
+ * landscape from `sm` up — and publishes that as `data-card-orientation` for
+ * the cards to lay themselves out against. It is the pile's call rather than
+ * the card's because it is a fact about the space the cards are being shown
+ * in, not about any one of them.
+ *
  * @example
  * <CardPile label="Ada's saved cards">
  *   <PersonCard name="Ada Lovelace" title="Head of Partnerships" />
@@ -134,6 +181,7 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
       activeIndex: controlledIndex,
       onActiveIndexChange,
       label,
+      orientation = 'responsive',
       className,
       ...props
     },
@@ -154,27 +202,32 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
     const [dragX, setDragX] = useState(0)
     const [isDragging, setIsDragging] = useState(false)
     const [isAnimating, setIsAnimating] = useState(false)
-    const [reducedMotion, setReducedMotion] = useState(() =>
-      typeof window.matchMedia === 'function'
-        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        : false,
-    )
+    const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
+
+    /*
+     * `responsive` is resolved here rather than in CSS because the layer
+     * offsets are inline transforms, and a media query cannot reach an
+     * inline style. One resolved value then drives both: those transforms
+     * and the `data-card-orientation` the cards lay themselves out against.
+     *
+     * Asked as the negation of `sm` rather than as `sm` itself, so that
+     * every environment that cannot answer — jsdom, a server render, a
+     * browser without `matchMedia` — answers "no" and lands on landscape.
+     * Nothing that cannot report its width is a phone, and a phone-shaped
+     * pile is the more surprising thing to get wrong.
+     */
+    const isNarrow = useMediaQuery(`not all and ${mediaQuery('sm')}`)
+    const resolvedOrientation =
+      orientation === 'responsive'
+        ? isNarrow
+          ? 'portrait'
+          : 'landscape'
+        : orientation
 
     const startXRef = useRef(0)
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
       undefined,
     )
-
-    // Only reacts to the media query changing after mount — the initial
-    // value is read directly in useState above, not set here.
-    useEffect(() => {
-      if (typeof window.matchMedia !== 'function') return
-
-      const query = window.matchMedia('(prefers-reduced-motion: reduce)')
-      const onChange = () => setReducedMotion(query.matches)
-      query.addEventListener('change', onChange)
-      return () => query.removeEventListener('change', onChange)
-    }, [])
 
     useEffect(() => () => clearTimeout(timeoutRef.current), [])
 
@@ -241,6 +294,13 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
         role="group"
         aria-roledescription="card pile"
         aria-label={label ?? 'Card pile'}
+        /*
+         * The contract the cards lay out against: any ancestor may declare
+         * an orientation, and `PersonCard` re-lays itself beneath it. Set
+         * here as a resolved value — never `responsive` — so a card only
+         * ever has to answer one question.
+         */
+        data-card-orientation={resolvedOrientation}
         className={cx('deck-card-pile', className)}
         onKeyDown={handleKeyDown}
         {...props}
@@ -260,7 +320,7 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
                 style={{
                   transform: isFront
                     ? `translateX(${dragX}px) rotate(${dragX / 24}deg)`
-                    : getLayerTransform(depth),
+                    : getLayerTransform(depth, resolvedOrientation),
                   transition: isFront && isDragging ? 'none' : undefined,
                   zIndex: visibleCount - depth,
                 }}
