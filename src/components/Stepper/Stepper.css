@@ -1,6 +1,11 @@
 .deck-stepper {
   font-family: var(--deck-font-sans);
   min-width: 0;
+
+  /* Named because the stacked layout has to line its connector up with the
+     middle of a marker. A literal 12px there would be a number that silently
+     stops being half of anything. */
+  --deck-stepper-marker-size: 24px;
 }
 
 .deck-stepper__list {
@@ -62,8 +67,8 @@ button.deck-stepper__action {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
+  width: var(--deck-stepper-marker-size);
+  height: var(--deck-stepper-marker-size);
   border-radius: var(--deck-radius-full);
   border: 1px solid var(--deck-color-border-default);
   font-size: var(--deck-font-size-label-xs);
@@ -173,25 +178,93 @@ button.deck-stepper__action {
   }
 }
 
-/* On narrow screens only the current step keeps its label, so four steps
-   still fit without wrapping. */
+/* ---- Narrow screens ---------------------------------------------------- */
+
+/*
+ * Every step keeps its label, stacked under its own marker.
+ *
+ * Showing only the current label fitted the row, but it cost the thing a
+ * progress indicator is for: you could see where you were and nothing about
+ * what that was out of. Naming the steps is what makes four numbered discs a
+ * flow, and the labels are needed most at the width where the surrounding
+ * page gives the least context.
+ *
+ * Stacking pays for it in height rather than in meaning — the row grows by
+ * one short line, which a phone has to spare far more readily than width.
+ */
 @media (max-width: 640px) {
-  .deck-stepper__step:not(.deck-stepper__step--current) .deck-stepper__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+  /*
+   * Markers align across the row even when one label wraps to two lines and
+   * its neighbours do not.
+   *
+   * The row gap goes to the labels instead. Stacked, the space between steps
+   * is drawn by the connector rather than held open by the layout, so every
+   * pixel of it is better spent on the column that has a word to fit — at
+   * five steps on a 375px screen those eight pixels are what keep the
+   * longest label on one line.
+   */
+  .deck-stepper__list {
+    align-items: flex-start;
+    gap: 0;
   }
 
+  /*
+   * Equal columns, so a step's centre is reliably its own 50% — which is what
+   * lets the connector below be positioned from it.
+   */
   .deck-stepper__step {
-    flex: 0 1 auto;
+    position: relative;
+    flex: 1 1 0;
   }
 
-  .deck-stepper__step--current {
-    flex: 1;
+  .deck-stepper__action {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--deck-space-6);
+    width: 100%;
+  }
+
+  /*
+   * The connector leaves the flex row: stacked, an in-flow sibling would sit
+   * level with the middle of marker-plus-label rather than the middle of the
+   * marker. Absolute instead, spanning centre to centre and trimmed back at
+   * each end by the marker's radius plus a gutter.
+   *
+   * With the list gap at zero the two ends are symmetric: this step's centre
+   * is its own 50%, the next one's is 50% past its right edge, and each is
+   * cleared by the same amount.
+   */
+  .deck-stepper__step:not(:last-child)::after {
+    position: absolute;
+    top: calc(var(--deck-stepper-marker-size) / 2);
+    left: calc(50% + var(--deck-stepper-marker-size) / 2 + var(--deck-space-8));
+    right: calc(var(--deck-stepper-marker-size) / 2 + var(--deck-space-8) - 50%);
+    min-width: 0;
+    margin-left: 0;
+  }
+
+  /*
+   * A step's width is now a fifth of a phone, so the label drops a size and
+   * is allowed to wrap. Ellipsis is the wrong failure here: a truncated name
+   * under a numbered disc says less than a name on two lines.
+   *
+   * Stretched to the column so the text has a box to centre and wrap in, but
+   * the wrap stops at word boundaries. Forcing a break inside a word is worse
+   * than the crowding it avoids: at these widths the longest label misses by
+   * a few pixels, and what comes back is a single orphaned character under
+   * its own step. A word that will not fit overhangs instead — into the row
+   * the connector occupies, where there is nothing to collide with.
+   *
+   * `hyphens: auto` takes the good version of that break when the document
+   * declares a language: "Avail-ability" rather than "Availabilit / y".
+   */
+  .deck-stepper__label {
+    align-self: stretch;
+    font-size: var(--deck-font-size-label-xs);
+    line-height: var(--deck-line-height-label-xs);
+    text-align: center;
+    white-space: normal;
+    overflow: visible;
+    hyphens: auto;
   }
 }
