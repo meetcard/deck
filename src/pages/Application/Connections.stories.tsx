@@ -43,7 +43,7 @@ export const Default: Story = {
     // Only the front card is exposed; the rest are decorative depth.
     await expect(canvas.getByRole('heading', { name: 'Ben Ackles' })).toBeVisible()
 
-    const pile = canvas.getByRole('group', { name: 'Recent connections' })
+    const pile = canvas.getByRole('group', { name: 'Cards from Founders Dinner' })
     await expect(pile).toHaveAttribute('data-card-orientation', 'landscape')
 
     const card = canvasElement.querySelector<HTMLElement>(
@@ -88,13 +88,25 @@ export const TurningACardOver: Story = {
  * Phone. The pile stands its cards up — same 3.5x2in object, turned — and
  * the card re-lays itself around that: portrait, then the ways to reach
  * them, then the name.
+ *
+ * The sentence under the heading stops naming the event here, because the
+ * collapsed timeline names it in a card two lines below.
  */
 export const Mobile: Story = {
   globals: { viewport: { value: 'mobileS' } },
   parameters: { chromatic: { viewports: [375] } },
   play: async ({ canvas, canvasElement }) => {
-    const pile = canvas.getByRole('group', { name: 'Recent connections' })
+    const pile = canvas.getByRole('group', { name: 'Cards from Founders Dinner' })
     await expect(pile).toHaveAttribute('data-card-orientation', 'portrait')
+
+    // Said once: the timeline's own card, not the sentence above it.
+    // `innerText`, not `textContent` — the name is dropped with
+    // `display: none`, which textContent would happily read out anyway.
+    const summary = canvas.getByText<HTMLElement>(/You have dropped 3 cards/)
+    await expect(summary.innerText).not.toMatch(/Founders Dinner/)
+    await expect(
+      canvasElement.querySelector('.deck-event-timeline__current'),
+    ).toHaveTextContent('Founders Dinner')
 
     const card = canvasElement.querySelector<HTMLElement>(
       '.deck-card-pile__layer--front .deck-person-card',
@@ -104,6 +116,51 @@ export const Mobile: Story = {
     await expect(ratio).toBeGreaterThan(0.55)
     await expect(ratio).toBeLessThan(0.59)
     await expect(card.scrollHeight).toBeLessThanOrEqual(card.clientHeight + 1)
+  },
+}
+
+/**
+ * The timeline is the index and the pile is what it opens: moving along the
+ * line puts a different event's cards on the desk, squared up from the top.
+ */
+export const MovingAlongTheTimeline: Story = {
+  play: async ({ canvas, userEvent }) => {
+    await expect(
+      canvas.getByRole('heading', { name: 'Ben Ackles' }),
+    ).toBeVisible()
+
+    await userEvent.click(canvas.getByRole('radio', { name: /SaaStr Annual/ }))
+
+    await expect(
+      await canvas.findByRole('heading', { name: 'Renée Ashford' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('group', { name: 'Cards from SaaStr Annual' }),
+    ).toBeInTheDocument()
+    // The page says whose pile this is, and how big it is. Asserted on the
+    // whole sentence, since the event's name is a span of its own — the
+    // phone drops it, and this width keeps it.
+    await expect(
+      canvas.getByText<HTMLElement>(/You have dropped 2 cards/).innerText,
+    ).toMatch(/from SaaStr Annual/)
+  },
+}
+
+/**
+ * An event nobody has been to yet has an empty desk. Said plainly rather
+ * than hidden — a timeline that skipped its empty events would be lying
+ * about where the cards came from.
+ */
+export const AnEventWithNoCards: Story = {
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('radio', { name: /RevOps Summit/ }))
+
+    await expect(
+      await canvas.findByRole('heading', { name: 'No cards from this event' }),
+    ).toBeVisible()
+    await expect(
+      canvas.queryByRole('heading', { name: 'Ben Ackles' }),
+    ).not.toBeInTheDocument()
   },
 }
 

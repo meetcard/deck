@@ -14,9 +14,35 @@
   width: 100%;
 }
 
+/* The line stays with the heading at the top of the page — it is the index
+   for what's below, and an index that floats in the middle of the page is
+   no longer indexing anything. */
+.connections__timeline {
+  flex-shrink: 0;
+}
+
+/* "…from Founders Dinner", said once. Below `sm` the timeline collapses to
+   its dots and names the selected event in a card directly under this
+   sentence, so the sentence stops naming it — `display: none` rather than a
+   clip, since a screen reader would hear the same duplication a sighted
+   reader would see. The breakpoint is the one the timeline changes shape at.
+
+   Kept as a page-level concern rather than something `EventTimeline` knows:
+   the timeline has no idea what the prose above it says. */
+.connections__from {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .connections__from {
+    display: inline;
+  }
+}
+
 /* `margin-block: auto` rather than `justify-content: center`, so the heading
    stays pinned to the top while the pile takes the slack above and below. */
-.connections__pile {
+.connections__pile,
+.connections__empty {
   align-self: center;
   margin-block: auto;
 }

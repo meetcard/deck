@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CalendarDays, Handshake, Mail, Share2 } from 'lucide-react'
 import { Button } from '../../components/Button/Button'
 import { CardPile } from '../../components/CardPile/CardPile'
+import { EmptyState } from '../../components/EmptyState/EmptyState'
+import { EventTimeline } from '../../components/EventTimeline/EventTimeline'
+import type { TimelineEvent } from '../../components/EventTimeline/EventTimeline'
 import { Heading } from '../../components/Heading/Heading'
 import { IconButton } from '../../components/IconButton/IconButton'
 import { PersonCard } from '../../components/PersonCard/PersonCard'
@@ -45,6 +48,8 @@ const LinkedInIcon = () => (
 export interface Connection {
   /** Stable key — the person's card slug. */
   slug: string
+  /** Which event you met at — an `id` from the timeline's events. */
+  eventId: string
   name: string
   tagline?: string
   title?: string
@@ -56,9 +61,36 @@ export interface Connection {
   feeling?: ConnectionFeeling
 }
 
+/*
+ * The events these cards came from. Dated either side of the line's "today"
+ * so the sample shows all three of a timeline's states at once — one behind,
+ * one selected, one still ahead — which is also what the mockups show.
+ */
+const EVENTS: TimelineEvent[] = [
+  {
+    id: 'saastr-annual',
+    name: 'SaaStr Annual',
+    date: '2027-09-09',
+    location: 'San Francisco, CA',
+  },
+  {
+    id: 'founders-dinner',
+    name: 'Founders Dinner',
+    date: '2027-11-12',
+    location: 'Denver, CO',
+  },
+  {
+    id: 'revops-summit',
+    name: 'RevOps Summit',
+    date: '2028-01-22',
+    location: 'Chicago, IL',
+  },
+]
+
 const INITIAL: Connection[] = [
   {
     slug: 'ben@meetcard',
+    eventId: 'founders-dinner',
     name: 'Ben Ackles',
     tagline: 'What a lovable guy',
     title: 'Builder',
@@ -69,6 +101,7 @@ const INITIAL: Connection[] = [
   },
   {
     slug: 'grace@sextant',
+    eventId: 'founders-dinner',
     name: 'Grace Okafor',
     tagline: 'Ask me about supply chains.',
     title: 'Head of Operations',
@@ -77,19 +110,56 @@ const INITIAL: Connection[] = [
   },
   {
     slug: 'mika@ply',
+    eventId: 'founders-dinner',
     name: 'Mika Tanaka',
     tagline: 'Always three prototypes deep.',
     title: 'Principal Engineer',
     company: 'Ply',
     location: 'Seattle, Washington',
   },
+  {
+    slug: 'renee@harborlight',
+    eventId: 'saastr-annual',
+    name: 'Renée Ashford',
+    tagline: 'Pricing is a product.',
+    title: 'VP Revenue',
+    company: 'Harborlight',
+    location: 'San Francisco, California',
+    note: 'Wants the deck demo before their Q1 planning.',
+  },
+  {
+    slug: 'devon@northbound',
+    eventId: 'saastr-annual',
+    name: 'Devon Iyer',
+    tagline: 'Runs on conference coffee.',
+    title: 'Founder',
+    company: 'Northbound',
+    location: 'Austin, Texas',
+  },
 ]
+
+/**
+ * The event the page opens on: the latest one that has actually happened,
+ * since that is where the newest cards are. If every event is still ahead —
+ * a new account with its calendar filled in and nobody met yet — the first
+ * is as good a place to stand as any.
+ */
+function mostRecentPast(events: TimelineEvent[], today: string): string {
+  const past = events.filter((event) => event.date <= today)
+  return (past.length > 0 ? past[past.length - 1] : events[0])?.id ?? ''
+}
 
 /* ---- Page -------------------------------------------------------------- */
 
 export interface ConnectionsProps {
   /** Seeds the page. Notes stay local — Deck has no data layer. */
   connections?: Connection[]
+  /** The events on the line above the pile, oldest first. */
+  events?: TimelineEvent[]
+  /** Which event the page opens on. Defaults to the most recent past one. */
+  defaultEventId?: string
+  /** ISO date the timeline is read from. Pinned in stories and tests. */
+  today?: string
 }
 
 /**
@@ -103,18 +173,52 @@ export interface ConnectionsProps {
  * The pile decides its own orientation — portrait on a phone, landscape from
  * `sm` up — so this page only says what is in it.
  *
+ * Above it, the events those cards came from. Cards arrive in bursts — a
+ * conference, a dinner — and "where did I meet this person" is the question
+ * people actually use to find one again, so the timeline is the index and
+ * the pile is what it opens. Selecting an event puts that event's cards on
+ * the desk; an event nobody has been to yet has an empty desk, which is the
+ * honest answer rather than a hidden one.
+ *
  * Nothing persists. Notes written here live for as long as the page does.
  */
-export function Connections({ connections = INITIAL }: ConnectionsProps) {
+export function Connections({
+  connections = INITIAL,
+  events = EVENTS,
+  defaultEventId,
+  /* The sample data lives in 2027, so the line needs a present to be read
+     from or every event on it is still to come. A caller bringing real
+     events brings its own today with them. */
+  today = '2027-12-01',
+}: ConnectionsProps) {
   const [cards, setCards] = useState<Connection[]>(connections)
   const [index, setIndex] = useState(0)
   /** Which card is turned over, by slug — at most one at a time. */
   const [flipped, setFlipped] = useState<string | null>(null)
+  const [eventId, setEventId] = useState(
+    () => defaultEventId ?? mostRecentPast(events, today),
+  )
 
   const update = (slug: string, patch: Partial<Connection>) =>
     setCards((all) =>
       all.map((card) => (card.slug === slug ? { ...card, ...patch } : card)),
     )
+
+  const event = events.find((candidate) => candidate.id === eventId)
+  const pile = useMemo(
+    () => cards.filter((card) => card.eventId === eventId),
+    [cards, eventId],
+  )
+
+  /* Moving along the line puts a different pile on the desk, so the pile
+     starts at its top card and nothing is left turned over from the last
+     one — a note you opened on one event's card has no business hanging
+     over another's. */
+  function selectEvent(next: string) {
+    setEventId(next)
+    setIndex(0)
+    setFlipped(null)
+  }
 
   return (
     <div className="connections">
@@ -123,11 +227,45 @@ export function Connections({ connections = INITIAL }: ConnectionsProps) {
           <Heading level={1} size="xl" family="serif">
             Recent connections
           </Heading>
+          {/*
+            The event's name is in a span of its own because a phone drops
+            it: down there the timeline collapses to dots and names the
+            selected event in a card immediately below this line, so saying
+            it here too is the same words twice, and it costs a second line
+            of a sentence that already wraps. On a wider screen there is no
+            such card — the name under the dot is small and off to one side
+            — so the sentence carries it.
+          */}
           <Text tone="muted">
-            You have dropped {cards.length}{' '}
-            {cards.length === 1 ? 'card' : 'cards'} onto your workspace deck.
+            {pile.length > 0 ? (
+              <>
+                You have dropped {pile.length}{' '}
+                {pile.length === 1 ? 'card' : 'cards'} onto your workspace deck
+                {event ? (
+                  <span className="connections__from"> from {event.name}</span>
+                ) : null}
+                .
+              </>
+            ) : (
+              <>
+                Nothing on the desk
+                <span className="connections__from">
+                  {' '}
+                  from {event?.name ?? 'this event'}
+                </span>{' '}
+                yet.
+              </>
+            )}
           </Text>
         </Stack>
+
+        <EventTimeline
+          events={events}
+          value={eventId}
+          onValueChange={selectEvent}
+          today={today}
+          className="connections__timeline"
+        />
 
         {/* The pile's own section heading. Hidden, because the page has
             already said what this is and the mockup has nothing there — but
@@ -137,74 +275,91 @@ export function Connections({ connections = INITIAL }: ConnectionsProps) {
           The pile
         </Heading>
 
-        <CardPile
-          label="Recent connections"
-          activeIndex={index}
-          onActiveIndexChange={setIndex}
-          className="connections__pile"
-        >
-          {cards.map((card) => (
-            <PersonCard
-              key={card.slug}
-              name={card.name}
-              avatarSrc={card.avatarSrc}
-              tagline={card.tagline}
-              title={card.title}
-              company={card.company}
-              location={card.location}
-              privateNote={{ hasContent: Boolean(card.note || card.feeling) }}
-              flipped={flipped === card.slug}
-              onFlippedChange={(next) =>
-                setFlipped(next ? card.slug : null)
-              }
-              back={
-                <PrivateNote
-                  value={card.note ?? ''}
-                  onValueChange={(note) => update(card.slug, { note })}
-                  feeling={card.feeling}
-                  onFeelingChange={(feeling) => update(card.slug, { feeling })}
-                  onHide={() => setFlipped(null)}
-                />
-              }
-              contactActions={
-                <>
-                  <IconButton
-                    label={`Email ${card.name}`}
-                    icon={<Mail />}
-                    size="sm"
-                    round
+        {pile.length === 0 ? (
+          <EmptyState
+            className="connections__empty"
+            title="No cards from this event"
+            description={
+              event
+                ? `Cards you collect at ${event.name} will land here.`
+                : 'Cards you collect will land here.'
+            }
+          />
+        ) : (
+          <CardPile
+            /* Named for the event, so a screen reader hears which pile moved
+               when the line does. The `key` remounts it: a new pile is a new
+               set of cards, not the same one re-sorted, and it should arrive
+               squared up rather than mid-swipe from the last event. */
+            key={eventId}
+            label={event ? `Cards from ${event.name}` : 'Recent connections'}
+            activeIndex={index}
+            onActiveIndexChange={setIndex}
+            className="connections__pile"
+          >
+            {pile.map((card) => (
+              <PersonCard
+                key={card.slug}
+                name={card.name}
+                avatarSrc={card.avatarSrc}
+                tagline={card.tagline}
+                title={card.title}
+                company={card.company}
+                location={card.location}
+                privateNote={{ hasContent: Boolean(card.note || card.feeling) }}
+                flipped={flipped === card.slug}
+                onFlippedChange={(next) =>
+                  setFlipped(next ? card.slug : null)
+                }
+                back={
+                  <PrivateNote
+                    value={card.note ?? ''}
+                    onValueChange={(note) => update(card.slug, { note })}
+                    feeling={card.feeling}
+                    onFeelingChange={(feeling) => update(card.slug, { feeling })}
+                    onHide={() => setFlipped(null)}
                   />
-                  <IconButton
-                    label={`${card.name} on LinkedIn`}
-                    icon={<LinkedInIcon />}
-                    size="sm"
-                    round
-                  />
-                  <IconButton
-                    label={`Share ${card.name}'s card`}
-                    icon={<Share2 />}
-                    size="sm"
-                    round
-                  />
-                </>
-              }
-              footer={
-                <>
-                  <Button size="sm" iconStart={<CalendarDays />}>
-                    Book with me
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    iconStart={<Handshake />}
-                  >
-                    Exchange cards
-                  </Button>
-                </>
-              }
-            />
-          ))}
-        </CardPile>
+                }
+                contactActions={
+                  <>
+                    <IconButton
+                      label={`Email ${card.name}`}
+                      icon={<Mail />}
+                      size="sm"
+                      round
+                    />
+                    <IconButton
+                      label={`${card.name} on LinkedIn`}
+                      icon={<LinkedInIcon />}
+                      size="sm"
+                      round
+                    />
+                    <IconButton
+                      label={`Share ${card.name}'s card`}
+                      icon={<Share2 />}
+                      size="sm"
+                      round
+                    />
+                  </>
+                }
+                footer={
+                  <>
+                    <Button size="sm" iconStart={<CalendarDays />}>
+                      Book with me
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      iconStart={<Handshake />}
+                    >
+                      Exchange cards
+                    </Button>
+                  </>
+                }
+              />
+            ))}
+          </CardPile>
+        )}
       </Stack>
     </div>
   )
