@@ -253,5 +253,11 @@ export type { RsvpControlProps, RsvpStatus, RsvpCounts } from './components/Rsvp
 export { EventMetaList } from './components/EventMetaList'
 export type { EventMetaListProps, EventMetaItem } from './components/EventMetaList'
 
+export { EventTimeline } from './components/EventTimeline'
+export type {
+  EventTimelineProps,
+  TimelineEvent,
+} from './components/EventTimeline'
+
 export { AttendeeList } from './components/AttendeeList'
 export type { AttendeeListProps, EventAttendee } from './components/AttendeeList'
