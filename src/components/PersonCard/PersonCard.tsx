@@ -138,6 +138,10 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
         ref={ref}
         as="article"
         surface="elevated"
+        // `md` rather than the `sm` default: at 1px/3px the shadow was doing
+        // nothing a border does not already do, and a card in a pile needs to
+        // sit above the one behind it, not merely be outlined against it.
+        elevation="md"
         padding={20}
         className={cx('deck-person-card', className)}
         {...cardProps}

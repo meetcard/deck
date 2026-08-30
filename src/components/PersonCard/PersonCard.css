@@ -13,12 +13,27 @@
    backstop. The tradeoff is deliberate — a business card is a fixed-size
    object, and content that cannot fit one is content that does not belong on
    one. */
+/* The edge is softened toward the card's own fill rather than swapped for a
+   lighter token, because the two schemes start in different places: measured
+   on the elevated surface, the hairline is 1.5:1 in light but 2.57:1 in dark,
+   where it reads as a drawn outline around the card instead of the edge of a
+   physical object. Mixing against the surface pulls both to the same softness
+   — measured at 1.29 and 1.77 — and keeps doing so if either value moves.
+
+   It stays a border rather than being dropped for the shadow alone. The pile
+   overlaps cards on top of each other, and where two of the same surface meet
+   the shadow alone does not say where one stops. */
 .deck-person-card {
   width: 100%;
   max-width: 400px;
   aspect-ratio: 7 / 4;
   overflow: hidden;
   border-radius: var(--deck-radius-xl);
+  border-color: color-mix(
+    in srgb,
+    var(--deck-color-border-default) 65%,
+    var(--deck-color-background-elevated)
+  );
 }
 
 .deck-person-card__header {
