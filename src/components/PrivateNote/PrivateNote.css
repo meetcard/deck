@@ -1,12 +1,21 @@
 /* Dashed throughout: the card's face is set type, this is a pencil mark.
-   The dashes are what say "written by you, not published". */
+   The dashes are what say "written by you, not published".
+
+   Tighter than the card's own 20px because this face has a height budget the
+   front does not: the shell is a fixed 7/4 object, and everything here has to
+   fit inside it. Measured before this change, the content wanted 240px in a
+   227px box and the note field was clipped off the bottom edge of the card.
+
+   16px padding and an 8px rhythm give back 20 of those pixels, and the rest
+   comes from the heading and the field below. The chrome shrinks so the
+   writing area does not have to. */
 .deck-private-note {
   display: flex;
   flex-direction: column;
-  gap: var(--deck-space-12);
+  gap: var(--deck-space-8);
   box-sizing: border-box;
   block-size: 100%;
-  padding: var(--deck-space-20);
+  padding: var(--deck-space-16);
   background-color: var(--deck-color-background-elevated);
   border: 1px dashed var(--deck-color-border-default);
   border-radius: var(--deck-radius-xl);
@@ -38,10 +47,13 @@
   block-size: 14px;
 }
 
+/* `label-md` rather than `lg`. On a face this size the question is a prompt
+   above a field, not a section title — and the four pixels of type plus four
+   of line height are four percent of the height the note field was short. */
 .deck-private-note__heading {
   margin: 0;
-  font-size: var(--deck-font-size-label-lg);
-  line-height: var(--deck-line-height-label-lg);
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
   font-weight: var(--deck-font-weight-semibold);
   color: var(--deck-color-text-default);
 }
@@ -69,8 +81,23 @@
   min-block-size: 0;
 }
 
+/* `Textarea` carries a global `min-height: 80px` — a sensible floor for a
+   textarea on a page, and the thing that was actually breaking this card. The
+   field is `flex: 1`, but a flex item cannot shrink below its own minimum, so
+   the textarea held 80px it did not have and pushed the overflow out through
+   the bottom of the shell. Released here, and only here, so `flex: 1` decides:
+   the field becomes exactly the room the chrome above it did not take.
+   Everywhere else the floor still applies.
+
+   `body-sm` for the same reason the heading dropped a step. At 16px the two
+   lines of a typical note filled the field to its edge with nowhere to put a
+   third; at 14px the same note leaves a line spare, which is what makes this
+   feel like somewhere to write rather than somewhere to fit. */
 .deck-private-note__field textarea {
   block-size: 100%;
+  min-block-size: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
   border-style: dashed;
 }
 
