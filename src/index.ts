@@ -89,6 +89,12 @@ export type { IconButtonProps } from './components/IconButton'
 export { Link } from './components/Link'
 export type { LinkProps, LinkTone } from './components/Link'
 
+export { ProviderButton } from './components/ProviderButton'
+export type {
+  ProviderButtonProps,
+  AuthProvider,
+} from './components/ProviderButton'
+
 /* ---- Feedback -------------------------------------------------------- */
 export { Banner } from './components/Banner'
 export type { BannerProps, BannerTone } from './components/Banner'
@@ -204,6 +210,12 @@ export type { ControlSize } from './components/Field/Field'
 
 export { Input } from './components/Input'
 export type { InputProps } from './components/Input'
+
+export { PasswordInput } from './components/PasswordInput'
+export type {
+  PasswordInputProps,
+  PasswordPurpose,
+} from './components/PasswordInput'
 
 export { Textarea } from './components/Textarea'
 export type { TextareaProps } from './components/Textarea'
