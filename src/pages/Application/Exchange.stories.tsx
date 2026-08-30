@@ -7,7 +7,21 @@ const meta = {
   component: Exchange,
   title: 'Experience/Application/Exchange',
   tags: ['page'],
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    /*
+     * Every story here opens a modal `<dialog>`, and a modal dialog is
+     * promoted to the browser's top layer — out of its story's box and over
+     * the whole page. Rendered inline, the docs page stacked three of them on
+     * top of each other and on top of the prose, which read as the sheet
+     * itself being broken mid-transition.
+     *
+     * An iframe per story is the only thing that actually contains a top-layer
+     * element. The height fits the tallest state (the receipt) so none of them
+     * scrolls inside its frame.
+     */
+    docs: { story: { inline: false, height: '600px' } },
+  },
 } satisfies Meta<typeof Exchange>
 
 export default meta
