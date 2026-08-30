@@ -47,9 +47,9 @@ load it however your app loads fonts. The stack degrades to system UI.
 | --- | --- |
 | **Typography** | `Text`, `Heading` |
 | **Layout** | `Stack`, `Divider`, `Card` (+ `CardHeader`, `CardBody`, `CardFooter`) |
-| **Actions** | `Button`, `IconButton`, `Link` |
+| **Actions** | `Button`, `IconButton`, `Link`, `ProviderButton` |
 | **Data display** | `Badge`, `Avatar`, `Tag`, `StatTile`, `UsageMeter`, `QRCode` |
-| **Forms** | `Field`, `Input`, `Textarea`, `Select`, `SearchField`, `Checkbox`, `Radio` (+ `RadioGroup`), `Switch` |
+| **Forms** | `Field`, `Input`, `PasswordInput`, `Textarea`, `Select`, `SearchField`, `Checkbox`, `Radio` (+ `RadioGroup`), `Switch` |
 | **Feedback** | `Banner`, `EmptyState`, `Spinner` |
 | **Overlays** | `Sheet` |
 | **App shell** | `AppBar`, `BottomNav` |
@@ -70,6 +70,11 @@ The **application layer** (`app.meetcard.io`) is the installed PWA:
 **Exchange** action, which opens a `Sheet` offering "Show my card" and "Scan a
 card". `SearchField` and `Tag` drive the Rolodex, `StatTile` the dashboard
 headline metrics, and `UsageMeter` the Solo connections cap.
+
+The way into that layer is `Input` + `PasswordInput` for the credentials and
+a row of `ProviderButton`s for single sign-on, split by a `Divider` with an
+`OR` label. Those screens are presentational: the identity provider sits
+behind their callbacks, not inside them.
 
 ## Usage
 
