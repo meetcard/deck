@@ -20,3 +20,38 @@
   min-height: var(--deck-space-16);
   align-self: stretch;
 }
+
+/* ---- Labelled ------------------------------------------------------- */
+
+/* The caption sits *in* the rule, so the element itself carries no fill —
+   the two `__rule` spans do. Resetting the background here rather than
+   scoping the base rule keeps the plain `<hr>` path a single declaration. */
+.deck-divider--labelled {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-12);
+  width: 100%;
+  height: auto;
+  background-color: transparent;
+}
+
+.deck-divider__rule {
+  flex: 1;
+  height: 1px;
+  background-color: var(--deck-color-border-default);
+}
+
+.deck-divider--strong .deck-divider__rule {
+  background-color: var(--deck-color-border-strong);
+}
+
+.deck-divider__label {
+  flex-shrink: 0;
+  font-family: var(--deck-font-sans);
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  font-weight: var(--deck-font-weight-medium);
+  letter-spacing: var(--deck-tracking-label);
+  text-transform: uppercase;
+  color: var(--deck-color-text-muted);
+}
