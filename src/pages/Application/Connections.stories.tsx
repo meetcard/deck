@@ -76,10 +76,10 @@ export const TurningACardOver: Story = {
     await userEvent.click(
       canvas.getByRole('button', { name: /Your private note/ }),
     )
+    /* The written note reads on the card's back as prose, not as a field:
+       it is closed until you press it to edit. */
     await waitFor(async () => {
-      await expect(
-        canvas.getByDisplayValue(/Front Range meetup/),
-      ).toBeVisible()
+      await expect(canvas.getByText(/Front Range meetup/)).toBeVisible()
     })
   },
 }

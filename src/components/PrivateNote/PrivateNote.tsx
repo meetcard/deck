@@ -1,5 +1,5 @@
-import { useId } from 'react'
-import type { ReactNode } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
+import type { KeyboardEvent, ReactNode } from 'react'
 import { Button } from '../Button/Button'
 import { ChoiceGroup } from '../ChoiceGroup/ChoiceGroup'
 import { Textarea } from '../Textarea/Textarea'
@@ -83,12 +83,29 @@ const SnowflakeIcon = (
   </svg>
 )
 
+/*
+ * Lucide's pencil, on the same 24 grid at stroke 2 as the feelings above it —
+ * they sit within 100px of each other, and a 16-grid glyph at stroke 1.5
+ * beside them reads as a lighter weight rather than a different icon.
+ */
+const PencilIcon = (
+  <svg {...feelingIconProps}>
+    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+    <path d="m15 5 4 4" />
+  </svg>
+)
+
 /** How the connection felt. Ordered warmest first, as the prompt implies. */
 export type ConnectionFeeling = 'hot' | 'warm' | 'cold'
 
 export interface PrivateNoteProps {
-  /** The note text. Controlled. */
+  /**
+   * The note text. Controlled, and committed rather than live: this is the
+   * saved note, and it changes when the writer saves rather than as they
+   * type. While they are editing, the draft lives here.
+   */
   value?: string
+  /** Called with the new note on save. Never on keystroke, never on cancel. */
   onValueChange?: (value: string) => void
   feeling?: ConnectionFeeling
   onFeelingChange?: (feeling: ConnectionFeeling) => void
@@ -97,6 +114,10 @@ export interface PrivateNoteProps {
   hideLabel?: string
   /** Overrides the reassurance line, e.g. when notes do sync. */
   privacyLabel?: ReactNode
+  /** The prompt shown on the closed field, and inside the open one. */
+  placeholder?: string
+  /** Open the editor on mount, for stories and deep links. */
+  defaultEditing?: boolean
   className?: string
 }
 
@@ -123,6 +144,13 @@ const FEELINGS: { value: ConnectionFeeling; label: string; icon: ReactNode }[] =
  * Dashed borders throughout, to read as something written rather than
  * published — the card's front is set type, this is a pencil mark.
  *
+ * The note itself is closed until you mean to write. A standing textarea on
+ * the back of a card is a chore with a cursor in it; a line of prose with a
+ * pencil beside it is an invitation, and it gives the writing room back to
+ * the card until it is wanted. Opening it brings Cancel and Save, which is
+ * what makes the field safe to open: you can look, think better of it, and
+ * leave without having changed the note.
+ *
  * @example
  * <PrivateNote
  *   value={note}
@@ -140,13 +168,79 @@ export function PrivateNote({
   onHide,
   hideLabel = 'Hide',
   privacyLabel = 'Private to you · This device only',
+  placeholder = 'How do you remember them?',
+  defaultEditing = false,
   className,
 }: PrivateNoteProps) {
   const headingId = useId()
 
+  const [editing, setEditing] = useState(defaultEditing)
+  /* Seeded at each open rather than kept in sync with `value`: the draft is
+     the writer's, and a save elsewhere should not rewrite what they are in
+     the middle of typing. */
+  const [draft, setDraft] = useState(value ?? '')
+
+  const fieldRef = useRef<HTMLTextAreaElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+
+  /* Focus follows the state change, in both directions — opening puts the
+     cursor where the writing happens, and closing returns it to the control
+     that was pressed rather than dropping it on the body.
+
+     Keyed off the *transition*, so mounting with `defaultEditing` never
+     grabs focus: a card that steals the cursor as it renders is worse than
+     one that makes you click twice. */
+  const wasEditing = useRef(editing)
+  useEffect(() => {
+    if (editing && !wasEditing.current) fieldRef.current?.focus()
+    else if (!editing && wasEditing.current) triggerRef.current?.focus()
+    wasEditing.current = editing
+  }, [editing])
+
+  const open = () => {
+    setDraft(value ?? '')
+    setEditing(true)
+  }
+
+  const cancel = () => {
+    setDraft(value ?? '')
+    setEditing(false)
+  }
+
+  const save = () => {
+    onValueChange?.(draft)
+    setEditing(false)
+  }
+
+  /* Nothing typed, nothing to save. The disabled Save is also the answer to
+     "did that go through?" — it only lights up when there is a change. */
+  const dirty = draft !== (value ?? '')
+
+  const onFieldKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Escape') {
+      /* Both, deliberately: `stopPropagation` keeps a card inside a Sheet
+         from closing the Sheet, and `preventDefault` stops the browser's own
+         close request doing the same over our heads. Escape here means
+         "abandon this edit", which is the innermost thing it could mean. */
+      event.preventDefault()
+      event.stopPropagation()
+      cancel()
+      return
+    }
+    /* The shortcut anyone who writes in a box already has in their hands. */
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && dirty) {
+      event.preventDefault()
+      save()
+    }
+  }
+
   return (
     <section
-      className={cx('deck-private-note', className)}
+      className={cx(
+        'deck-private-note',
+        editing && 'deck-private-note--editing',
+        className,
+      )}
       aria-labelledby={headingId}
     >
       <header className="deck-private-note__bar">
@@ -163,7 +257,13 @@ export function PrivateNote({
         ) : null}
       </header>
 
-      <h3 className="deck-private-note__heading" id={headingId}>
+      <h3
+        className={cx(
+          'deck-private-note__heading',
+          editing && 'deck-visually-hidden',
+        )}
+        id={headingId}
+      >
         How did this connection feel?
       </h3>
 
@@ -190,16 +290,64 @@ export function PrivateNote({
         className="deck-private-note__feelings"
       />
 
-      <Textarea
-        label="How do you remember them?"
-        hideLabel
-        placeholder="How do you remember them?"
-        rows={2}
-        resize="none"
-        value={value}
-        onChange={(event) => onValueChange?.(event.target.value)}
-        fieldClassName="deck-private-note__field"
-      />
+      {/* The rule is what makes the note a second question rather than a
+          third option in the row above it. Open, the field's own border is
+          already that line, and the card has no pixels to spend twice. */}
+      {editing ? null : <hr className="deck-private-note__rule" />}
+
+      {editing ? (
+        <>
+          <Textarea
+            ref={fieldRef}
+            label={placeholder}
+            hideLabel
+            placeholder={placeholder}
+            rows={2}
+            resize="none"
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={onFieldKeyDown}
+            fieldClassName="deck-private-note__field"
+          />
+
+          <div className="deck-private-note__actions">
+            <Button variant="ghost" size="sm" onClick={cancel}>
+              Cancel
+            </Button>
+            <Button size="sm" onClick={save} disabled={!dirty}>
+              Save
+            </Button>
+          </div>
+        </>
+      ) : (
+        <button
+          type="button"
+          ref={triggerRef}
+          className="deck-private-note__trigger"
+          onClick={open}
+          /* The note's own words belong in the name — a screen reader should
+             read what is written there, not a label about it. Built as one
+             string rather than as a visually hidden prefix beside the text:
+             adjacent inline elements are concatenated *without* a separator
+             when the name is computed, which spelled it "Edit note:Wants an
+             intro to Priya". */
+          aria-label={
+            value ? `Edit note: ${value}` : `Add a note: ${placeholder}`
+          }
+        >
+          <span
+            className={cx(
+              'deck-private-note__preview',
+              !value && 'deck-private-note__preview--empty',
+            )}
+          >
+            {value || placeholder}
+          </span>
+          <span className="deck-private-note__pencil" aria-hidden="true">
+            {PencilIcon}
+          </span>
+        </button>
+      )}
     </section>
   )
 }
