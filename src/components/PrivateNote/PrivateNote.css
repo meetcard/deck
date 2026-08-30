@@ -68,9 +68,11 @@
   display: inline-flex;
 }
 
+/* 14px, not 15. On a 24 grid at stroke 2 the even size lands the strokes on
+   whole pixels; 15 put the sun's spokes on half-pixels and greyed them. */
 .deck-private-note__feeling-icon > svg {
-  inline-size: 15px;
-  block-size: 15px;
+  inline-size: 14px;
+  block-size: 14px;
 }
 
 /* The note is the surface's main event once a feeling is picked, so it takes
@@ -106,15 +108,36 @@
    owns rather than by reaching into ChoiceGroup's markup — that coupling
    would break silently the next time ChoiceGroup changes shape. Only the
    icon is tinted; the label and the control keep the system's colours so
-   contrast is unaffected. */
-.deck-private-note__feeling-icon--hot {
-  color: var(--deck-color-solid-error);
+   contrast is unaffected.
+
+   The colour belongs to the *chosen* answer. Tinting all three at once
+   turned the row into a palette — three colours competing before you had
+   said anything — and it left the selected state to be carried by the brand
+   fill underneath, where the icon then sat at 1.13:1 and disappeared. Now
+   the unselected icons are the same muted ink as their labels, and picking
+   one is what brings its colour up. Position and label still say which is
+   which, so this reinforces the answer rather than encoding it. */
+/* Inherits the control's own colour, so an unselected icon is exactly the
+   grey of the label beside it rather than a second grey chosen separately. */
+.deck-private-note__feeling-icon {
+  color: inherit;
+  transition: color var(--deck-duration-fast) var(--deck-ease-standard);
 }
 
-.deck-private-note__feeling-icon--warm {
-  color: var(--deck-color-status-warning-text);
+.deck-choice-group__input:checked
+  + .deck-choice-group__control
+  .deck-private-note__feeling-icon--hot {
+  color: var(--deck-color-feeling-hot);
 }
 
-.deck-private-note__feeling-icon--cold {
-  color: var(--deck-color-text-brand);
+.deck-choice-group__input:checked
+  + .deck-choice-group__control
+  .deck-private-note__feeling-icon--warm {
+  color: var(--deck-color-feeling-warm);
+}
+
+.deck-choice-group__input:checked
+  + .deck-choice-group__control
+  .deck-private-note__feeling-icon--cold {
+  color: var(--deck-color-feeling-cold);
 }

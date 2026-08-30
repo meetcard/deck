@@ -22,23 +22,64 @@ const LockIcon = (
   </svg>
 )
 
+/*
+ * The feeling icons are Lucide's flame, sun and snowflake (ISC), drawn inline
+ * on a 24 grid at stroke 2 rather than imported. `lucide-react` is a dev
+ * dependency here and never ships: `src/components` goes into `dist/deck.js`,
+ * which is a zero-dependency bundle, and `grep -c lucide dist/deck.js` is a
+ * check this repo intends to keep answering 0.
+ *
+ * These replace three hand-drawn 16-grid glyphs at stroke 1.5. The difference
+ * is not decorative: at 14px a 1.5 stroke on a 16 grid renders thin and
+ * slightly soft, and a snowflake simplified to three crossed lines is a
+ * asterisk. Lucide's snowflake keeps its six barbs, which is what makes it
+ * read as cold rather than as a footnote marker.
+ */
+const feelingIconProps = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 2,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  'aria-hidden': true,
+}
+
 const FlameIcon = (
-  <svg {...iconProps} aria-hidden="true">
-    <path d="M8 1.8s3.2 2.6 3.2 5.6a3.2 3.2 0 0 1-6.4 0c0-1 .4-1.8.9-2.5.3.9.9 1.4.9 1.4s-.3-2.9 1.4-4.5Z" />
+  <svg {...feelingIconProps}>
+    <path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4" />
   </svg>
 )
 
 const SunIcon = (
-  <svg {...iconProps} aria-hidden="true">
-    <circle cx="8" cy="8" r="2.9" />
-    <path d="M8 1.5v1.4M8 13.1v1.4M2.6 2.6l1 1M12.4 12.4l1 1M1.5 8h1.4M13.1 8h1.4M2.6 13.4l1-1M12.4 3.6l1-1" />
+  <svg {...feelingIconProps}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
   </svg>
 )
 
+/*
+ * Lucide's twelve segments, transcribed exactly rather than simplified. The
+ * first attempt drew the axes as two full-length strokes through the middle
+ * (`M2 12h20M12 2v20`) with the barbs laid over them, which is a different
+ * icon: lucide's arms are kinked — each one steps off the axis where its
+ * barbs meet it — so the six points radiate from a small open centre instead
+ * of crossing at one. At 14px that difference is most of the character.
+ */
 const SnowflakeIcon = (
-  <svg {...iconProps} aria-hidden="true">
-    <path d="M8 1.6v12.8M2.5 4.8l11 6.4M2.5 11.2l11-6.4" />
-    <path d="M6.4 3.1 8 4.7l1.6-1.6M6.4 12.9 8 11.3l1.6 1.6" />
+  <svg {...feelingIconProps}>
+    <path d="m10 20-1.25-2.5L6 18" />
+    <path d="M10 4 8.75 6.5 6 6" />
+    <path d="m14 20 1.25-2.5L18 18" />
+    <path d="m14 4 1.25 2.5L18 6" />
+    <path d="m17 21-3-6h-4" />
+    <path d="m17 3-3 6 1.5 3" />
+    <path d="M2 12h6.5L10 9" />
+    <path d="m20 10-1.5 2 1.5 2" />
+    <path d="M22 12h-6.5L14 15" />
+    <path d="m4 10 1.5 2L4 14" />
+    <path d="m7 21 3-6-1.5-3" />
+    <path d="m7 3 3 6h4" />
   </svg>
 )
 
@@ -129,7 +170,7 @@ export function PrivateNote({
       <ChoiceGroup
         label="How did this connection feel?"
         hideLabel
-        variant="pill"
+        variant="segmented"
         value={feeling}
         onChange={(next) => onFeelingChange?.(next as ConnectionFeeling)}
         options={FEELINGS.map(({ value: v, label, icon }) => ({

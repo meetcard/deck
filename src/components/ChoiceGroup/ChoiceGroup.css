@@ -44,6 +44,99 @@
   grid-template-columns: repeat(var(--deck-choice-columns, 3), minmax(0, 1fr));
 }
 
+/* One track holding every option, rather than three separate controls.
+
+   `inline-flex`, so the track is as wide as its options and no wider. The
+   other variants stretch because they are answering a question that owns the
+   width it is given; this one is a setting on the thing beside it, and a
+   three-word control stretched across a card claims more of the eye than the
+   answer deserves.
+
+   The 4px inset is what the chip sits in — without it the selected option
+   meets the track's own edge and the whole thing reads as one flat pill. */
+.deck-choice-group__options--segmented {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: var(--deck-space-2);
+  padding: var(--deck-space-4);
+  background-color: var(--deck-color-segmented-track);
+  border: 1px solid var(--deck-color-segmented-track-border);
+  border-radius: var(--deck-radius-full);
+}
+
+/* Not `flex: 1` — each option is its own width, so "Hot" does not occupy the
+   same space as a longer label next to it. */
+.deck-choice-group__options--segmented .deck-choice-group__control {
+  flex: 0 0 auto;
+  flex-direction: row;
+  gap: var(--deck-space-6);
+  min-block-size: 32px;
+  padding: 0 var(--deck-space-12);
+  background-color: transparent;
+  border-color: transparent;
+}
+
+/* One step down from the other variants' `body-sm`. This is a control that
+   should sit quietly under the question it answers, and at 14px the three
+   labels start to compete with the heading above them. */
+.deck-choice-group__options--segmented .deck-choice-group__label {
+  font-size: var(--deck-font-size-label-sm);
+  line-height: var(--deck-line-height-label-sm);
+}
+
+/* Monochrome until chosen. The colour in this variant belongs to the selected
+   option alone, so an unselected option recedes to a single flat grey —
+   label and icon the same value, which is what stops the row reading as a
+   palette before anyone has answered. */
+.deck-choice-group__options--segmented
+  .deck-choice-group__input:not(:checked)
+  + .deck-choice-group__control {
+  color: var(--deck-color-segmented-muted);
+}
+
+.deck-choice-group__options--segmented
+  .deck-choice-group__input:not(:checked)
+  + .deck-choice-group__control
+  .deck-choice-group__label {
+  color: var(--deck-color-segmented-muted);
+}
+
+/* Recessed rather than filled: the chip is a shade of the track, not a brand
+   colour laid over it. The label goes to full ink — the selected option is
+   the only one at reading contrast, which is the quietest way to say which
+   one it is. */
+.deck-choice-group__options--segmented
+  .deck-choice-group__input:checked
+  + .deck-choice-group__control {
+  background-color: var(--deck-color-segmented-chip);
+  border-color: transparent;
+}
+
+.deck-choice-group__options--segmented
+  .deck-choice-group__input:checked
+  + .deck-choice-group__control
+  .deck-choice-group__label {
+  color: var(--deck-color-text-default);
+}
+
+/* Hover brings the label up to full ink rather than drawing a border, since
+   there are no borders in here to strengthen. */
+.deck-choice-group__options--segmented
+  .deck-choice-group__option:hover
+  .deck-choice-group__input:not(:disabled):not(:checked)
+  + .deck-choice-group__control {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.deck-choice-group__options--segmented
+  .deck-choice-group__option:hover
+  .deck-choice-group__input:not(:disabled):not(:checked)
+  + .deck-choice-group__control
+  .deck-choice-group__label {
+  color: var(--deck-color-text-default);
+}
+
 .deck-choice-group__option {
   display: flex;
   min-width: 0;
