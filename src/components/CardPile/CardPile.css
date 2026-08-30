@@ -4,10 +4,57 @@
   align-items: center;
   gap: var(--deck-space-16);
   width: 100%;
-  /* Matches `PersonCard`'s own max-width, so the stage and the card it holds
-     end at the same edge and the pile stays centred on that edge rather than
-     on 20px of empty stage. */
-  max-width: 400px;
+  /* Matches `PersonCard`'s own max-width times whatever the pile is zooming
+     it by, so the stage and the card it holds end at the same edge and the
+     pile stays centred on that edge rather than on 20px of empty stage. */
+  max-width: calc(400px * var(--deck-person-card-zoom, 1));
+}
+
+/* Half again as large once there is a desktop's room for it. A pile is the
+   page's subject wherever it appears, and at 400px on a wide screen it sat
+   in the middle of the viewport looking like a thumbnail of itself.
+
+   `zoom` rather than a wider card, because the card is a 3.5x2in object and
+   the ask is to see it bigger, not to see a bigger one. Widening the box
+   alone left the contents at their original size: measured, the empty band
+   under the buttons went from 12% of the card's height to 41%, since the
+   avatar, the type and the spacing are all fixed px. Zoom multiplies used
+   values, so the whole object scales — including `border-radius`, which at
+   1.5 renders the 12px `xl` token at 18px, near the ~20px the physical 3.4%
+   corner wants at this size.
+
+   Landscape only. The enlargement is about having room, and the one way to
+   get a portrait pile on a wide screen is to ask for it explicitly — a
+   caller who pins `orientation="portrait"` is describing the card, not the
+   room, and a 1.5x column of it would be two thirds the height of the
+   screen.
+
+   Set on the pile rather than in `PersonCard`, so a card standing on its own
+   — Exchange's, the component's own stories — keeps the size it has today.
+   Every pile does grow, My cards' included: it is the same object on the same
+   desk, and one page showing it at two thirds the size of another is the
+   inconsistency, not the fix. */
+@media (min-width: 640px) {
+  .deck-card-pile[data-card-orientation='landscape'] {
+    --deck-person-card-zoom: 1.5;
+  }
+
+  /* Applied to the layer's direct child rather than to `.deck-person-card`,
+     because that child is a bare card on some piles and a `PersonCardFlip`
+     wrapping one on others. Naming the card itself would zoom it twice
+     wherever both are in the tree — 2.25x, which is how this was first
+     found. One element, once, whichever component it turns out to be. */
+  .deck-card-pile[data-card-orientation='landscape'] .deck-card-pile__layer > * {
+    zoom: var(--deck-person-card-zoom, 1);
+  }
+
+  /* The layers step further out at this size (see `DEPTH_STEP`), so the room
+     the stage reserves grows with them. 32/64 rather than a literal 32/56:
+     the spacing scale has no 56, and over-reserving eight pixels below the
+     pile is invisible where under-reserving them is a clipped corner. */
+  .deck-card-pile[data-card-orientation='landscape'] .deck-card-pile__stage {
+    margin-block: var(--deck-space-32) var(--deck-space-64);
+  }
 }
 
 /* Turned on its short edge the card is narrower, and a pile that kept the
@@ -46,6 +93,11 @@
   transition: transform var(--deck-duration-base) var(--deck-ease-standard);
 }
 
+/* Left as a plain `100%` under zoom on purpose. A percentage resolved against
+   a containing block at a different zoom is adjusted by the ratio already, so
+   dividing here too lands the back cards at 2/3 the front's height — measured
+   at 229px against the front's 343px before this comment replaced the
+   division that caused it. */
 .deck-card-pile__layer:not(.deck-card-pile__layer--front) > * {
   block-size: 100%;
 }

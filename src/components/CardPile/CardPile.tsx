@@ -87,7 +87,8 @@ const EXIT_DISTANCE = 480
  * The step is per-orientation, so a portrait pile does not get the sideways
  * nudge of a landscape one half again as wide. Kept in sync with the room
  * `CardPile.css` reserves around the stage: the deepest of three layers sits
- * `2 x y` below the front card.
+ * `2 x y` below the front card — at both sizes, since the stylesheet grows
+ * that reservation by the same multiplier applied below.
  */
 const DEPTH_STEP: Record<
   Exclude<CardPileOrientation, 'responsive'>,
@@ -100,6 +101,22 @@ const DEPTH_ROTATE_BASE = 1.1
 const DEPTH_ROTATE_STEP = 0.5
 const DEPTH_SCALE_STEP = 0.01
 
+/*
+ * A landscape pile is half again as wide on a desktop screen (`CardPile.css`),
+ * and the offsets above are a proportion of the card's width, not a fixed
+ * number of pixels — that is how they were derived from the mockup in the
+ * first place. Growing the card without growing them would shrink the sliver
+ * of edge that is the entire tell that this is a pile.
+ *
+ * The check is worth stating plainly: at 600px this puts the layers 25.5 and
+ * 24/48 out, against the 25 and 21/39 measured on the mockup's own 520px
+ * card. Scaling up lands nearer the source than the 400px default does.
+ *
+ * Rotation and scale stay put. Both are angles and ratios, which a bigger
+ * card does not change.
+ */
+const ROOMY_DEPTH_MULTIPLIER = 1.5
+
 function mod(value: number, length: number) {
   return ((value % length) + length) % length
 }
@@ -108,14 +125,16 @@ function mod(value: number, length: number) {
 function getLayerTransform(
   depth: number,
   orientation: Exclude<CardPileOrientation, 'responsive'>,
+  roomy: boolean,
 ) {
   const step = DEPTH_STEP[orientation]
+  const multiplier = roomy ? ROOMY_DEPTH_MULTIPLIER : 1
   // Odd depths go up and right, even ones down and left.
   const sign = depth % 2 === 1 ? 1 : -1
   // Sideways: same distance every layer, alternating side. Vertically: a
   // step per layer, so the pile deepens downward as it goes back.
-  const x = sign * step.x
-  const y = -sign * depth * step.y
+  const x = sign * step.x * multiplier
+  const y = -sign * depth * step.y * multiplier
   const rotate = sign * (DEPTH_ROTATE_BASE + (depth - 1) * DEPTH_ROTATE_STEP)
   const scale = 1 - depth * DEPTH_SCALE_STEP
   return `translate(${x}px, ${y}px) rotate(${rotate}deg) scale(${scale})`
@@ -223,6 +242,14 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
           ? 'portrait'
           : 'landscape'
         : orientation
+
+    /*
+     * The enlarged pile, mirroring the `min-width: 640px` rule in the
+     * stylesheet. Both sides ask the same question of the same breakpoint —
+     * `isNarrow` is its negation — so the transforms cannot end up sized for
+     * one card while the CSS renders the other.
+     */
+    const roomy = !isNarrow && resolvedOrientation === 'landscape'
 
     const startXRef = useRef(0)
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -346,7 +373,7 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
                 style={{
                   transform: isFront
                     ? `translateX(${dragX}px) rotate(${dragX / 24}deg)`
-                    : getLayerTransform(depth, resolvedOrientation),
+                    : getLayerTransform(depth, resolvedOrientation, roomy),
                   transition: isFront && isDragging ? 'none' : undefined,
                   zIndex: visibleCount - depth,
                 }}
