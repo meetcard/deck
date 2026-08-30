@@ -180,9 +180,18 @@
   min-width: 0;
   box-sizing: border-box;
   overflow: hidden;
-  padding: var(--deck-space-8) var(--deck-space-16);
-  background-color: var(--deck-color-background-subtle);
+  /* 12px sides rather than 16. Every pixel of padding is a pixel the byline
+     cannot use, and this line is the one that runs out of room first: a role,
+     a company and a city need 406px at the old size against the 328px a
+     landscape card can give them. */
+  padding: var(--deck-space-6) var(--deck-space-12);
+  background-color: var(--deck-color-background-inset);
   border-radius: var(--deck-radius-lg);
+  /* Set on the band so anything inheriting inside it comes along — the
+     company `Link` sets no size of its own and was picking up the card's
+     16px while the `Text` spans beside it were 14. */
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
 }
 
 /* Nothing wraps, and the deficit falls on the two parts that can carry it.

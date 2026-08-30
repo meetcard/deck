@@ -95,6 +95,14 @@
   --deck-color-feeling-warm: var(--deck-primitive-amber);
   --deck-color-feeling-cold: var(--deck-primitive-sky);
 
+  /* Inset — a band set into a surface rather than laid on top of it: the
+     card's detail line, and anywhere else a strip needs to read as part of
+     what is behind it. `background-subtle` is the wrong weight for this. It
+     is Sand, a page-level surface, and on a white card it lands as a beige
+     block heavy enough to become the first thing the eye finds — ahead of
+     the name. Chalk is a quarter of the way there. */
+  --deck-color-background-inset: var(--deck-primitive-chalk);
+
   /* Segmented control — a track holding its options, with the chosen one
      recessed into it. Light sinks the chip below the track; see the dark
      block, which lifts it instead. */
@@ -188,6 +196,10 @@
     --deck-color-feeling-warm: #fe9a00;
     --deck-color-feeling-cold: #00a6f4;
 
+    /* One step up from the page rather than down, for the same reason the
+       segmented chip inverts below: a darker band on a dark card is a hole. */
+    --deck-color-background-inset: #333f3f;
+
     /* Inverted: dark raises the chip out of the track rather than sinking
        it in, because a recess in a dark scheme reads as a hole. */
     --deck-color-segmented-track: #242d2d;
@@ -258,6 +270,10 @@
   --deck-color-feeling-hot: #ff5c7f;
   --deck-color-feeling-warm: #fe9a00;
   --deck-color-feeling-cold: #00a6f4;
+
+  /* One step up from the page rather than down, for the same reason the
+     segmented chip inverts below: a darker band on a dark card is a hole. */
+  --deck-color-background-inset: #333f3f;
 
   /* Inverted: dark raises the chip out of the track rather than sinking
      it in, because a recess in a dark scheme reads as a hole. */

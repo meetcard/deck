@@ -184,7 +184,7 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
           <div className="deck-person-card__meta-row">
             {tagline ? (
               <Text
-                size="sm"
+                size="xs"
                 tone="muted"
                 truncate
                 className="deck-person-card__tagline"
@@ -220,12 +220,12 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
         {hasDetailPill ? (
           <div className="deck-person-card__pill">
             {title ? (
-              <Text as="span" size="sm" weight="medium">
+              <Text as="span" size="xs" weight="medium">
                 {title}
               </Text>
             ) : null}
             {title && company ? (
-              <Text as="span" size="sm" tone="muted">
+              <Text as="span" size="xs" tone="muted">
                 {' '}
                 at{' '}
               </Text>
@@ -241,7 +241,7 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
                   {company}
                 </Link>
               ) : (
-                <Text as="span" size="sm" weight="medium">
+                <Text as="span" size="xs" weight="medium">
                   {company}
                 </Text>
               )
@@ -259,7 +259,7 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
                     child is the company whenever there is no place. */}
                 <Text
                   as="span"
-                  size="sm"
+                  size="xs"
                   tone="muted"
                   className="deck-person-card__place"
                 >
