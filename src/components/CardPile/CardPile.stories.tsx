@@ -98,6 +98,66 @@ export const SwipeAdvances: Story = {
 }
 
 /**
+ * A press that lands on a control inside the card belongs to that control,
+ * not to the pile — even when the pointer then travels far enough to have
+ * been a swipe.
+ *
+ * This guards a bug that shipped past a test which appeared to cover it.
+ * `CardPile` captured every pointerdown, and pointer capture retargets the
+ * pointerup that follows, so a real browser resolved the click on the common
+ * ancestor rather than on the button: nothing on the front card could be
+ * clicked. `userEvent.click` did not catch it because it synthesizes a click
+ * on the element it is given instead of letting the browser work the target
+ * out from the pointer sequence — which is exactly the step that was broken.
+ *
+ * So the assertion here is on the pointer sequence, not on a click: press on
+ * the button, move past the drag threshold, release. The pile must not have
+ * advanced, and the button must have heard about it.
+ */
+export const PressingAControlDoesNotDrag: Story = {
+  render: (args) => (
+    <CardPile {...args}>
+      <PersonCard
+        name="Ada Lovelace"
+        title="Card one"
+        footer={<Button size="sm">Share card</Button>}
+      />
+      <PersonCard name="Grace Hopper" title="Card two" />
+    </CardPile>
+  ),
+  play: async ({ canvas, userEvent, args }) => {
+    const share = canvas.getByRole('button', { name: 'Share card' })
+    const front = share.closest('.deck-card-pile__layer--front') as HTMLElement
+
+    await userEvent.pointer([
+      { keys: '[MouseLeft>]', target: share, coords: { x: 200, y: 0 } },
+      { target: share, coords: { x: 40, y: 0 } },
+    ])
+
+    /*
+     * Asserted mid-gesture, on the transform, because that is the only part
+     * of this that is observable immediately. `advance` reports the new index
+     * from inside a 220ms timeout, so checking `onActiveIndexChange` straight
+     * after the release passes whether or not the pile moved — the call has
+     * simply not happened yet. The card's offset is set synchronously as the
+     * pointer moves, so a pile that was dragging is already 160px out here.
+     */
+    await expect(front.style.transform).toContain('translateX(0px)')
+
+    await userEvent.pointer([
+      { keys: '[/MouseLeft]', target: share, coords: { x: 40, y: 0 } },
+    ])
+
+    // And past the timeout, the pile is still showing the same card.
+    await new Promise((resolve) => setTimeout(resolve, 350))
+    await expect(
+      canvas.getByRole('heading', { name: 'Ada Lovelace' }),
+    ).toBeVisible()
+    await expect(args.onActiveIndexChange).not.toHaveBeenCalled()
+  },
+}
+
+/**
  * A small drag that doesn't clear the threshold springs back — it isn't
  * mistaken for a swipe, and a tap on the front card's own content (like its
  * Share button) still works normally.

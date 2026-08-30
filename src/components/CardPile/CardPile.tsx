@@ -251,8 +251,34 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
       }, duration)
     }
 
+    /*
+     * A press that lands on a control inside the card is that control's, not
+     * the pile's. Without this the pile captured every pointerdown, and
+     * capture retargets the pointerup that follows — so the browser resolved
+     * the click on the common ancestor instead of the button, and nothing on
+     * the front card could be clicked at all. The card's own private-note
+     * flip, its Book with me and Exchange buttons and all three contact icons
+     * were inert; only the keyboard reached them.
+     *
+     * Matched on the interactive element rather than on a `data-` opt-out,
+     * because the card's contents come from the caller: `CardPile` cannot
+     * know what they put in a footer, and the failure mode of guessing wrong
+     * is a dead button rather than a pile that will not drag.
+     *
+     * `label` is in the list for a reason that cost a second round of this
+     * bug. A radio's control is usually a visually hidden `input` with the
+     * visible part rendered as a sibling span inside the label — so a press
+     * on what looks like the option finds no `input` above it in the tree,
+     * the pile captured it, and the label's implicit activation never fired.
+     * The private-note pill worked because it is a real `button`; the feeling
+     * choices sat there looking hoverable and refusing to be chosen.
+     */
+    const INTERACTIVE =
+      'button, a[href], label, input, textarea, select, [role="button"], [role="radio"], [contenteditable="true"]'
+
     function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
       if (isAnimating) return
+      if ((event.target as HTMLElement).closest(INTERACTIVE)) return
       event.currentTarget.setPointerCapture(event.pointerId)
       startXRef.current = event.clientX
       setIsDragging(true)
