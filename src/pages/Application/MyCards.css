@@ -8,7 +8,10 @@
 
 .my-cards__container {
   width: 100%;
-  max-width: 36rem;
+  /* Wide enough for a landscape card at the size it wants plus the pile's
+     own arrows either side. The list below keeps its own, narrower measure —
+     rows of text do not want to be 840px wide. */
+  max-width: 52rem;
 }
 
 .my-cards__top {
@@ -28,6 +31,13 @@
   letter-spacing: var(--deck-tracking-caps);
   font-weight: var(--deck-font-weight-semibold);
   color: var(--deck-color-text-muted);
+}
+
+/* "Your cards" is the page's subject, and the pile under it is the only thing
+   on the page in colour. The heading takes the brand so the two read as one
+   block rather than as a grey label above a green object. */
+.my-cards__eyebrow--brand {
+  color: var(--deck-color-text-brand);
 }
 
 .my-cards__section-heading {
@@ -69,6 +79,7 @@
 
 .my-cards__list {
   display: flex;
+  max-width: 40rem;
   flex-direction: column;
   gap: var(--deck-space-8);
   margin: 0;
@@ -124,9 +135,12 @@
   min-width: 0;
 }
 
-.my-cards__row-icon {
+.my-cards__row-showing {
   flex-shrink: 0;
-  inline-size: 18px;
-  block-size: 18px;
-  color: var(--deck-color-text-muted);
+  color: var(--deck-color-text-brand);
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  font-weight: var(--deck-font-weight-semibold);
+  letter-spacing: var(--deck-tracking-caps);
+  text-transform: uppercase;
 }

@@ -71,6 +71,14 @@ The **application layer** (`app.meetcard.io`) is the installed PWA:
 card". `SearchField` and `Tag` drive the Rolodex, `StatTile` the dashboard
 headline metrics, and `UsageMeter` the Solo connections cap.
 
+`PersonCard` is the object both surfaces are built around, and it is the one
+component that does not read the page's palette. A card carries its own —
+`theme={{ primary, accent }}` — because the brand on a card belongs to whoever
+owns the card, not to the app showing it. Everything placed on the card,
+including ordinary `Button`s and `IconButton`s, picks that palette up. It is
+also fixed at 3.5x2in and scales as one object rather than reflowing, so a
+card is the same artifact on a phone and on a desk.
+
 The way into that layer is `Input` + `PasswordInput` for the credentials and
 a row of `ProviderButton`s for single sign-on, split by a `Divider` with an
 `OR` label. Those screens are presentational: the identity provider sits

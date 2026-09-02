@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
-import { PersonCard } from '../PersonCard/PersonCard'
+import { ContactCard } from '../ContactCard/ContactCard'
 import { Stack } from '../Stack/Stack'
 import { EmptyState } from '../EmptyState/EmptyState'
 import { SearchField } from './SearchField'
@@ -67,7 +67,11 @@ export const FilteringRolodex: Story = {
           <Stack as="ul" gap={8}>
             {results.map((person) => (
               <li key={person.name}>
-                <PersonCard {...person} />
+                {/* A rolodex result is a list entry, not the artifact. A full
+                    `PersonCard` is a 3.5x2in object that scales as one thing,
+                    so at this column's width its type comes out the size it
+                    would be on a real card held at arm's length. */}
+                <ContactCard {...person} />
               </li>
             ))}
           </Stack>

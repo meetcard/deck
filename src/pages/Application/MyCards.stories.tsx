@@ -20,7 +20,11 @@ export const Default: Story = {
     await expect(
       canvas.getByRole('heading', { level: 1, name: 'My cards' }),
     ).toBeVisible()
-    await expect(canvas.getByText('1 / 2')).toBeVisible()
+    // The pile says where you are in it through its dots, and the current
+    // one carries `aria-current` rather than only a colour.
+    await expect(
+      canvas.getByRole('button', { name: 'Card 1 of 2', current: true }),
+    ).toBeVisible()
     // The pile's front card is the only one exposed to assistive tech.
     await expect(
       canvas.getByRole('heading', { name: 'Alex Rivera' }),
@@ -49,13 +53,17 @@ export const EditingLive: Story = {
 /** Choosing a row moves the pile, rather than following a link nowhere. */
 export const SelectingFromTheList: Story = {
   play: async ({ canvas, userEvent }) => {
-    await expect(canvas.getByText('1 / 2')).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Card 1 of 2', current: true }),
+    ).toBeVisible()
 
     const rows = canvas.getAllByRole('button', { name: /Alex Rivera/ })
     await userEvent.click(rows[rows.length - 1])
 
     await waitFor(async () => {
-      await expect(canvas.getByText('2 / 2')).toBeVisible()
+      await expect(
+        canvas.getByRole('button', { name: 'Card 2 of 2', current: true }),
+      ).toBeVisible()
     })
   },
 }
@@ -101,7 +109,9 @@ export const CreatingACard: Story = {
     await userEvent.click(ui.getByRole('button', { name: 'Create card' }))
 
     await waitFor(async () => {
-      await expect(canvas.getByText('3 / 3')).toBeVisible()
+      await expect(
+        canvas.getByRole('button', { name: 'Card 3 of 3', current: true }),
+      ).toBeVisible()
     })
     await expect(canvas.getByLabelText('Tagline')).toBeVisible()
   },

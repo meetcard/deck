@@ -8,6 +8,7 @@ import type { TimelineEvent } from '../../components/EventTimeline/EventTimeline
 import { Heading } from '../../components/Heading/Heading'
 import { IconButton } from '../../components/IconButton/IconButton'
 import { PersonCard } from '../../components/PersonCard/PersonCard'
+import type { CardTheme } from '../../components/PersonCard/PersonCard'
 import { PrivateNote } from '../../components/PrivateNote/PrivateNote'
 import type { ConnectionFeeling } from '../../components/PrivateNote/PrivateNote'
 import { Stack } from '../../components/Stack/Stack'
@@ -56,6 +57,12 @@ export interface Connection {
   company?: string
   location?: string
   avatarSrc?: string
+  /**
+   * The colours their card is branded with. Someone else's card is the one
+   * place a palette is not yours to choose, so the page carries whatever came
+   * with the card rather than tinting everyone the same green.
+   */
+  theme?: CardTheme
   /** What you wrote on the back of their card, if anything. */
   note?: string
   feeling?: ConnectionFeeling
@@ -90,6 +97,7 @@ const EVENTS: TimelineEvent[] = [
 const INITIAL: Connection[] = [
   {
     slug: 'ben@meetcard',
+    theme: { primary: '#2E6E5B', accent: '#C66A4A' },
     eventId: 'founders-dinner',
     name: 'Ben Ackles',
     tagline: 'What a lovable guy',
@@ -101,6 +109,7 @@ const INITIAL: Connection[] = [
   },
   {
     slug: 'grace@sextant',
+    theme: { primary: '#2F4858', accent: '#E0A458' },
     eventId: 'founders-dinner',
     name: 'Grace Okafor',
     tagline: 'Ask me about supply chains.',
@@ -110,6 +119,7 @@ const INITIAL: Connection[] = [
   },
   {
     slug: 'mika@ply',
+    theme: { primary: '#4A3B5C', accent: '#C9A227' },
     eventId: 'founders-dinner',
     name: 'Mika Tanaka',
     tagline: 'Always three prototypes deep.',
@@ -302,6 +312,7 @@ export function Connections({
                 key={card.slug}
                 name={card.name}
                 avatarSrc={card.avatarSrc}
+                theme={card.theme}
                 tagline={card.tagline}
                 title={card.title}
                 company={card.company}
