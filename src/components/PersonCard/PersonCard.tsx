@@ -3,42 +3,22 @@ import type { CSSProperties, HTMLAttributes, ReactNode } from 'react'
 import { cx } from '../../lib/cx'
 import { Avatar } from '../Avatar/Avatar'
 import { Heading } from '../Heading/Heading'
-import { Link } from '../Link/Link'
 import { Text } from '../Text/Text'
+import { CompanyFace } from './CompanyFace'
+import type { CardCompanyProfile } from './CompanyFace'
+import { ShareFace } from './ShareFace'
+import type { CardShare } from './ShareFace'
+
+export type { CardShare } from './ShareFace'
+export type { CardCompanyProfile, CardCompanyPerson } from './CompanyFace'
+import {
+  ArrowLeftIcon,
+  CloseIcon,
+  LockIcon,
+  PencilIcon,
+  ShareIcon,
+} from './cardIcons'
 import './PersonCard.css'
-
-const LockIcon = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-    <rect
-      x="3.5"
-      y="7"
-      width="9"
-      height="6.5"
-      rx="1.5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.3"
-    />
-    <path
-      d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.3"
-    />
-  </svg>
-)
-
-const PencilIcon = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-    <path
-      d="M11.2 2.3a1.5 1.5 0 0 1 2.1 2.1l-7.2 7.2-2.8.7.7-2.8 7.2-7.2Z"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.3"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
 
 /**
  * A card's own palette.
@@ -67,6 +47,17 @@ export interface CardTheme {
   /** A second brand colour, for accents. Falls back to `primary`. */
   accent?: string
 }
+
+/**
+ * Which face of the card's front is showing.
+ *
+ * Not to be confused with the card's `back`, which is the physical reverse
+ * and turns with `flipped`. These are all the front: the card is showing you
+ * its face, its code, or the company it belongs to, and it turns between them
+ * in place. What is written on the back of a card is a different thing from
+ * what the front of it is currently saying.
+ */
+export type PersonCardView = 'profile' | 'share' | 'company' | 'company-share'
 
 export interface PersonCardPrivateNote {
   /** Defaults to "Your private note". */
@@ -120,6 +111,28 @@ export interface PersonCardProps
   onEdit?: () => void
   /** Accessible name for that pencil. Defaults to "Edit card". */
   editLabel?: string
+  /**
+   * The card's link, and what turning it over to be scanned shows.
+   *
+   * Supplying it puts a Share control in the action row and makes the card
+   * able to show its own code. Sharing a card is the card doing something,
+   * so it happens on the card rather than in a dialog over it.
+   */
+  share?: CardShare
+  /**
+   * The company behind the card, reached from the company's name.
+   *
+   * With this, `company` becomes a control that turns the card to the
+   * company's own face rather than a link somewhere else — you wondered who
+   * they work for while holding their card, and the answer is on it.
+   * `companyHref` still applies when there is no profile to turn to.
+   */
+  companyProfile?: CardCompanyProfile
+  /** Which face the card is showing. Omit to let it keep its own. */
+  view?: PersonCardView
+  /** The face it starts on. Default `"profile"`. */
+  defaultView?: PersonCardView
+  onViewChange?: (view: PersonCardView) => void
   /** A dismissible, private annotation only the card's owner can see. */
   privateNote?: PersonCardPrivateNote
   /** Circular icon buttons for contact methods — email, LinkedIn, share. */
@@ -191,6 +204,11 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
       backdropSrc,
       onEdit,
       editLabel = 'Edit card',
+      share,
+      companyProfile,
+      view,
+      defaultView = 'profile',
+      onViewChange,
       privateNote,
       contactActions,
       footer,
@@ -203,7 +221,24 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
     ref,
   ) {
     const hasDetail = Boolean(title || company || location)
-    const hasActionRow = Boolean(contactActions || privateNote)
+    const hasActionRow = Boolean(contactActions || privateNote || share)
+
+    const [selfView, setSelfView] = useState<PersonCardView>(defaultView)
+    const currentView = view ?? selfView
+    const setView = (next: PersonCardView) => {
+      if (view === undefined) setSelfView(next)
+      onViewChange?.(next)
+    }
+
+    /*
+     * Closing a share goes back to whichever profile raised it, not to the
+     * person's card every time. Sharing the company from the company's own
+     * face and landing back on someone's portrait would lose your place in a
+     * card you had deliberately turned over.
+     */
+    const sharing = currentView === 'share' || currentView === 'company-share'
+    const activeShare =
+      currentView === 'company-share' ? companyProfile?.share : share
 
     const [selfFlipped, setSelfFlipped] = useState(false)
     const isControlled = flipped !== undefined
@@ -223,6 +258,41 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
       '--deck-card-accent': theme?.accent ?? theme?.primary,
     } as CSSProperties
 
+    /*
+     * One control in the corner, and which one it is says where you are.
+     * A pencil edits the card you are looking at; a cross puts a code away
+     * and gives the card back; an arrow returns from the company to the
+     * person whose card led you there.
+     */
+    const cornerAction = sharing ? (
+      <button
+        type="button"
+        className="deck-person-card__corner-button"
+        onClick={() => setView(currentView === 'company-share' ? 'company' : 'profile')}
+      >
+        <CloseIcon />
+        <span className="deck-visually-hidden">Close share</span>
+      </button>
+    ) : currentView === 'company' ? (
+      <button
+        type="button"
+        className="deck-person-card__corner-button"
+        onClick={() => setView('profile')}
+      >
+        <ArrowLeftIcon />
+        <span className="deck-visually-hidden">Back to {name}'s card</span>
+      </button>
+    ) : onEdit ? (
+      <button
+        type="button"
+        className="deck-person-card__corner-button"
+        onClick={onEdit}
+      >
+        <PencilIcon />
+        <span className="deck-visually-hidden">{editLabel}</span>
+      </button>
+    ) : null
+
     const face = (
       <article
         ref={ref}
@@ -240,118 +310,155 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
         </div>
 
         <div className="deck-person-card__corners">
-          {kind ? <span className="deck-person-card__kind">{kind}</span> : null}
-          {onEdit ? (
-            <button
-              type="button"
-              className="deck-person-card__edit"
-              onClick={onEdit}
-            >
-              <PencilIcon />
-              <span className="deck-visually-hidden">{editLabel}</span>
-            </button>
+          {/* The chip says which of your cards this is, so it belongs to the
+              card's own face and not to what the card is currently showing. */}
+          {kind && currentView === 'profile' ? (
+            <span className="deck-person-card__kind">{kind}</span>
           ) : null}
+
+          {cornerAction}
         </div>
 
-        <div className="deck-person-card__body">
-          <div className="deck-person-card__portrait">
-            {logoSrc ? (
-              <img
-                className="deck-person-card__logo"
-                src={logoSrc}
-                alt={logoAlt ?? company ?? ''}
-              />
-            ) : null}
-            <div className="deck-person-card__avatar-wrap">
-              <span className="deck-person-card__avatar-glow" aria-hidden="true" />
-              <Avatar name={name} src={avatarSrc} size="lg" decorative />
+        {sharing && activeShare ? (
+          <ShareFace
+            share={activeShare}
+            heading={
+              currentView === 'company-share' && companyProfile
+                ? `Share ${companyProfile.name}`
+                : 'Share this card'
+            }
+          />
+        ) : currentView === 'company' && companyProfile ? (
+          <CompanyFace
+            profile={companyProfile}
+            onShare={
+              companyProfile.share ? () => setView('company-share') : undefined
+            }
+          />
+        ) : (
+          <div className="deck-person-card__body">
+            <div className="deck-person-card__portrait">
+              {logoSrc ? (
+                <img
+                  className="deck-person-card__logo"
+                  src={logoSrc}
+                  alt={logoAlt ?? company ?? ''}
+                />
+              ) : null}
+              <div className="deck-person-card__avatar-wrap">
+                <span className="deck-person-card__avatar-glow" aria-hidden="true" />
+                <Avatar name={name} src={avatarSrc} size="lg" decorative />
+              </div>
+            </div>
+
+            <div className="deck-person-card__content">
+              <Text
+                as="span"
+                size="xs"
+                weight="semibold"
+                className="deck-person-card__eyebrow"
+              >
+                {eyebrow}
+              </Text>
+              <Heading level={3} size="lg" truncate className="deck-person-card__name">
+                {name}
+              </Heading>
+              {tagline ? (
+                <Text truncate className="deck-person-card__tagline">
+                  {tagline}
+                </Text>
+              ) : null}
+
+              {hasActionRow ? (
+                <div className="deck-person-card__actions">
+                  {privateNote ? (
+                    <button
+                      type="button"
+                      className="deck-person-card__note"
+                      aria-expanded={back ? isFlipped : undefined}
+                      onClick={back ? () => setFlipped(true) : privateNote.onClick}
+                    >
+                      <LockIcon />
+                      <span>{privateNote.label ?? 'Your private note'}</span>
+                      {privateNote.hasContent ? (
+                        <span
+                          className="deck-person-card__note-dot"
+                          aria-hidden="true"
+                        />
+                      ) : null}
+                    </button>
+                  ) : null}
+                  {contactActions || share ? (
+                    <div className="deck-person-card__contact-actions">
+                      {contactActions}
+                      {/* The card's own, not the caller's. Sharing turns this
+                          card over, and only the card knows how to do that. */}
+                      {share ? (
+                        <button
+                          type="button"
+                          className="deck-person-card__share"
+                          onClick={() => setView('share')}
+                        >
+                          <ShareIcon />
+                          Share
+                        </button>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {/* One sentence rather than a row of chips. Role, employer and
+                  place are a phrase people already know how to read — "Builder
+                  at MeetCard in Boulder, Colorado" — and setting them as three
+                  fielded values separated by rules makes a database record of
+                  something that is a line of prose on every printed card. */}
+              {hasDetail ? (
+                <p className="deck-person-card__detail">
+                  {title ? <span>{title}</span> : null}
+                  {company ? (
+                    <>
+                      {title ? ' at ' : null}
+                      {/* Three things the company's name can be, and they are
+                          not interchangeable: a face of this card, a link off
+                          it, or neither. Turning the card wins when there is
+                          a profile to turn to, because it keeps you holding
+                          the card you were reading. */}
+                      {companyProfile ? (
+                        <button
+                          type="button"
+                          className="deck-person-card__company-link"
+                          onClick={() => setView('company')}
+                        >
+                          {company}
+                        </button>
+                      ) : companyHref ? (
+                        <a
+                          href={companyHref}
+                          className="deck-person-card__company-link"
+                        >
+                          {company}
+                        </a>
+                      ) : (
+                        <span>{company}</span>
+                      )}
+                    </>
+                  ) : null}
+                  {location ? (
+                    <>
+                      {title || company ? ' in ' : null}
+                      <span className="deck-person-card__place">{location}</span>
+                    </>
+                  ) : null}
+                </p>
+              ) : null}
+
+              {footer ? (
+                <div className="deck-person-card__footer">{footer}</div>
+              ) : null}
             </div>
           </div>
-
-          <div className="deck-person-card__content">
-            <Text
-              as="span"
-              size="xs"
-              weight="semibold"
-              className="deck-person-card__eyebrow"
-            >
-              {eyebrow}
-            </Text>
-            <Heading level={3} size="lg" truncate className="deck-person-card__name">
-              {name}
-            </Heading>
-            {tagline ? (
-              <Text truncate className="deck-person-card__tagline">
-                {tagline}
-              </Text>
-            ) : null}
-
-            {hasActionRow ? (
-              <div className="deck-person-card__actions">
-                {privateNote ? (
-                  <button
-                    type="button"
-                    className="deck-person-card__note"
-                    aria-expanded={back ? isFlipped : undefined}
-                    onClick={back ? () => setFlipped(true) : privateNote.onClick}
-                  >
-                    <LockIcon />
-                    <span>{privateNote.label ?? 'Your private note'}</span>
-                    {privateNote.hasContent ? (
-                      <span
-                        className="deck-person-card__note-dot"
-                        aria-hidden="true"
-                      />
-                    ) : null}
-                  </button>
-                ) : null}
-                {contactActions ? (
-                  <div className="deck-person-card__contact-actions">
-                    {contactActions}
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-
-            {/* One sentence rather than a row of chips. Role, employer and
-                place are a phrase people already know how to read — "Builder
-                at MeetCard in Boulder, Colorado" — and setting them as three
-                fielded values separated by rules makes a database record of
-                something that is a line of prose on every printed card. */}
-            {hasDetail ? (
-              <p className="deck-person-card__detail">
-                {title ? <span>{title}</span> : null}
-                {company ? (
-                  <>
-                    {title ? ' at ' : null}
-                    {companyHref ? (
-                      <Link
-                        href={companyHref}
-                        tone="default"
-                        underline="always"
-                        className="deck-person-card__company-link"
-                      >
-                        {company}
-                      </Link>
-                    ) : (
-                      <span>{company}</span>
-                    )}
-                  </>
-                ) : null}
-                {location ? (
-                  <>
-                    {title || company ? ' in ' : null}
-                    <span className="deck-person-card__place">{location}</span>
-                  </>
-                ) : null}
-              </p>
-            ) : null}
-
-            {footer ? (
-              <div className="deck-person-card__footer">{footer}</div>
-            ) : null}
-          </div>
-        </div>
+        )}
       </article>
     )
 

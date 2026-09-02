@@ -187,7 +187,7 @@
 /* Quiet until wanted. The pencil is the owner's own affordance and it is on
    top of the thing it edits, so it announces itself by being there rather
    than by being bright. */
-.deck-person-card__edit {
+.deck-person-card__corner-button {
   display: grid;
   place-items: center;
   margin-left: auto;
@@ -204,17 +204,17 @@
   transition: opacity var(--deck-duration-base) var(--deck-ease-standard);
 }
 
-.deck-person-card__edit:hover,
-.deck-person-card__edit:focus-visible {
+.deck-person-card__corner-button:hover,
+.deck-person-card__corner-button:focus-visible {
   opacity: 1;
 }
 
-.deck-person-card__edit:focus-visible {
+.deck-person-card__corner-button:focus-visible {
   outline: var(--deck-focus-ring-width) solid var(--deck-card-fg);
   outline-offset: var(--deck-focus-ring-offset);
 }
 
-.deck-person-card__edit svg {
+.deck-person-card__corner-button svg {
   width: calc(16 * var(--deck-card-u));
   height: calc(16 * var(--deck-card-u));
 }
@@ -612,6 +612,7 @@
 }
 
 [data-card-orientation='portrait'] .deck-person-card__detail,
+[data-card-orientation='portrait'] .deck-person-card__link,
 [data-card-orientation='portrait'] .deck-person-card__footer {
   width: 100%;
   margin-top: calc(20 * var(--deck-card-u));
@@ -621,4 +622,291 @@
    canvas the two labels wrap and stop reading as buttons. */
 [data-card-orientation='portrait'] .deck-person-card__footer {
   grid-template-columns: 1fr;
+}
+
+
+/* ---- The company's name ------------------------------------------------ */
+
+/* A button, a link or a span depending on where it goes, all set the same: a
+   dotted underline is how a printed card marks a reference, and what the
+   name does when you press it is not something its appearance should have an
+   opinion about. */
+.deck-person-card__company-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.deck-person-card__company-link:hover {
+  text-decoration-style: solid;
+}
+
+.deck-person-card__company-link:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-card-fg);
+  outline-offset: var(--deck-focus-ring-offset);
+  border-radius: 2px;
+}
+
+/* ---- Share ------------------------------------------------------------- */
+
+/* The card's own Share, sized to sit in the row with whatever contact icons
+   the caller passed. A pill rather than a circle because it carries a word:
+   every other control in that row is a recognisable glyph, and this is the
+   one whose consequence — the card turning over — is worth naming. */
+.deck-person-card__share {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(6 * var(--deck-card-u));
+  height: calc(36 * var(--deck-card-u));
+  padding-inline: calc(12 * var(--deck-card-u));
+  border: 0;
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-card-surface);
+  color: var(--deck-card-fg);
+  font: inherit;
+  font-size: calc(12 * var(--deck-card-u));
+  font-weight: var(--deck-font-weight-medium);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background-color var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+.deck-person-card__share:hover {
+  background-color: var(--deck-card-surface-hover);
+}
+
+.deck-person-card__share:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-card-fg);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-person-card__share svg {
+  width: calc(14 * var(--deck-card-u));
+  height: calc(14 * var(--deck-card-u));
+}
+
+/* The code sits where the portrait does, at the same size, so turning the
+   card over does not move anything. White plate because a QR code needs a
+   quiet zone and the card's ground is neither quiet nor light. */
+.deck-person-card__qr {
+  display: grid;
+  place-items: center;
+  padding: calc(12 * var(--deck-card-u));
+  border-radius: calc(24 * var(--deck-card-u));
+  background-color: #ffffff;
+  box-shadow: 0 calc(8 * var(--deck-card-u)) calc(24 * var(--deck-card-u))
+    calc(-8 * var(--deck-card-u)) rgba(12, 14, 13, 0.5);
+}
+
+.deck-person-card__qr .deck-qrcode {
+  width: calc(136 * var(--deck-card-u));
+  height: calc(136 * var(--deck-card-u));
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* The matrix fills the plate whatever aspect the generator hands back. The
+   sample one is 184x189 — not square — and left to itself it grew past the
+   plate instead of fitting inside it. */
+.deck-person-card__qr svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Not a name, so it does not want the name's shadow or its tracking — but it
+   is the same line of the card and takes the same size and weight. */
+.deck-person-card__share-title {
+  text-shadow: none;
+}
+
+/* The one detail line that may wrap. Everywhere else the line is reference —
+   role, employer, place — and truncating it loses the least useful end. This
+   one is the sentence a recipient reads to decide whether to follow the link,
+   and half of it is not worth having. */
+.deck-person-card__summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}
+
+.deck-person-card__link {
+  margin-top: calc(16 * var(--deck-card-u));
+}
+
+/* `CopyField` reads the same action and border tokens as everything else, so
+   the card's palette has already made it glass. What is left is the size,
+   which belongs to the card rather than to the field. */
+.deck-person-card__link .deck-copy-field__input {
+  height: calc(44 * var(--deck-card-u));
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-card-surface);
+  border-color: transparent;
+  color: var(--deck-card-fg);
+  font-size: calc(14 * var(--deck-card-u));
+}
+
+/* ---- The company's face ------------------------------------------------ */
+
+.deck-person-card__company {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%;
+  padding: calc(32 * var(--deck-card-u)) calc(36 * var(--deck-card-u));
+}
+
+.deck-person-card__company-logo {
+  height: calc(64 * var(--deck-card-u));
+  align-self: flex-start;
+}
+
+.deck-person-card__company-name {
+  margin: 0;
+  font-size: calc(26 * var(--deck-card-u));
+  font-weight: var(--deck-font-weight-bold);
+}
+
+/* The company's line sits low on the card, under its mark, the way a printed
+   card sets an address block. */
+.deck-person-card__company-body {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.deck-person-card__company-headline {
+  margin: calc(6 * var(--deck-card-u)) 0 0;
+  font-size: calc(28 * var(--deck-card-u));
+  font-weight: var(--deck-font-weight-bold);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* Three lines, then it stops. A company can always say more about itself
+   than a business card has room for. */
+.deck-person-card__company-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: calc(10 * var(--deck-card-u)) 0 0;
+  max-width: calc(560 * var(--deck-card-u));
+  color: var(--deck-card-fg-muted);
+  font-size: calc(13 * var(--deck-card-u));
+  line-height: 1.5;
+}
+
+.deck-person-card__company-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(10 * var(--deck-card-u));
+  margin-top: calc(14 * var(--deck-card-u));
+}
+
+.deck-person-card__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(6 * var(--deck-card-u));
+  height: calc(36 * var(--deck-card-u));
+  padding-inline: calc(14 * var(--deck-card-u));
+  border: 0;
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-card-surface);
+  box-shadow: inset 0 0 0 1px var(--deck-card-ring);
+  color: var(--deck-card-fg);
+  font: inherit;
+  font-size: calc(13 * var(--deck-card-u));
+  font-weight: var(--deck-font-weight-medium);
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+}
+
+.deck-person-card__chip--icon {
+  width: calc(36 * var(--deck-card-u));
+  padding-inline: 0;
+  justify-content: center;
+}
+
+.deck-person-card__chip--action {
+  cursor: pointer;
+  transition: background-color var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+.deck-person-card__chip--action:hover,
+.deck-person-card__chip--icon:hover {
+  background-color: var(--deck-card-surface-hover);
+}
+
+.deck-person-card__chip:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-card-fg);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-person-card__chip svg {
+  width: calc(14 * var(--deck-card-u));
+  height: calc(14 * var(--deck-card-u));
+  flex: none;
+}
+
+/* Overlapped, the way a handful of cards would be. No `gap`: the overlap is
+   the negative margin, and a gap fighting it leaves the row spaced by the
+   difference between two numbers nobody set on purpose. */
+.deck-person-card__people {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deck-person-card__people li:not(:first-child) {
+  margin-left: calc(-10 * var(--deck-card-u));
+}
+
+.deck-person-card__people .deck-avatar {
+  width: calc(36 * var(--deck-card-u));
+  height: calc(36 * var(--deck-card-u));
+  font-size: calc(13 * var(--deck-card-u));
+  background-color: rgba(255, 255, 255, 0.18);
+  color: var(--deck-card-fg);
+  box-shadow: 0 0 0 calc(2 * var(--deck-card-u)) var(--deck-card-base);
+}
+
+.deck-person-card__people-more {
+  margin-left: calc(10 * var(--deck-card-u));
+  color: var(--deck-card-fg-muted);
+  font-size: calc(13 * var(--deck-card-u));
+  font-weight: var(--deck-font-weight-medium);
+}
+
+/* ---- Portrait, the other faces ----------------------------------------- */
+
+[data-card-orientation='portrait'] .deck-person-card__qr .deck-qrcode {
+  width: calc(200 * var(--deck-card-u));
+  height: calc(200 * var(--deck-card-u));
+}
+
+[data-card-orientation='portrait'] .deck-person-card__company {
+  padding: calc(36 * var(--deck-card-u)) calc(28 * var(--deck-card-u));
+}
+
+[data-card-orientation='portrait'] .deck-person-card__company-headline {
+  font-size: calc(34 * var(--deck-card-u));
+}
+
+[data-card-orientation='portrait'] .deck-person-card__company-description {
+  font-size: calc(16 * var(--deck-card-u));
 }

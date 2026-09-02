@@ -5,7 +5,17 @@ import { Button } from '../Button/Button'
 import { IconButton } from '../IconButton/IconButton'
 import { PrivateNote } from '../PrivateNote/PrivateNote'
 import type { ConnectionFeeling } from '../PrivateNote/PrivateNote'
+import { sampleQrMatrixSvg } from '../QRCode/sampleQrMatrix'
 import { PersonCard } from './PersonCard'
+
+/* Deck encodes nothing — the matrix is supplied. This is the real code the
+   QRCode stories use. */
+const Matrix = () => (
+  <span
+    style={{ display: 'block', width: '100%', height: '100%' }}
+    dangerouslySetInnerHTML={{ __html: sampleQrMatrixSvg }}
+  />
+)
 
 const EmailIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -217,6 +227,60 @@ export const Portrait: Story = {
       <PersonCard {...args} />
     </div>
   ),
+}
+
+const share = {
+  value: 'meetcard.io/ben@meetcard',
+  summary: 'Ben Ackles, Builder at MeetCard',
+  qr: <Matrix />,
+  onDownloadQr: () => {},
+  onShareLinkedIn: () => {},
+}
+
+const companyProfile = {
+  name: 'MeetCard',
+  headline: 'Meet people. Remember them.',
+  description:
+    'MeetCard turns in-person introductions into durable professional connections.',
+  website: 'meetcard.io',
+  location: 'Boulder, CO',
+  linkedInHref: 'https://www.linkedin.com/company/meetcard',
+  people: [{ name: 'Ben Ackles' }, { name: 'Ada Lovelace' }, { name: 'Grace Hopper' }],
+  peopleTotal: 12,
+  share: {
+    value: 'meetcard.io/@meetcard',
+    summary: 'MeetCard',
+    qr: <Matrix />,
+    onDownloadQr: () => {},
+    onShareLinkedIn: () => {},
+  },
+}
+
+/**
+ * Sharing is the card doing something, so it happens on the card. Not a
+ * dialog: a panel over the top would put the thing being shared behind the
+ * thing describing it.
+ */
+export const Sharing: Story = {
+  args: { contactActions, footer, kind: 'Business', share, view: 'share' },
+}
+
+/**
+ * The company behind the card, reached from its name. You wondered who they
+ * work for while holding their card, so the answer is on it.
+ */
+export const TheCompany: Story = {
+  args: {
+    contactActions,
+    footer,
+    companyProfile,
+    view: 'company',
+  },
+}
+
+/** Sharing from the company hands over the company, not the person. */
+export const SharingTheCompany: Story = {
+  args: { ...TheCompany.args, share, view: 'company-share' },
 }
 
 /** A long name still fits — it truncates rather than breaking the layout. */

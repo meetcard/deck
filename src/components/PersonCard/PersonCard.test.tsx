@@ -190,6 +190,116 @@ describe('PersonCard', () => {
     })
   })
 
+  describe('the card\'s other faces', () => {
+    const share = {
+      value: 'meetcard.io/ben@meetcard',
+      summary: 'Ben Ackles, Builder at MeetCard',
+    }
+    const companyProfile = {
+      name: 'MeetCard',
+      headline: 'Meet people. Remember them.',
+      share: { value: 'meetcard.io/@meetcard', summary: 'MeetCard' },
+    }
+
+    it('has no Share control unless the card has a link', () => {
+      render(<PersonCard name="Ben Ackles" />)
+      expect(screen.queryByRole('button', { name: 'Share' })).toBeNull()
+    })
+
+    it('turns the card to its code rather than opening anything', async () => {
+      const user = userEvent.setup()
+      render(<PersonCard name="Ben Ackles" share={share} />)
+
+      await user.click(screen.getByRole('button', { name: 'Share' }))
+
+      expect(screen.getByLabelText('Share link')).toHaveValue(
+        'meetcard.io/ben@meetcard',
+      )
+      expect(document.querySelector('dialog')).toBeNull()
+      // The face it replaced is gone, not merely covered.
+      expect(screen.queryByRole('heading', { name: 'Ben Ackles' })).toBeNull()
+    })
+
+    it('gives the card back when the share is closed', async () => {
+      const user = userEvent.setup()
+      render(<PersonCard name="Ben Ackles" share={share} />)
+
+      await user.click(screen.getByRole('button', { name: 'Share' }))
+      await user.click(screen.getByRole('button', { name: 'Close share' }))
+
+      expect(
+        screen.getByRole('heading', { name: 'Ben Ackles' }),
+      ).toBeInTheDocument()
+    })
+
+    it('turns to the company from its name, and back to the person', async () => {
+      const user = userEvent.setup()
+      render(
+        <PersonCard
+          name="Ben Ackles"
+          company="MeetCard"
+          companyProfile={companyProfile}
+        />,
+      )
+
+      await user.click(screen.getByRole('button', { name: 'MeetCard' }))
+      expect(
+        screen.getByRole('heading', { name: 'Meet people. Remember them.' }),
+      ).toBeInTheDocument()
+
+      await user.click(
+        screen.getByRole('button', { name: "Back to Ben Ackles's card" }),
+      )
+      expect(
+        screen.getByRole('heading', { name: 'Ben Ackles' }),
+      ).toBeInTheDocument()
+    })
+
+    // The whole point of the pair: what gets shared is whatever is showing.
+    it('shares the company from the company, and returns there', async () => {
+      const user = userEvent.setup()
+      render(
+        <PersonCard
+          name="Ben Ackles"
+          company="MeetCard"
+          share={share}
+          companyProfile={companyProfile}
+        />,
+      )
+
+      await user.click(screen.getByRole('button', { name: 'MeetCard' }))
+      await user.click(screen.getByRole('button', { name: 'Share' }))
+
+      expect(screen.getByLabelText('Share link')).toHaveValue(
+        'meetcard.io/@meetcard',
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Close share' }))
+      expect(
+        screen.getByRole('heading', { name: 'Meet people. Remember them.' }),
+      ).toBeInTheDocument()
+    })
+
+    it('reports the face it moved to when controlled', async () => {
+      const onViewChange = vi.fn()
+      const user = userEvent.setup()
+      render(
+        <PersonCard
+          name="Ben Ackles"
+          share={share}
+          view="profile"
+          onViewChange={onViewChange}
+        />,
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Share' }))
+
+      expect(onViewChange).toHaveBeenCalledWith('share')
+      // Controlled: it asked, and stayed where it was put.
+      expect(screen.getByRole('heading', { name: 'Ben Ackles' })).toBeVisible()
+    })
+  })
+
   it('forwards a ref to the card element', () => {
     const ref = { current: null as HTMLElement | null }
     render(<PersonCard ref={ref} name="Ben Ackles" />)

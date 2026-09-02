@@ -243,7 +243,11 @@ export { PersonCard } from './components/PersonCard'
 export type {
   PersonCardProps,
   PersonCardPrivateNote,
+  PersonCardView,
   CardTheme,
+  CardShare,
+  CardCompanyProfile,
+  CardCompanyPerson,
 } from './components/PersonCard'
 
 export { CompanyCard } from './components/CompanyCard'
