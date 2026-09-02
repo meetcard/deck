@@ -4,87 +4,63 @@
   align-items: center;
   gap: var(--deck-space-16);
   width: 100%;
-  /* Matches `PersonCard`'s own max-width times whatever the pile is zooming
-     it by, so the stage and the card it holds end at the same edge and the
-     pile stays centred on that edge rather than on 20px of empty stage. */
-  max-width: calc(400px * var(--deck-person-card-zoom, 1));
 }
 
-/* Half again as large once there is a desktop's room for it. A pile is the
-   page's subject wherever it appears, and at 400px on a wide screen it sat
-   in the middle of the viewport looking like a thumbnail of itself.
-
-   `zoom` rather than a wider card, because the card is a 3.5x2in object and
-   the ask is to see it bigger, not to see a bigger one. Widening the box
-   alone left the contents at their original size: measured, the empty band
-   under the buttons went from 12% of the card's height to 41%, since the
-   avatar, the type and the spacing are all fixed px. Zoom multiplies used
-   values, so the whole object scales — including `border-radius`, which at
-   1.5 renders the 12px `xl` token at 18px, near the ~20px the physical 3.4%
-   corner wants at this size.
-
-   Landscape only. The enlargement is about having room, and the one way to
-   get a portrait pile on a wide screen is to ask for it explicitly — a
-   caller who pins `orientation="portrait"` is describing the card, not the
-   room, and a 1.5x column of it would be two thirds the height of the
-   screen.
-
-   Set on the pile rather than in `PersonCard`, so a card standing on its own
-   — Exchange's, the component's own stories — keeps the size it has today.
-   Every pile does grow, My cards' included: it is the same object on the same
-   desk, and one page showing it at two thirds the size of another is the
-   inconsistency, not the fix. */
-@media (min-width: 640px) {
-  .deck-card-pile[data-card-orientation='landscape'] {
-    --deck-person-card-zoom: 1.5;
-  }
-
-  /* Applied to the layer's direct child rather than to `.deck-person-card`,
-     because that child is a bare card on some piles and a `PersonCardFlip`
-     wrapping one on others. Naming the card itself would zoom it twice
-     wherever both are in the tree — 2.25x, which is how this was first
-     found. One element, once, whichever component it turns out to be. */
-  .deck-card-pile[data-card-orientation='landscape'] .deck-card-pile__layer > * {
-    zoom: var(--deck-person-card-zoom, 1);
-  }
-
-  /* The layers step further out at this size (see `DEPTH_STEP`), so the room
-     the stage reserves grows with them. 32/64 rather than a literal 32/56:
-     the spacing scale has no 56, and over-reserving eight pixels below the
-     pile is invisible where under-reserving them is a clipped corner. */
-  .deck-card-pile[data-card-orientation='landscape'] .deck-card-pile__stage {
-    margin-block: var(--deck-space-32) var(--deck-space-64);
-  }
+/* The card and the two controls that move it, on one line. The arrows are
+   outside the card rather than on it: they belong to the pile, and a control
+   painted on the front card would look like the card's own. */
+.deck-card-pile__frame {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-12);
+  width: 100%;
+  /* `PersonCard`'s own maximum plus the arrows and their gaps, so a wide page
+     centres the pile on the card rather than on empty stage. */
+  max-width: calc(760px + 2 * (40px + var(--deck-space-12)));
 }
 
-/* Turned on its short edge the card is narrower, and a pile that kept the
-   landscape width would leave the layers floating in the middle of a box
-   nothing fills. */
-.deck-card-pile[data-card-orientation='portrait'] {
-  max-width: 260px;
+.deck-card-pile[data-card-orientation='portrait'] .deck-card-pile__frame {
+  max-width: 400px;
+}
+
+.deck-card-pile__arrow {
+  flex: none;
+  width: 40px;
+  height: 40px;
+}
+
+/* There is no room beside a card on a phone, and squeezing the arrows in
+   would take it from the card. The dots below are the pointer route through
+   the pile at this size, and they reach any card rather than the next one. */
+@media (max-width: 639px) {
+  .deck-card-pile__arrow {
+    display: none;
+  }
 }
 
 /* The peeking layers sit outside the front card's box — up and right, then
    down and left — so the stage reserves room for them instead of letting them
    collide with whatever the page put above the pile or with the pile's own
-   controls below. Kept in step with `DEPTH_STEP` in CardPile.tsx: one layer's
-   worth above, two below, plus a couple of pixels for the rotation. */
+   dots below. Kept in step with `DEPTH_STEP` in CardPile.tsx: one layer's
+   worth above, two below, plus a little for the rotation.
+
+   Reserved in `%` of the stage's own width for the same reason the offsets
+   are: the card scales with its container, so a fixed reservation is either
+   too much on a phone or not enough on a desktop. */
 .deck-card-pile__stage {
   position: relative;
-  width: 100%;
-  margin-block: var(--deck-space-24) var(--deck-space-40);
+  min-width: 0;
+  flex: 1;
+  margin-block: 3% 4.5%;
 }
 
 /* Peeking layers: absolutely positioned so they don't affect the stage's
    size, offset per-depth via an inline transform computed in JS.
 
    `inset: 0` rather than `top/left` alone, so a layer takes the front card's
-   whole box instead of its own content height. Every card in a pile is the
-   same physical object, and without this a shorter card behind a taller one
-   ends *above* the front card's bottom edge and cannot peek at all — which
-   is what happens as soon as two people's cards carry different amounts of
-   detail. The layers are inert and aria-hidden, so stretching them costs
-   nothing but the illusion of depth it buys. */
+   whole box instead of its own content height. The layers are inert and
+   aria-hidden, so stretching them costs nothing but the illusion of depth it
+   buys. */
 .deck-card-pile__layer {
   position: absolute;
   inset: 0;
@@ -93,18 +69,12 @@
   transition: transform var(--deck-duration-base) var(--deck-ease-standard);
 }
 
-/* Left as a plain `100%` under zoom on purpose. A percentage resolved against
-   a containing block at a different zoom is adjusted by the ratio already, so
-   dividing here too lands the back cards at 2/3 the front's height — measured
-   at 229px against the front's 343px before this comment replaced the
-   division that caused it. */
 .deck-card-pile__layer:not(.deck-card-pile__layer--front) > * {
   block-size: 100%;
 }
 
-/* The front card stays in normal flow — its natural (content-driven) height
-   is what sizes the stage, since PersonCard has no fixed aspect ratio, and
-   therefore what the stretched layers behind it inherit. */
+/* The front card stays in normal flow — its height is what sizes the stage,
+   and therefore what the stretched layers behind it inherit. */
 .deck-card-pile__layer--front {
   position: relative;
   inset: auto;
@@ -130,8 +100,47 @@
   z-index: 100;
 }
 
-.deck-card-pile__controls {
+/* ---- Dots -------------------------------------------------------------- */
+
+.deck-card-pile__dots {
   display: flex;
   align-items: center;
-  gap: var(--deck-space-12);
+  justify-content: center;
+  gap: var(--deck-space-6);
+}
+
+/* The active dot stretches rather than filling in. Colour alone would put the
+   whole burden of "which card am I on" on a hue difference at 6px; a dot four
+   times as long says it by shape as well. */
+.deck-card-pile__dot {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-color-border-default);
+  cursor: pointer;
+  transition:
+    width var(--deck-duration-base) var(--deck-ease-standard),
+    background-color var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+.deck-card-pile__dot:hover {
+  background-color: var(--deck-color-border-strong);
+}
+
+.deck-card-pile__dot--active {
+  width: 24px;
+  background-color: var(--deck-color-text-default);
+}
+
+.deck-card-pile__dot:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-card-pile__dot {
+    transition: none;
+  }
 }

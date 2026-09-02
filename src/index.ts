@@ -240,7 +240,11 @@ export { CardPile } from './components/CardPile'
 export type { CardPileProps, CardPileOrientation } from './components/CardPile'
 
 export { PersonCard } from './components/PersonCard'
-export type { PersonCardProps } from './components/PersonCard'
+export type {
+  PersonCardProps,
+  PersonCardPrivateNote,
+  CardTheme,
+} from './components/PersonCard'
 
 export { CompanyCard } from './components/CompanyCard'
 export type { CompanyCardProps } from './components/CompanyCard'

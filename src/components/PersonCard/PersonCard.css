@@ -1,292 +1,488 @@
-/* A physical business card rounds about 3mm on an 89mm edge — roughly 3.4%.
-   At this card's 400px that is ~13px, so `xl` (12px) is the honest token.
-   The previous `3xl` (24px) read at 6.3%, closer to a coaster than a card.
+/*
+ * The card is a picture of a physical object, and that is what makes its
+ * stylesheet unlike every other one in Deck.
+ *
+ * A 3.5x2in card is 7/4, and it is 7/4 at every size. So the card is laid out
+ * on a fixed canvas — 760x434 landscape, 400x700 portrait — and every metric
+ * inside it is a fraction of the card's own width rather than a step on the
+ * spacing scale. `--deck-card-u` is one canvas pixel, resolved against the
+ * shell's container width, so `calc(30 * var(--deck-card-u))` is "30px on a
+ * 760px card" and stays proportionally that at 320px or at 760.
+ *
+ * This is the one component that opts out of the token scale, deliberately.
+ * The alternative was tried and is worse: with `--deck-space-*` padding and
+ * `--deck-font-size-*` type, growing the card left its contents at their
+ * original size and the empty band under the buttons went from 12% of the
+ * card's height to 41%. Tokens describe a page's rhythm. This is not a page.
+ *
+ * The consequence worth knowing: type on the card does not respond to the
+ * browser's font-size setting, because it is sized off the card and not off
+ * the root. That is true of a printed card too, and it is why nothing on the
+ * card is the only place a piece of information appears — the page around it
+ * carries the same names and details as ordinary, scalable text.
+ */
 
-   7/4 is the US 3.5x2in card. Fixing the ratio is what makes every card in a
-   pile the same object rather than a set of boxes that happen to be stacked —
-   with content-driven heights, one person's card was 268px and the next's
-   193px, and no amount of offsetting reads as a pile after that.
+/* ---- The shell --------------------------------------------------------- */
 
-   It replaces an earlier decision to let height follow content "so a long name
-   or a populated footer never gets clipped". That risk is real and is handled
-   here instead: the name clamps to two lines, and `overflow: hidden` is the
-   backstop. The tradeoff is deliberate — a business card is a fixed-size
-   object, and content that cannot fit one is content that does not belong on
-   one. */
-/* The edge is softened toward the card's own fill rather than swapped for a
-   lighter token, because the two schemes start in different places: measured
-   on the elevated surface, the hairline is 1.5:1 in light but 2.57:1 in dark,
-   where it reads as a drawn outline around the card instead of the edge of a
-   physical object. Mixing against the surface pulls both to the same softness
-   — measured at 1.29 and 1.77 — and keeps doing so if either value moves.
-
-   It stays a border rather than being dropped for the shadow alone. The pile
-   overlaps cards on top of each other, and where two of the same surface meet
-   the shadow alone does not say where one stops. */
-.deck-person-card {
+/*
+ * The container the card's metrics are a percentage of. It has to be a
+ * separate element the card owns: an element cannot be its own container, and
+ * the card gets dropped into piles, grids and pages that know nothing about
+ * any of this.
+ */
+.deck-person-card-shell {
+  container-type: inline-size;
   width: 100%;
-  max-width: 400px;
+  /* The prototype's own card, and about as large as a card can be shown
+     before it stops reading as something you would put in a pocket. */
+  max-width: 760px;
+
+  /* The two colours a card is branded with, and the only ones set from
+     outside. They live on the shell rather than on the card because `theme`
+     arrives as an inline style on this element: a declaration on the card
+     itself would win over the inherited value every time, and every card in
+     the system would come out Deck green no matter what it was handed. */
+  --deck-card-brand: var(--deck-primitive-signal-green);
+  --deck-card-accent: var(--deck-card-brand);
+}
+
+.deck-person-card {
+  --deck-card-u: calc(100cqw / 760);
+
+  /* Derived from the two the shell carries, so that every card in a pile is
+     glassy in the same way regardless of what colour it is. */
+  --deck-card-base: #0c0e0d;
+  --deck-card-fg: #ffffff;
+  --deck-card-fg-muted: rgba(255, 255, 255, 0.74);
+  /* 0.75, not the 0.6 the prototype uses. Measured against the wash at the
+     top of the card, where it is lightest: white at 60% lands the eyebrow on
+     3.75:1, and it is 11px type. At 0.75 it is 4.87:1. axe cannot check any
+     of this — it declines to judge contrast over an image or a gradient — so
+     the card's own values are checked here by hand rather than by the sweep. */
+  --deck-card-fg-subtle: rgba(255, 255, 255, 0.75);
+  --deck-card-surface: rgba(255, 255, 255, 0.16);
+  --deck-card-surface-hover: rgba(255, 255, 255, 0.26);
+  --deck-card-ring: rgba(255, 255, 255, 0.3);
+  --deck-card-cta-bg: #ffffff;
+  --deck-card-cta-fg: var(--deck-card-brand);
+
+  /*
+   * Deck's action tokens, re-pointed at the card's palette.
+   *
+   * This is what lets a caller drop an ordinary `Button` or `IconButton` into
+   * `footer` or `contactActions` and have it come out as glass on the card.
+   * The alternative — a `variant="on-card"` on every control that might ever
+   * sit here — would push the card's business into components that have no
+   * reason to know about it, and would silently do nothing for the next one.
+   * A surface with its own palette re-declaring the tokens is the smaller and
+   * more honest mechanism.
+   */
+  --deck-color-action-primary: var(--deck-card-cta-bg);
+  --deck-color-action-primary-hover: var(--deck-card-cta-bg);
+  --deck-color-action-primary-pressed: var(--deck-card-cta-bg);
+  --deck-color-action-primary-text: var(--deck-card-cta-fg);
+  --deck-color-action-primary-disabled: rgba(255, 255, 255, 0.24);
+  --deck-color-action-secondary: rgba(255, 255, 255, 0.14);
+  --deck-color-action-secondary-border: rgba(255, 255, 255, 0.55);
+  --deck-color-action-secondary-text: var(--deck-card-fg);
+  --deck-color-background-subtle: var(--deck-card-surface-hover);
+  --deck-color-background-overlay: var(--deck-card-surface-hover);
+  --deck-color-border-default: var(--deck-card-ring);
+  --deck-color-border-strong: var(--deck-card-fg);
+  --deck-color-border-focus: var(--deck-card-fg);
+  --deck-color-text-default: var(--deck-card-fg);
+  --deck-color-text-muted: var(--deck-card-fg-muted);
+  --deck-color-text-inverse: var(--deck-card-base);
+  --deck-color-text-disabled: rgba(255, 255, 255, 0.4);
+
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
   aspect-ratio: 7 / 4;
   overflow: hidden;
-  border-radius: var(--deck-radius-xl);
-  border-color: color-mix(
-    in srgb,
-    var(--deck-color-border-default) 65%,
-    var(--deck-color-background-elevated)
+  /* A physical card rounds about 3mm on an 89mm edge — 3.4%, which on the
+     760px canvas is 26px. 28 is the prototype's, and the difference is
+     invisible; the point is that it scales with the card instead of sitting
+     at a fixed 12px on an object three times the size. */
+  border-radius: calc(28 * var(--deck-card-u));
+  background-color: var(--deck-card-base);
+  color: var(--deck-card-fg);
+  /* Deck's sans throughout. The serif that used to set the name belongs to
+     the page's voice; on the card the name is the object's own lettering, and
+     the prototype sets it in the same face as everything else on it. */
+  font-family: var(--deck-font-sans);
+  box-shadow:
+    inset 0 0 0 1px var(--deck-card-ring),
+    0 calc(18 * var(--deck-card-u)) calc(40 * var(--deck-card-u))
+      calc(-18 * var(--deck-card-u)) rgba(12, 14, 13, 0.5);
+}
+
+/* ---- The ground -------------------------------------------------------- */
+
+/* The portrait, out of focus, under a wash of the card's own colour. The
+   photograph is what stops two cards with the same palette being the same
+   picture; the wash is what stops the photograph being the subject. */
+.deck-person-card__ground {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.deck-person-card__ground-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Scaled past the edges because a blur samples past them and would
+     otherwise fade the card's own border into grey. */
+  transform: scale(1.08);
+  filter: blur(calc(4 * var(--deck-card-u)));
+}
+
+.deck-person-card__ground-wash {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--deck-card-brand) 88%, transparent) 0%,
+    color-mix(in oklab, var(--deck-card-brand) 82%, var(--deck-card-base)) 55%,
+    color-mix(in oklab, var(--deck-card-brand) 52%, var(--deck-card-base)) 100%
   );
 }
 
-.deck-person-card__header {
+/* ---- Corners ----------------------------------------------------------- */
+
+.deck-person-card__corners {
+  position: absolute;
+  inset: calc(28 * var(--deck-card-u));
   display: flex;
   align-items: flex-start;
-  gap: var(--deck-space-16);
-  min-width: 0;
+  justify-content: space-between;
+  /* The chip and the pencil sit over the content, and nothing between them
+     should intercept a press meant for the card. */
+  pointer-events: none;
+  z-index: 2;
+}
+
+.deck-person-card__corners > * {
+  pointer-events: auto;
+}
+
+.deck-person-card__kind {
+  display: inline-flex;
+  align-items: center;
+  padding: calc(4 * var(--deck-card-u)) calc(12 * var(--deck-card-u));
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-card-surface);
+  box-shadow: inset 0 0 0 1px var(--deck-card-ring);
+  color: var(--deck-card-fg);
+  font-size: calc(12 * var(--deck-card-u));
+  font-weight: var(--deck-font-weight-medium);
+  line-height: 1.4;
+  backdrop-filter: blur(8px);
+}
+
+/* Quiet until wanted. The pencil is the owner's own affordance and it is on
+   top of the thing it edits, so it announces itself by being there rather
+   than by being bright. */
+.deck-person-card__edit {
+  display: grid;
+  place-items: center;
+  margin-left: auto;
+  width: calc(32 * var(--deck-card-u));
+  height: calc(32 * var(--deck-card-u));
+  padding: 0;
+  border: 0;
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-card-surface);
+  box-shadow: inset 0 0 0 1px var(--deck-card-ring);
+  color: var(--deck-card-fg);
+  opacity: 0.55;
+  cursor: pointer;
+  transition: opacity var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+.deck-person-card__edit:hover,
+.deck-person-card__edit:focus-visible {
+  opacity: 1;
+}
+
+.deck-person-card__edit:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-card-fg);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-person-card__edit svg {
+  width: calc(16 * var(--deck-card-u));
+  height: calc(16 * var(--deck-card-u));
+}
+
+/* ---- Body -------------------------------------------------------------- */
+
+.deck-person-card__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 100%;
+  padding: calc(32 * var(--deck-card-u)) calc(36 * var(--deck-card-u));
+}
+
+.deck-person-card__portrait {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(16 * var(--deck-card-u));
+  flex: none;
+  width: calc(184 * var(--deck-card-u));
+}
+
+.deck-person-card__logo {
+  height: calc(40 * var(--deck-card-u));
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
 }
 
 .deck-person-card__avatar-wrap {
   position: relative;
-  flex-shrink: 0;
+  flex: none;
 }
 
 /* Soft glow behind the avatar — purely decorative. */
 .deck-person-card__avatar-glow {
   position: absolute;
-  inset: calc(var(--deck-space-12) * -1);
+  inset: calc(-16 * var(--deck-card-u));
   border-radius: var(--deck-radius-full);
+  /* The accent's one appearance on the card, and it is deliberately barely
+     an appearance: behind a photograph it lifts the portrait off the ground,
+     and behind initials it should not become a coloured smudge with letters
+     in it. */
   background: radial-gradient(
     circle,
-    var(--deck-color-background-brand-subtle) 0%,
-    transparent 72%
+    color-mix(in oklab, var(--deck-card-accent) 30%, transparent) 0%,
+    transparent 70%
   );
-  z-index: 0;
+  filter: blur(calc(16 * var(--deck-card-u)));
 }
 
+/* Sized here rather than by passing a different `size`, because how large the
+   portrait is on a card is a fact about the card, not about the Avatar. */
 .deck-person-card__avatar-wrap .deck-avatar {
   position: relative;
-  z-index: 1;
+  width: calc(144 * var(--deck-card-u));
+  height: calc(144 * var(--deck-card-u));
+  /* Glass and white rather than Avatar's own tinted fill. Without a photo the
+     avatar is a hole in the card otherwise — its light-on-dark-green fallback
+     was designed against the page's surfaces, not against a card that is
+     already dark green. */
+  background-color: rgba(255, 255, 255, 0.18);
+  color: var(--deck-card-fg);
+  font-size: calc(44 * var(--deck-card-u));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
-.deck-person-card__identity {
+.deck-person-card__content {
   display: flex;
   flex-direction: column;
-  gap: var(--deck-space-2);
   min-width: 0;
   flex: 1;
-  padding-top: var(--deck-space-4);
+  margin-left: calc(32 * var(--deck-card-u));
 }
 
 .deck-person-card__eyebrow {
-  text-transform: uppercase;
+  color: var(--deck-card-fg-subtle);
+  font-size: calc(11 * var(--deck-card-u));
+  line-height: 1.4;
   letter-spacing: var(--deck-tracking-caps);
+  text-transform: uppercase;
 }
 
-/* One line, then ellipsis — as a name is set on a printed card.
-   Measured: at two lines the header grows from 56px to ~70px, which no
-   amount of tightening the gaps fits into a 7/4 box that also carries a
-   detail pill and a footer. The card can no longer grow to accommodate the
-   name, so the name yields instead of the layout. */
+/* One line, then ellipsis — as a name is set on a printed card. The card
+   cannot grow to accommodate a long one, so the name yields instead of the
+   layout. */
 .deck-person-card__name {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-weight: var(--deck-font-weight-bold);
+  margin-top: calc(6 * var(--deck-card-u));
+  color: var(--deck-card-fg);
+  font-family: inherit;
+  font-size: calc(30 * var(--deck-card-u));
+  font-weight: var(--deck-font-weight-semibold);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45);
+}
+
+.deck-person-card__tagline {
+  margin-top: calc(6 * var(--deck-card-u));
+  color: var(--deck-card-fg-muted);
+  font-size: calc(16 * var(--deck-card-u));
+  line-height: 1.4;
+}
+
+/* ---- Actions ----------------------------------------------------------- */
+
+.deck-person-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(12 * var(--deck-card-u));
+  margin-top: calc(16 * var(--deck-card-u));
 }
 
 .deck-person-card__contact-actions {
   display: flex;
   align-items: center;
-  gap: var(--deck-space-4);
-  flex-shrink: 0;
+  gap: calc(8 * var(--deck-card-u));
 }
 
-.deck-person-card__meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--deck-space-12);
-  min-width: 0;
+/* Every control the card carries is the same glass, at the same size, whether
+   the caller sent an `IconButton`, a `Button`, or the card made it itself. */
+.deck-person-card__contact-actions .deck-icon-button,
+.deck-person-card__contact-actions .deck-button {
+  height: calc(36 * var(--deck-card-u));
+  min-width: calc(36 * var(--deck-card-u));
+  padding-inline: calc(12 * var(--deck-card-u));
+  border: 0;
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-card-surface);
+  color: var(--deck-card-fg);
+  font-size: calc(12 * var(--deck-card-u));
+  backdrop-filter: blur(8px);
 }
 
-.deck-person-card__tagline {
-  min-width: 0;
+.deck-person-card__contact-actions .deck-icon-button {
+  width: calc(36 * var(--deck-card-u));
+  padding-inline: 0;
+}
+
+.deck-person-card__contact-actions .deck-icon-button:hover,
+.deck-person-card__contact-actions .deck-button:hover {
+  background-color: var(--deck-card-surface-hover);
+}
+
+.deck-person-card__contact-actions svg {
+  width: calc(16 * var(--deck-card-u));
+  height: calc(16 * var(--deck-card-u));
 }
 
 .deck-person-card__note {
   display: inline-flex;
   align-items: center;
-  gap: var(--deck-space-6);
-  flex-shrink: 0;
-  padding: var(--deck-space-6) var(--deck-space-12);
+  gap: calc(6 * var(--deck-card-u));
+  flex: none;
+  height: calc(36 * var(--deck-card-u));
+  padding-inline: calc(14 * var(--deck-card-u));
   /* Dashed, like `PrivateNote` on the card's other side — the note is
      something written rather than something published, and the control that
      opens it should look like the thing it opens rather than like the card's
      own set type. */
-  border: 1px dashed var(--deck-color-border-default);
+  border: 1px dashed var(--deck-card-ring);
   border-radius: var(--deck-radius-full);
-  background: none;
-  color: var(--deck-color-text-muted);
+  background-color: var(--deck-card-surface);
+  color: var(--deck-card-fg);
   font: inherit;
-  font-size: var(--deck-font-size-label-sm);
-  line-height: var(--deck-line-height-label-sm);
+  font-size: calc(12 * var(--deck-card-u));
   cursor: pointer;
+  backdrop-filter: blur(8px);
   transition: border-color var(--deck-duration-base) var(--deck-ease-standard);
 }
 
 .deck-person-card__note:hover {
-  border-color: var(--deck-color-border-strong);
+  border-color: var(--deck-card-fg);
+}
+
+.deck-person-card__note:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-card-fg);
+  outline-offset: var(--deck-focus-ring-offset);
 }
 
 .deck-person-card__note svg {
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
+  width: calc(12 * var(--deck-card-u));
+  height: calc(12 * var(--deck-card-u));
+  flex: none;
 }
 
 .deck-person-card__note-dot {
-  width: 6px;
-  height: 6px;
+  width: calc(6 * var(--deck-card-u));
+  height: calc(6 * var(--deck-card-u));
   border-radius: var(--deck-radius-full);
-  background-color: var(--deck-color-action-primary);
-  flex-shrink: 0;
+  background-color: var(--deck-card-fg);
+  flex: none;
 }
 
-/* One line, like the name above it. It used to wrap, which was right when the
-   card grew with its content; against a fixed 7/4 box a two-line role pushes
-   the footer out of the card. A long role is truncated rather than silently
-   clipped at whatever pixel the box ends. */
-/* A filled band across the card rather than an outlined chip hugging its
-   text. It is the one block on the card that is pure reference — role,
-   employer, place — and giving it a ground of its own separates it from the
-   name above and the actions below without another border competing with the
-   card's own edge. Full width because a chip that changes length with the
-   job title makes every card in a pile a slightly different shape. */
-.deck-person-card__pill {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: var(--deck-space-4);
-  width: 100%;
-  max-width: 100%;
-  /* Both lines are load-bearing, and neither is enough alone.
+/* ---- Detail ------------------------------------------------------------ */
 
-     `min-width: 0` because the pill is itself a flex item, and a flex item's
-     `min-width: auto` refuses to go below its content.
-
-     `box-sizing` because Deck has no global border-box reset — each component
-     sets its own — and without it `max-width: 100%` caps the *content* box,
-     then padding and border are added on top. Measured: the computed width
-     clamped correctly to 338px while the rendered box was 372, spilling 32px
-     past a 380px card whose role, company and place were all set. */
-  min-width: 0;
+.deck-person-card__detail {
   box-sizing: border-box;
+  margin: calc(16 * var(--deck-card-u)) 0 0;
+  padding: calc(14 * var(--deck-card-u)) calc(16 * var(--deck-card-u));
+  border-radius: calc(16 * var(--deck-card-u));
+  background-color: var(--deck-card-surface);
+  box-shadow: inset 0 0 0 1px var(--deck-card-ring);
+  color: var(--deck-card-fg);
+  font-size: calc(15 * var(--deck-card-u));
+  font-weight: var(--deck-font-weight-semibold);
+  line-height: 1.35;
+  backdrop-filter: blur(8px);
+  /* One line. A role, an employer and a city is a sentence the card has room
+     for; anything longer loses its tail rather than growing the box. */
   overflow: hidden;
-  /* 12px sides rather than 16. Every pixel of padding is a pixel the byline
-     cannot use, and this line is the one that runs out of room first: a role,
-     a company and a city need 406px at the old size against the 328px a
-     landscape card can give them. */
-  padding: var(--deck-space-6) var(--deck-space-12);
-  background-color: var(--deck-color-background-inset);
-  border-radius: var(--deck-radius-lg);
-  /* Set on the band so anything inheriting inside it comes along — the
-     company `Link` sets no size of its own and was picking up the card's
-     16px while the `Text` spans beside it were 14. */
-  font-size: var(--deck-font-size-body-xs);
-  line-height: var(--deck-line-height-body-xs);
-}
-
-/* Nothing wraps, and the deficit falls on the two parts that can carry it.
-
-   Letting *every* child shrink truncates all of them at once — "Head of
-   Partners… a. MeetC… Boulder, Color…", with the word "at" clipped to "a.".
-   Letting only the role shrink is fine while the shortfall is small, but a
-   card carrying a role, a company *and* a place is short by far more than
-   the role alone can give, and it collapses to "De…".
-
-   So the place gives four times as fast as the role, and the company and the
-   connectives do not give at all. "Design Lead at Northwind Studio" is the
-   line someone reads to know who you are; the city is the part they can lose
-   and still have the card. Sacrificing the role instead leaves "D… at
-   Northwind Studio · Boulder, Colorado", which keeps the least useful half. */
-.deck-person-card__pill > * {
-  flex-shrink: 0;
   white-space: nowrap;
-}
-
-.deck-person-card__pill > *:first-child,
-.deck-person-card__pill > *:last-child {
-  /* Without `min-width: 0` the text refuses to go below its content width
-     and the pill overflows instead of ellipsising. */
-  min-width: 0;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.deck-person-card__pill > *:first-child {
-  flex-shrink: 1;
-}
-
-.deck-person-card__pill > *:last-child {
-  flex-shrink: 4;
-}
-
 .deck-person-card__company-link {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
   text-decoration-style: dotted;
   text-underline-offset: 3px;
 }
 
-.deck-person-card__pill-divider {
-  width: 1px;
-  align-self: stretch;
-  margin-inline: var(--deck-space-4);
-  background-color: var(--deck-color-border-default);
-}
+/* ---- Footer ------------------------------------------------------------ */
 
 .deck-person-card__footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--deck-space-8);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(12 * var(--deck-card-u));
+  margin-top: calc(16 * var(--deck-card-u));
 }
 
-.deck-person-card__footer > * {
-  flex: 1;
+.deck-person-card__footer > *,
+.deck-person-card__footer .deck-button {
+  width: 100%;
+  height: calc(48 * var(--deck-card-u));
+  border-radius: var(--deck-radius-full);
+  font-size: calc(15 * var(--deck-card-u));
+}
+
+.deck-person-card__footer .deck-button svg {
+  width: calc(18 * var(--deck-card-u));
+  height: calc(18 * var(--deck-card-u));
 }
 
 /* ---- The turn ---------------------------------------------------------- */
 
-/* Only present when the card has a back. `perspective` on the outer element
-   rather than the rotating one, so the turn has depth instead of reading as
-   a flat horizontal squash.
-
-   The ratio lives here too, not only on the face. Both faces share one grid
-   cell, so without it the taller face sets the height and the card stops
-   being card-shaped the moment it gains a back — measured at 1.465 instead
-   of 1.75. With it, the shell is the fixed object and both sides fill it. */
+/* `perspective` on the outer element rather than the rotating one, so the
+   turn has depth instead of reading as a flat horizontal squash. */
 .deck-person-card-flip {
   position: relative;
-  width: 100%;
-  max-width: 400px;
   aspect-ratio: 7 / 4;
   perspective: 1400px;
 }
 
-.deck-person-card-flip__inner {
-  block-size: 100%;
-}
-
 /* Grid rather than absolute positioning: both faces share one cell, so the
-   card cannot change height halfway through turning over.
-
-   `minmax(0, 1fr)` is what makes the shell's ratio the authority. A grid row
-   sizes to its tallest item by default, and a back longer than the front —
-   `PrivateNote` is, by about 30px at 400px wide — then pushed that row past
-   the fixed-height shell and the face spilled out of the bottom of the card.
-   Measured: a 400px card whose shell was a correct 228px carried a 262px
-   face. Pinning the row to the shell puts the overflow where it belongs,
-   inside the back face, which scrolls. */
+   card cannot change height halfway through turning over. `minmax(0, 1fr)` is
+   what makes the shell's ratio the authority — a back longer than the front
+   would otherwise push the row past the fixed-height shell. */
 .deck-person-card-flip__inner {
   display: grid;
   grid-template-rows: minmax(0, 1fr);
+  block-size: 100%;
   transform-style: preserve-3d;
   transition: transform var(--deck-duration-slow) var(--deck-ease-standard);
 }
@@ -308,8 +504,7 @@
 
 /* Pre-turned, so it faces the viewer once the shell rotates. `overflow: auto`
    because the back is written on rather than set: a note long enough to
-   outgrow the card scrolls within it, the way the front's name truncates.
-   Both keep the card the size of the physical object. */
+   outgrow the card scrolls within it, the way the front's name truncates. */
 .deck-person-card-flip__face--back {
   transform: rotateY(180deg);
   overflow: auto;
@@ -338,11 +533,6 @@
     opacity: 0;
   }
 
-  .deck-person-card-flip:not(.deck-person-card-flip--flipped)
-    .deck-person-card-flip__face--back {
-    opacity: 0;
-  }
-
   .deck-person-card-flip--flipped .deck-person-card-flip__face {
     opacity: 0;
   }
@@ -352,146 +542,83 @@
   }
 }
 
-/* Card stacks its children 16px apart. That is right for a card that grows
-   with its content and 17px too much for one pinned to 7/4: measured, the
-   blocks need 146px and the box leaves 177px, so three 16px gaps overflow by
-   19. Eight leaves the whole thing 7px of slack. */
-.deck-person-card > * + * {
-  margin-top: var(--deck-space-8);
-}
-
 /* ---- Portrait ---------------------------------------------------------- */
 
 /*
- * The same card stood on its short edge.
+ * The same card stood on its short edge, on its own 400x700 canvas.
  *
  * Which way up is not the card's own decision — it is a fact about the space
  * the card is being shown in, so whoever is doing the showing declares it:
  * `data-card-orientation="portrait"` on any ancestor, which `CardPile` sets
- * for itself (portrait on a phone, landscape from `sm` up). A card outside
- * such an ancestor is landscape, exactly as before.
+ * for itself. A card outside such an ancestor is landscape.
  *
- * Nothing is added or removed in portrait, only re-ordered and re-aligned:
- * both faces of the same object, so that a card recognised on a desktop is
- * still recognisable on a phone.
+ * Nothing is added or removed, only re-arranged: the two columns become one,
+ * read straight down — who they are, how to reach them, what they do.
  */
-/* Centred down the card, not stacked from the top. Landscape is packed
-   tightly enough that it makes no difference; portrait has real slack, and
-   how much depends on the person — a card with no tagline and no note runs
-   ~90px short. Anchored to the top, that slack all collects under the
-   buttons and the card looks unfinished rather than roomy. */
-[data-card-orientation='portrait'] .deck-person-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+[data-card-orientation='portrait'] .deck-person-card-shell {
+  max-width: 400px;
 }
 
 [data-card-orientation='portrait'] .deck-person-card,
 [data-card-orientation='portrait'] .deck-person-card-flip {
-  /* 4/7 is the same 3.5x2in card as landscape's 7/4, turned. Anything else
-     would be a differently shaped object rather than the same one rotated. */
   aspect-ratio: 4 / 7;
-  max-width: 260px;
 }
 
-/* Centred, and read down the card: who they are, how to reach them, then
-   what they do. The gaps go up from 8px — the portrait box has ~120px more
-   room than the landscape one for the same content, and the reason to stand
-   the card up is to use it. */
-[data-card-orientation='portrait'] .deck-person-card > * + * {
-  margin-top: var(--deck-space-16);
+[data-card-orientation='portrait'] .deck-person-card {
+  --deck-card-u: calc(100cqw / 400);
 }
 
-[data-card-orientation='portrait'] .deck-person-card__header {
+[data-card-orientation='portrait'] .deck-person-card__body {
   flex-direction: column;
-  align-items: center;
-  gap: var(--deck-space-12);
-  text-align: center;
-}
-
-/* Bigger than the landscape `lg`, and the one place portrait deviates from
-   "same content, re-arranged". Stood up, the portrait is the first thing on
-   the card and has a whole width to itself instead of sharing a row with the
-   name; at 56px it reads as an afterthought in that space, and the card ends
-   up with 50px of dead air at the bottom. Set here rather than by passing a
-   different `size`, because which avatar size is right is a consequence of
-   the orientation, and the orientation is not the card's own decision. */
-[data-card-orientation='portrait'] .deck-person-card__avatar-wrap .deck-avatar {
-  width: 72px;
-  height: 72px;
-}
-
-/* Visual order only. The DOM keeps name-before-buttons, which is the order a
-   screen reader should hear it in — you learn whose card it is, then what
-   you can do about it — while the eye gets the portrait's avatar, actions,
-   name. */
-[data-card-orientation='portrait'] .deck-person-card__avatar-wrap {
-  order: 1;
-}
-
-[data-card-orientation='portrait'] .deck-person-card__contact-actions {
-  order: 2;
-  gap: var(--deck-space-8);
-}
-
-[data-card-orientation='portrait'] .deck-person-card__identity {
-  order: 3;
-  align-items: center;
-  width: 100%;
-  flex: none;
-  padding-top: 0;
-}
-
-/* Hidden from the eye, kept for assistive tech. Landscape uses the eyebrow to
-   fill the space beside the avatar; stood up, the name sits directly under a
-   56px portrait and a second label above it just crowds the card. The word is
-   still worth announcing, so this is `deck-visually-hidden`'s treatment
-   rather than `display: none`. */
-[data-card-orientation='portrait'] .deck-person-card__eyebrow {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-[data-card-orientation='portrait'] .deck-person-card__meta-row {
-  flex-direction: column;
-  align-items: center;
-  gap: var(--deck-space-8);
-  text-align: center;
-}
-
-/* Role and employer on one line, the place on its own beneath — the pill is
-   as wide as the card either way, and in portrait that is not wide enough to
-   hold all three on one line without truncating the very thing it is there
-   to say. */
-[data-card-orientation='portrait'] .deck-person-card__pill {
-  flex-wrap: wrap;
   justify-content: center;
+  padding: calc(36 * var(--deck-card-u)) calc(28 * var(--deck-card-u));
+}
+
+[data-card-orientation='portrait'] .deck-person-card__portrait {
+  width: 100%;
+  gap: calc(28 * var(--deck-card-u));
+}
+
+[data-card-orientation='portrait'] .deck-person-card__logo {
+  height: calc(52 * var(--deck-card-u));
+}
+
+[data-card-orientation='portrait'] .deck-person-card__avatar-wrap .deck-avatar {
+  width: calc(180 * var(--deck-card-u));
+  height: calc(180 * var(--deck-card-u));
+  font-size: calc(56 * var(--deck-card-u));
+}
+
+[data-card-orientation='portrait'] .deck-person-card__content {
+  align-items: center;
+  width: 100%;
+  flex: none;
+  margin-left: 0;
+  margin-top: calc(28 * var(--deck-card-u));
   text-align: center;
 }
 
-[data-card-orientation='portrait'] .deck-person-card__pill-divider {
-  display: none;
+[data-card-orientation='portrait'] .deck-person-card__name {
+  font-size: calc(38 * var(--deck-card-u));
 }
 
-[data-card-orientation='portrait'] .deck-person-card__place {
-  flex-basis: 100%;
-  flex-shrink: 0;
+[data-card-orientation='portrait'] .deck-person-card__tagline {
+  font-size: calc(19 * var(--deck-card-u));
 }
 
-/* Stacked, each button the full width of the card. Side by side at 260px the
-   two labels wrap to two lines each and stop reading as buttons. */
+[data-card-orientation='portrait'] .deck-person-card__actions {
+  justify-content: center;
+  margin-top: calc(24 * var(--deck-card-u));
+}
+
+[data-card-orientation='portrait'] .deck-person-card__detail,
 [data-card-orientation='portrait'] .deck-person-card__footer {
-  flex-direction: column;
-  flex-wrap: nowrap;
+  width: 100%;
+  margin-top: calc(20 * var(--deck-card-u));
 }
 
-[data-card-orientation='portrait'] .deck-person-card__footer > * {
-  width: 100%;
-  flex: none;
+/* Stacked, each button the full width of the card. Side by side on a 400px
+   canvas the two labels wrap and stop reading as buttons. */
+[data-card-orientation='portrait'] .deck-person-card__footer {
+  grid-template-columns: 1fr;
 }

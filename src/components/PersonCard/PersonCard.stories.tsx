@@ -109,7 +109,11 @@ const meta = {
     tagline: 'What a lovable guy',
   },
   render: (args) => (
-    <div style={{ maxWidth: 420 }}>
+    /* Wider than the card used to be shown at. The card scales as one object
+       now, so the frame it is given is the only thing deciding how large it
+       is — and at 420px the type on it is the size of type on a real card
+       held at arm's length, which is not how anyone reviews a design. */
+    <div style={{ maxWidth: 640 }}>
       <PersonCard {...args} />
     </div>
   ),
@@ -152,6 +156,67 @@ export const WithPrivateNote: Story = {
       canvas.getByRole('button', { name: /Your private note/ }),
     ).toBeVisible()
   },
+}
+
+/**
+ * A card carries its own colours, and everything on it follows: the wash, the
+ * glass, and the brand the primary button's label is set in. The buttons here
+ * are ordinary `Button`s — they read the card's palette because they are on
+ * it, not because they were told they would be.
+ */
+export const Branded: Story = {
+  args: {
+    contactActions,
+    footer,
+    kind: 'Business',
+    theme: { primary: '#2E6E5B', accent: '#C66A4A' },
+  },
+}
+
+/** The same card, another company's colours. */
+export const BrandedElsewhere: Story = {
+  args: {
+    ...Branded.args,
+    name: 'Sam Ellery',
+    title: 'CEO',
+    company: 'Trail & Co',
+    tagline: 'Runs long, talks fast',
+    theme: { primary: '#3B4A6B', accent: '#E0A458' },
+  },
+}
+
+/**
+ * The owner's own card. The chip says which of your selves this is — the one
+ * thing on the card the person you hand it to never sees — and the pencil
+ * edits the thing it sits on.
+ */
+export const YourOwnCard: Story = {
+  args: {
+    contactActions,
+    footer,
+    kind: 'Personal',
+    theme: { primary: '#3A3F3D', accent: '#9A8F82' },
+    onEdit: () => {},
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('button', { name: 'Edit card' }),
+    ).toBeVisible()
+  },
+}
+
+/**
+ * The same object stood on its short edge. Orientation is not the card's own
+ * decision — an ancestor declares it, and `CardPile` does so from the room it
+ * has. Nothing is added or removed, only read straight down.
+ */
+export const Portrait: Story = {
+  args: { contactActions, footer, kind: 'Business' },
+  render: (args) => (
+    <div data-card-orientation="portrait" style={{ maxWidth: 360 }}>
+      <PersonCard {...args} />
+    </div>
+  ),
 }
 
 /** A long name still fits — it truncates rather than breaking the layout. */

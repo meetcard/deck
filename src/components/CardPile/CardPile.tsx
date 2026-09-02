@@ -80,42 +80,31 @@ const EXIT_DISTANCE = 480
  * the layers sat 25/17px out and 21/39px up-and-down, which at 400px is
  * ~17 and ~16/32.
  *
- * Rotation and scale stay tiny on purpose. Five- and seven-degree rotations
- * scatter the layers like a hand of playing cards; what tells you there is
- * more than one card here is the sliver of edge showing, not the angle.
+ * The angle carries more of it than the offset does. A card set down on
+ * another is rarely square to it and is almost never a clean inch to one
+ * side, so a few degrees with a small nudge reads as a pile where a large
+ * nudge at no angle reads as two cards someone laid out to compare.
  *
  * The step is per-orientation, so a portrait pile does not get the sideways
- * nudge of a landscape one half again as wide. Kept in sync with the room
- * `CardPile.css` reserves around the stage: the deepest of three layers sits
- * `2 x y` below the front card — at both sizes, since the stylesheet grows
- * that reservation by the same multiplier applied below.
+ * nudge of a landscape one half again as wide.
+ *
+ * Stated as percentages of the card, not pixels, and `translate()` resolves
+ * them against the element's own box — so the sliver of edge showing is the
+ * same fraction of a 320px card as of a 760px one. It used to be pixels plus
+ * a multiplier the stylesheet had to be kept in step with; the card now
+ * scales continuously with its container, and there is no longer a discrete
+ * "large" size for a multiplier to key off.
  */
 const DEPTH_STEP: Record<
   Exclude<CardPileOrientation, 'responsive'>,
   { x: number; y: number }
 > = {
-  landscape: { x: 17, y: 16 },
-  portrait: { x: 15, y: 18 },
+  landscape: { x: 1.5, y: 2 },
+  portrait: { x: 2.2, y: 1.4 },
 }
-const DEPTH_ROTATE_BASE = 1.1
-const DEPTH_ROTATE_STEP = 0.5
-const DEPTH_SCALE_STEP = 0.01
-
-/*
- * A landscape pile is half again as wide on a desktop screen (`CardPile.css`),
- * and the offsets above are a proportion of the card's width, not a fixed
- * number of pixels — that is how they were derived from the mockup in the
- * first place. Growing the card without growing them would shrink the sliver
- * of edge that is the entire tell that this is a pile.
- *
- * The check is worth stating plainly: at 600px this puts the layers 25.5 and
- * 24/48 out, against the 25 and 21/39 measured on the mockup's own 520px
- * card. Scaling up lands nearer the source than the 400px default does.
- *
- * Rotation and scale stay put. Both are angles and ratios, which a bigger
- * card does not change.
- */
-const ROOMY_DEPTH_MULTIPLIER = 1.5
+const DEPTH_ROTATE_BASE = 4
+const DEPTH_ROTATE_STEP = 1.4
+const DEPTH_SCALE_STEP = 0.015
 
 function mod(value: number, length: number) {
   return ((value % length) + length) % length
@@ -125,19 +114,17 @@ function mod(value: number, length: number) {
 function getLayerTransform(
   depth: number,
   orientation: Exclude<CardPileOrientation, 'responsive'>,
-  roomy: boolean,
 ) {
   const step = DEPTH_STEP[orientation]
-  const multiplier = roomy ? ROOMY_DEPTH_MULTIPLIER : 1
   // Odd depths go up and right, even ones down and left.
   const sign = depth % 2 === 1 ? 1 : -1
   // Sideways: same distance every layer, alternating side. Vertically: a
   // step per layer, so the pile deepens downward as it goes back.
-  const x = sign * step.x * multiplier
-  const y = -sign * depth * step.y * multiplier
+  const x = sign * step.x
+  const y = -sign * depth * step.y
   const rotate = sign * (DEPTH_ROTATE_BASE + (depth - 1) * DEPTH_ROTATE_STEP)
   const scale = 1 - depth * DEPTH_SCALE_STEP
-  return `translate(${x}px, ${y}px) rotate(${rotate}deg) scale(${scale})`
+  return `translate(${x}%, ${y}%) rotate(${rotate}deg) scale(${scale})`
 }
 
 const ChevronLeftIcon = () => (
@@ -242,14 +229,6 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
           ? 'portrait'
           : 'landscape'
         : orientation
-
-    /*
-     * The enlarged pile, mirroring the `min-width: 640px` rule in the
-     * stylesheet. Both sides ask the same question of the same breakpoint —
-     * `isNarrow` is its negation — so the transforms cannot end up sized for
-     * one card while the CSS renders the other.
-     */
-    const roomy = !isNarrow && resolvedOrientation === 'landscape'
 
     const startXRef = useRef(0)
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -358,6 +337,23 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
         onKeyDown={handleKeyDown}
         {...props}
       >
+      <div className="deck-card-pile__frame">
+        {/* Flanking the card rather than sitting under it. They point at the
+            thing they move, and they keep the space beside a landscape card —
+            which is otherwise empty — doing something. Dropped below `sm`,
+            where there is no such space and the dots carry the job. */}
+        {count > 1 ? (
+          <IconButton
+            label="Previous card"
+            icon={<ChevronLeftIcon />}
+            round
+            variant="secondary"
+            className="deck-card-pile__arrow"
+            disabled={isAnimating}
+            onClick={() => advance(-1, EXIT_DISTANCE)}
+          />
+        ) : null}
+
         <div className="deck-card-pile__stage">
           {Array.from({ length: visibleCount }, (_, depth) => {
             const itemIndex = mod(activeIndex + depth, count)
@@ -373,7 +369,7 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
                 style={{
                   transform: isFront
                     ? `translateX(${dragX}px) rotate(${dragX / 24}deg)`
-                    : getLayerTransform(depth, resolvedOrientation, roomy),
+                    : getLayerTransform(depth, resolvedOrientation),
                   transition: isFront && isDragging ? 'none' : undefined,
                   zIndex: visibleCount - depth,
                 }}
@@ -401,23 +397,47 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
         </div>
 
         {count > 1 ? (
-          <div className="deck-card-pile__controls">
-            <IconButton
-              label="Previous card"
-              icon={<ChevronLeftIcon />}
-              size="sm"
-              variant="secondary"
-              disabled={isAnimating}
-              onClick={() => advance(-1, EXIT_DISTANCE)}
-            />
-            <IconButton
-              label="Next card"
-              icon={<ChevronRightIcon />}
-              size="sm"
-              variant="secondary"
-              disabled={isAnimating}
-              onClick={() => advance(1, -EXIT_DISTANCE)}
-            />
+          <IconButton
+            label="Next card"
+            icon={<ChevronRightIcon />}
+            round
+            variant="secondary"
+            className="deck-card-pile__arrow"
+            disabled={isAnimating}
+            onClick={() => advance(1, -EXIT_DISTANCE)}
+          />
+        ) : null}
+      </div>
+
+        {/*
+          Dots rather than "2 / 5". They say how many cards there are and
+          which one you are on, and — unlike the arrows, which the layout
+          drops on a phone for want of room beside the card — they are a way
+          to reach any card directly rather than one step at a time. That
+          matters more than it looks: without them, a narrow screen would
+          leave dragging as the only pointer route through the pile.
+        */}
+        {count > 1 ? (
+          <div className="deck-card-pile__dots">
+            {items.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                className={cx(
+                  'deck-card-pile__dot',
+                  i === activeIndex && 'deck-card-pile__dot--active',
+                )}
+                aria-label={`Card ${i + 1} of ${count}`}
+                aria-current={i === activeIndex ? 'true' : undefined}
+                onClick={() => {
+                  if (isControlled) onActiveIndexChange?.(i)
+                  else {
+                    setUncontrolledIndex(i)
+                    onActiveIndexChange?.(i)
+                  }
+                }}
+              />
+            ))}
           </div>
         ) : null}
 

@@ -27,8 +27,8 @@ describe('PersonCard', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
   })
 
-  describe('detail pill', () => {
-    it('joins title, company, and location', () => {
+  describe('detail line', () => {
+    it('reads as a sentence, not as three fields', () => {
       render(
         <PersonCard
           name="Ben Ackles"
@@ -38,10 +38,18 @@ describe('PersonCard', () => {
         />,
       )
 
-      expect(screen.getByText('Builder')).toBeVisible()
-      expect(screen.getByText('at', { exact: false })).toBeVisible()
-      expect(screen.getByText('MeetCard')).toBeVisible()
-      expect(screen.getByText('Boulder, Colorado')).toBeVisible()
+      expect(
+        document.querySelector('.deck-person-card__detail'),
+      ).toHaveTextContent('Builder at MeetCard in Boulder, Colorado')
+    })
+
+    it('drops the connectives it has nothing to connect', () => {
+      render(<PersonCard name="Ben Ackles" location="Boulder, Colorado" />)
+
+      expect(
+        document.querySelector('.deck-person-card__detail'),
+      ).toHaveTextContent('Boulder, Colorado')
+      expect(screen.queryByText(/\bin\b/)).not.toBeInTheDocument()
     })
 
     it('renders company as a link when companyHref is given', () => {
@@ -61,9 +69,9 @@ describe('PersonCard', () => {
       expect(screen.getByText('MeetCard')).toBeVisible()
     })
 
-    it('omits the pill entirely when no detail is given', () => {
+    it('omits the line entirely when no detail is given', () => {
       render(<PersonCard name="Ben Ackles" />)
-      expect(document.querySelector('.deck-person-card__pill')).toBeNull()
+      expect(document.querySelector('.deck-person-card__detail')).toBeNull()
     })
   })
 
@@ -122,6 +130,66 @@ describe('PersonCard', () => {
     expect(screen.getByRole('button', { name: 'Book with me' })).toBeVisible()
   })
 
+  describe('the card as a branded object', () => {
+    it('puts the theme on the shell as custom properties', () => {
+      const { container } = render(
+        <PersonCard
+          name="Ben Ackles"
+          theme={{ primary: '#2E6E5B', accent: '#C66A4A' }}
+        />,
+      )
+
+      const shell = container.firstElementChild as HTMLElement
+      expect(shell.style.getPropertyValue('--deck-card-brand')).toBe('#2E6E5B')
+      expect(shell.style.getPropertyValue('--deck-card-accent')).toBe('#C66A4A')
+    })
+
+    it('falls back to the primary when no accent is given', () => {
+      const { container } = render(
+        <PersonCard name="Ben Ackles" theme={{ primary: '#2E6E5B' }} />,
+      )
+
+      const shell = container.firstElementChild as HTMLElement
+      expect(shell.style.getPropertyValue('--deck-card-accent')).toBe('#2E6E5B')
+    })
+
+    it('renders the kind as a chip', () => {
+      render(<PersonCard name="Ben Ackles" kind="Business" />)
+      expect(screen.getByText('Business')).toBeVisible()
+    })
+
+    it('names the edit control and calls it', async () => {
+      const onEdit = vi.fn()
+      const user = userEvent.setup()
+      render(<PersonCard name="Ben Ackles" onEdit={onEdit} />)
+
+      await user.click(screen.getByRole('button', { name: 'Edit card' }))
+      expect(onEdit).toHaveBeenCalledTimes(1)
+    })
+
+    it('has no edit control unless one is asked for', () => {
+      render(<PersonCard name="Ben Ackles" />)
+      expect(screen.queryByRole('button', { name: 'Edit card' })).toBeNull()
+    })
+
+    // The photograph is on the card at a size you can see. Announcing the
+    // blurred copy behind it would say the same thing twice, and say it worse.
+    it('builds the ground from the portrait, decoratively', () => {
+      render(<PersonCard name="Ben Ackles" avatarSrc="/ben.jpg" />)
+
+      const ground = document.querySelector('.deck-person-card__ground-photo')
+      expect(ground).toHaveAttribute('src', '/ben.jpg')
+      expect(ground).toHaveAttribute('alt', '')
+    })
+
+    it('takes no ground at all when asked for none', () => {
+      render(<PersonCard name="Ben Ackles" avatarSrc="/ben.jpg" backdropSrc={null} />)
+      expect(
+        document.querySelector('.deck-person-card__ground-photo'),
+      ).toBeNull()
+    })
+  })
+
   it('forwards a ref to the card element', () => {
     const ref = { current: null as HTMLElement | null }
     render(<PersonCard ref={ref} name="Ben Ackles" />)
@@ -131,11 +199,12 @@ describe('PersonCard', () => {
   describe('with a back', () => {
     const back = <p>Note surface</p>
 
-    // Without a back the card must render exactly as it always has — the
-    // article stays the root, unwrapped.
-    it('does not wrap the card when there is no back', () => {
+    // The shell is always there — it is the container the card's own metrics
+    // are a percentage of — but it only becomes a flip when there is a second
+    // face to turn to.
+    it('does not make the shell a flip when there is no back', () => {
       const { container } = render(<PersonCard name="Ada Lovelace" />)
-      expect(container.firstElementChild).toHaveAttribute('class', expect.stringContaining('deck-person-card'))
+      expect(container.firstElementChild).toHaveClass('deck-person-card-shell')
       expect(container.querySelector('.deck-person-card-flip')).toBeNull()
     })
 
