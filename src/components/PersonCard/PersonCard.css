@@ -416,23 +416,62 @@
 
 /* ---- Detail ------------------------------------------------------------ */
 
+/*
+ * A line of prose, set as prose.
+ *
+ * It used to carry the card's surface, ring and blur — the same treatment the
+ * buttons under it wear — which made a fact about the person look like a third
+ * thing to press. Nothing here is pressable except the company's name, and
+ * that says so on its own with a dotted underline. So no box: weight and
+ * colour place it under the tagline, which is all the separation a byline
+ * needs when it is the only text between the name and the actions.
+ */
 .deck-person-card__detail {
   box-sizing: border-box;
-  margin: calc(16 * var(--deck-card-u)) 0 0;
-  padding: calc(14 * var(--deck-card-u)) calc(16 * var(--deck-card-u));
-  border-radius: calc(16 * var(--deck-card-u));
-  background-color: var(--deck-card-surface);
-  box-shadow: inset 0 0 0 1px var(--deck-card-ring);
+  margin: calc(14 * var(--deck-card-u)) 0 0;
   color: var(--deck-card-fg);
   font-size: calc(15 * var(--deck-card-u));
   font-weight: var(--deck-font-weight-semibold);
-  line-height: 1.35;
-  backdrop-filter: blur(8px);
-  /* One line. A role, an employer and a city is a sentence the card has room
-     for; anything longer loses its tail rather than growing the box. */
+  line-height: 1.4;
+}
+
+/* "at", "in" — the words that are grammar rather than information. Set back
+   so the three things worth reading carry the line: the role, the employer,
+   the place. Weight and colour rather than size, because a preposition that
+   is also smaller starts to look like a mistake. */
+.deck-person-card__joiner {
+  font-weight: var(--deck-font-weight-regular);
+  color: var(--deck-card-fg-subtle);
+}
+
+/*
+ * Up to two lines, and the break between them is chosen rather than found.
+ *
+ * Two `inline-block`s with a real space between them: an inline-block is
+ * atomic, so it cannot be broken inside, which leaves that one space as the
+ * only place the line can break. The phrase therefore wraps where it reads
+ * well — "Head of Partnerships / at MeetCard in Boulder, Colorado" — instead
+ * of at whatever word happened to reach the edge. It is also what caps the
+ * byline at two lines: two atoms, one line each.
+ *
+ * A flex row with `column-gap` would place them the same way and was the
+ * first attempt, but the gap is layout rather than text — the paragraph then
+ * reads "Builderat MeetCard" to a screen reader and to anyone copying it,
+ * which a `PersonCard` test caught. Inline layout keeps the space real.
+ *
+ * A long half loses its own tail rather than costing the card a third line.
+ * `vertical-align` is pinned because `overflow: hidden` moves an inline
+ * block's baseline to its bottom edge, and two halves disagreeing about that
+ * would sit a pixel apart.
+ */
+.deck-person-card__role,
+.deck-person-card__affiliation {
+  display: inline-block;
+  max-inline-size: 100%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  vertical-align: top;
 }
 
 .deck-person-card__company-link {

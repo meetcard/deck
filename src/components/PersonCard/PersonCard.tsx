@@ -412,43 +412,78 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
                   place are a phrase people already know how to read — "Builder
                   at MeetCard in Boulder, Colorado" — and setting them as three
                   fielded values separated by rules makes a database record of
-                  something that is a line of prose on every printed card. */}
+                  something that is a line of prose on every printed card.
+
+                  Two spans, not one run of text, and the split is where the
+                  sentence would be read aloud with a breath: the role, then
+                  who and where. They are flex items, so when the phrase is too
+                  long for one line the break lands *there* rather than at
+                  whatever word happened to reach the edge — "Head of
+                  Partnerships / at MeetCard in Boulder, Colorado", never
+                  "…at MeetCard in / Boulder, Colorado". Two spans is also what
+                  caps it at two lines: each holds one line and elides its own
+                  tail, so a card cannot grow a third. */}
               {hasDetail ? (
                 <p className="deck-person-card__detail">
-                  {title ? <span>{title}</span> : null}
-                  {company ? (
-                    <>
-                      {title ? ' at ' : null}
+                  {title ? (
+                    <span className="deck-person-card__role">{title}</span>
+                  ) : null}
+                  {/* A real space, and the only break opportunity in the
+                      paragraph — see the CSS. Written explicitly because JSX
+                      drops the whitespace between elements on separate
+                      lines. */}
+                  {title && (company || location) ? ' ' : null}
+                  {company || location ? (
+                    <span className="deck-person-card__affiliation">
+                      {title && company ? (
+                        <>
+                          <span className="deck-person-card__joiner">at</span>{' '}
+                        </>
+                      ) : null}
                       {/* Three things the company's name can be, and they are
                           not interchangeable: a face of this card, a link off
                           it, or neither. Turning the card wins when there is
                           a profile to turn to, because it keeps you holding
                           the card you were reading. */}
-                      {companyProfile ? (
-                        <button
-                          type="button"
-                          className="deck-person-card__company-link"
-                          onClick={() => setView('company')}
-                        >
-                          {company}
-                        </button>
-                      ) : companyHref ? (
-                        <a
-                          href={companyHref}
-                          className="deck-person-card__company-link"
-                        >
-                          {company}
-                        </a>
-                      ) : (
-                        <span>{company}</span>
-                      )}
-                    </>
-                  ) : null}
-                  {location ? (
-                    <>
-                      {title || company ? ' in ' : null}
-                      <span className="deck-person-card__place">{location}</span>
-                    </>
+                      {company ? (
+                        companyProfile ? (
+                          <button
+                            type="button"
+                            className="deck-person-card__company-link"
+                            onClick={() => setView('company')}
+                          >
+                            {company}
+                          </button>
+                        ) : companyHref ? (
+                          <a
+                            href={companyHref}
+                            className="deck-person-card__company-link"
+                          >
+                            {company}
+                          </a>
+                        ) : (
+                          <span>{company}</span>
+                        )
+                      ) : null}
+                      {location ? (
+                        <>
+                          {/* The space before "in" belongs here when the
+                              company precedes it; when "in" opens this span,
+                              the space before it is the one above. */}
+                          {company ? ' ' : null}
+                          {title || company ? (
+                            <>
+                              <span className="deck-person-card__joiner">
+                                in
+                              </span>{' '}
+                            </>
+                          ) : null}
+                          <span className="deck-person-card__place">
+                            {location}
+                          </span>
+                        </>
+                      ) : null}
+                    </span>
                   ) : null}
                 </p>
               ) : null}
