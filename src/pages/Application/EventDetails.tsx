@@ -109,12 +109,13 @@ export function EventDetails({
           closeShareLabel={`Close share for ${event.name}`}
           share={{
             value: link,
-            /* The line a recipient reads before deciding to follow it —
-               when and where, which is what the fact panels said before
-               the hero turned over. */
-            summary: `${formatFullDate(event.date)} · ${event.venue}`,
+            /* The second fact only — the hero leads the chip with the event's
+               name. Which day it is, which is what you check before handing
+               the code to someone who is going to ask. */
+            summary: formatFullDate(event.date),
             qr: <SampleQr />,
             onDownloadQr: () => {},
+            onShareLinkedIn: () => {},
           }}
           badges={
             <>

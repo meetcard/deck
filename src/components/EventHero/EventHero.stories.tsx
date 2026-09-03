@@ -218,17 +218,23 @@ export const AsAnEventPage: Story = {
 
 const share = {
   value: 'meetcard.io/events/revops',
-  summary: 'Tuesday, May 18, 2027 · Austin Convention Center',
+  /* The second fact only — the hero leads the chip with the event's name. */
+  summary: 'Tuesday, May 18, 2027',
   qr: <Matrix />,
   onDownloadQr: () => {},
+  onShareLinkedIn: () => {},
 }
 
 /**
  * The hero turned over to be scanned.
  *
  * Not a dialog. The event is the thing being handed across, so it happens on
- * the event — same cover, same colours, its code where its details were. The
- * name stays put, so you can see what you are about to hand over.
+ * the event — same cover, same colours, its code where its details were.
+ *
+ * The arrangement is `PersonCard`'s share face, deliberately: caps line,
+ * instruction at heading size, the link, then the chip saying what you are
+ * handing over. A person meets both faces, and they are one gesture. The
+ * event's name is in that chip, and is still the hero's heading.
  *
  * The control that opens this belongs to the page (an event page puts Share
  * next to Add to calendar), so the caller drives `view`. The hero owns the

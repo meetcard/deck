@@ -103,6 +103,10 @@ export interface EventHeroProps
    * event's link and a person's link are the same kind of thing, and two
    * names for it is how two surfaces start drifting apart.
    *
+   * `summary` is the second fact only. The hero already has the event's name
+   * and leads the chip with it, so pass what someone would want next — when
+   * it is — rather than repeating the name a card's summary has to carry.
+   *
    * The hero does not raise the control — an event page puts "Share" in its
    * own row of actions, next to "Add to calendar" — so pass `view` alongside
    * it, or read `onViewChange` and let the hero keep its own.
@@ -144,9 +148,10 @@ export interface EventHeroProps
  * what the header is for.
  *
  * Given a `share`, the hero can turn to show the event's code in place of its
- * details — the same move a `PersonCard` makes, and for the same reason. The
- * name stays put while it does, so you can see what you are handing over and
- * the page keeps its heading.
+ * details — the same move a `PersonCard` makes, laid out the same way, so the
+ * two read as one gesture on two surfaces. The event's name goes on being the
+ * hero's heading throughout; it moves into the chip beside the code, where
+ * the card puts the person's.
  *
  * @example
  * <EventHero
@@ -193,6 +198,17 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
     }
     const sharing = currentView === 'share' && Boolean(share)
 
+    /* The heading's text, which is the same on both faces — only the size it
+       is set at changes. Written once so a link on the index cannot go
+       missing from one of them. */
+    const nameText = href ? (
+      <Link href={href} tone="default" underline="hover">
+        {name}
+      </Link>
+    ) : (
+      name
+    )
+
     return (
       <section
         ref={ref}
@@ -201,6 +217,7 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
           /* No photograph to protect, so the ground is drawn rather than
              screened — see the `--flat` block in the stylesheet. */
           !coverSrc && 'deck-event-hero--flat',
+          sharing && 'deck-event-hero--sharing',
           className,
         )}
         style={
@@ -256,87 +273,87 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
             <Eyebrow className="deck-event-hero__eyebrow">{eyebrow}</Eyebrow>
           ) : null}
 
-          <div className="deck-event-hero__body">
-            {/* "Attending", "Soon" — facts about the event that are yours
-                rather than the recipient's, so they go away with the rest of
-                the details when the hero turns over. */}
-            {badges && !sharing ? (
-              <div className="deck-event-hero__badges">{badges}</div>
-            ) : null}
-
-            <Name className="deck-event-hero__name">
-              {href ? (
-                <Link href={href} tone="default" underline="hover">
-                  {name}
-                </Link>
-              ) : (
-                name
-              )}
-            </Name>
-
-            {sharing && share ? (
-              <div className="deck-event-hero__share">
-                {/* Light in both themes, as `QRCode`'s own plate is: a scanner
-                    needs a quiet zone, and the hero's ground is a photograph
-                    under a wash of somebody's brand colour. */}
-                <div className="deck-event-hero__qr">
-                  <QRCode value={share.value} src={share.qrSrc} size="md">
-                    {share.qr}
-                  </QRCode>
-                </div>
-
-                <div className="deck-event-hero__share-body">
-                  {/* Not a heading: the event's name above it is the hero's
-                      heading whichever face is showing, and this is the
-                      instruction for the plate beside it. */}
-                  <p className="deck-event-hero__share-title">
-                    Scan or copy the link
-                  </p>
-
-                  {share.summary ? (
-                    <p className="deck-event-hero__share-summary">
-                      {share.summary}
-                    </p>
-                  ) : null}
-
-                  <CopyField
-                    label="Share link"
-                    value={share.value}
-                    icon={<LinkIcon />}
-                    size="sm"
-                    className="deck-event-hero__link"
-                  />
-
-                  {share.onDownloadQr || share.onShareLinkedIn ? (
-                    <div className="deck-event-hero__share-actions">
-                      {share.onDownloadQr ? (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          iconStart={<DownloadIcon />}
-                          onClick={share.onDownloadQr}
-                        >
-                          Download QR
-                        </Button>
-                      ) : null}
-                      {share.onShareLinkedIn ? (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          iconStart={<LinkedInIcon />}
-                          onClick={share.onShareLinkedIn}
-                        >
-                          Share on LinkedIn
-                        </Button>
-                      ) : null}
-                    </div>
-                  ) : null}
-                </div>
+          {sharing && share ? (
+            /*
+             * The same face a card shows, in the hero's own metrics: the code
+             * on the left, and beside it the caps line, the instruction, the
+             * link, and the chip naming what is being handed over. Reading
+             * order and proportions are `PersonCard`'s `ShareFace` — the two
+             * are one gesture on two surfaces, and a person meets both.
+             */
+            <div className="deck-event-hero__body deck-event-hero__share">
+              {/* Light in both themes, as `QRCode`'s own plate is: a scanner
+                  needs a quiet zone, and the hero's ground is a photograph
+                  under a wash of somebody's brand colour. */}
+              <div className="deck-event-hero__qr">
+                <QRCode value={share.value} src={share.qrSrc} size="md">
+                  {share.qr}
+                </QRCode>
               </div>
-            ) : (
-              children
-            )}
-          </div>
+
+              <div className="deck-event-hero__share-body">
+                <span className="deck-event-hero__share-eyebrow">
+                  Share this event
+                </span>
+
+                {/* Not a heading. It is the instruction for the plate beside
+                    it; the event's name is still the hero's heading, and it
+                    is in the chip below where the card puts the person's. */}
+                <p className="deck-event-hero__share-title">
+                  Scan or copy the link
+                </p>
+
+                <CopyField
+                  label="Share link"
+                  value={share.value}
+                  icon={<LinkIcon />}
+                  className="deck-event-hero__link"
+                />
+
+                {/* What you are handing over, in one line: the event, and the
+                    one fact that tells you which one. The heading is only the
+                    name, so nobody hears the date read as part of it. */}
+                <div className="deck-event-hero__share-summary">
+                  <Name className="deck-event-hero__share-name">
+                    {nameText}
+                  </Name>
+                  {share.summary ? <span> · {share.summary}</span> : null}
+                </div>
+
+                {share.onDownloadQr || share.onShareLinkedIn ? (
+                  <div className="deck-event-hero__share-actions">
+                    {share.onDownloadQr ? (
+                      <Button
+                        iconStart={<DownloadIcon />}
+                        onClick={share.onDownloadQr}
+                      >
+                        Download QR
+                      </Button>
+                    ) : null}
+                    {share.onShareLinkedIn ? (
+                      <Button
+                        variant="secondary"
+                        iconStart={<LinkedInIcon />}
+                        onClick={share.onShareLinkedIn}
+                      >
+                        Share on LinkedIn
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          ) : (
+            <div className="deck-event-hero__body">
+              {badges ? (
+                <div className="deck-event-hero__badges">{badges}</div>
+              ) : null}
+
+              <Name className="deck-event-hero__name">{nameText}</Name>
+
+              {children}
+            </div>
+          )}
         </div>
       </section>
     )
