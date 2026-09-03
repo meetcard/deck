@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn } from 'storybook/test'
+import { aspectRatioOf } from '../../test/measure'
 import { Button } from '../Button/Button'
 import { PersonCard } from '../PersonCard/PersonCard'
 import { CardPile } from './CardPile'
@@ -16,8 +17,31 @@ const meta = {
    * is clipped by the canvas edge and the card the story is about is the
    * one thing you cannot see whole. Every surface that uses a pile centres
    * it (`MyCards`, `Connections`); the story should show it the same way.
+   *
+   * Centred by a full-width box rather than by `layout: 'centered'`, though,
+   * and that distinction is not cosmetic. Storybook's centred layout makes
+   * the story a shrink-to-fit flex item, and a pile fills the width it is
+   * given — so it was being asked to size itself from nothing. It obliged:
+   * the card rendered at 0x0 in every story in this file, which surfaced as
+   * `offsetWidth / offsetHeight` being `NaN` in the ratio assertions below.
+   * The component no longer collapses that far, but a story should exercise
+   * it the way `MyCards` and `Connections` actually use it — inside
+   * something that has a width — rather than in a box that has none.
    */
-  parameters: { layout: 'centered' },
+  parameters: { layout: 'fullscreen' },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          boxSizing: 'border-box',
+          width: '100%',
+          padding: 'var(--deck-space-24)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     label: "Ada's saved cards",
     onActiveIndexChange: fn(),
@@ -342,7 +366,7 @@ export const Portrait: Story = {
     )!
 
     // 4/7 = 0.571, allowing a pixel of rounding.
-    const ratio = card.offsetWidth / card.offsetHeight
+    const ratio = aspectRatioOf(card, 'the front card')
     await expect(ratio).toBeGreaterThan(0.55)
     await expect(ratio).toBeLessThan(0.59)
     // Nothing spills out of a box that cannot grow, in either orientation.
@@ -396,7 +420,7 @@ export const UniformCards: Story = {
     }
 
     // 7/4 = 1.75, allowing a pixel of rounding at this width.
-    const ratio = first.offsetWidth / first.offsetHeight
+    const ratio = aspectRatioOf(first, 'the front card')
     await expect(ratio).toBeGreaterThan(1.72)
     await expect(ratio).toBeLessThan(1.78)
   },

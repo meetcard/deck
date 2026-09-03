@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor } from 'storybook/test'
+import { aspectRatioOf } from '../../test/measure'
 import { AppShell } from './AppShell'
 import { Connections } from './Connections'
 
@@ -112,7 +113,7 @@ export const Mobile: Story = {
       '.deck-card-pile__layer--front .deck-person-card',
     )!
     // 4/7 = 0.571 — the same card stood on its short edge.
-    const ratio = card.offsetWidth / card.offsetHeight
+    const ratio = aspectRatioOf(card, 'the front card')
     await expect(ratio).toBeGreaterThan(0.55)
     await expect(ratio).toBeLessThan(0.59)
     await expect(card.scrollHeight).toBeLessThanOrEqual(card.clientHeight + 1)

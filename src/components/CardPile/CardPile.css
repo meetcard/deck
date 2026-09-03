@@ -1,4 +1,13 @@
 .deck-card-pile {
+  /*
+   * How far a peeking layer leans out past the front card's edge, reserved
+   * so the lean happens inside the pile rather than over whatever is beside
+   * it. Sized for the case that can actually overflow — a phone, where the
+   * frame is clamped to the viewport — since on a wider screen the pile is
+   * centred with slack around it.
+   */
+  --deck-card-pile-lean: 12px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,18 +18,48 @@
 /* The card and the two controls that move it, on one line. The arrows are
    outside the card rather than on it: they belong to the pile, and a control
    painted on the front card would look like the card's own. */
+
+/*
+ * The frame carries the pile's width, and carries it as a *length* rather
+ * than as `width: 100%`. That is load-bearing, and it is the difference
+ * between a pile that lays out anywhere and one that only lays out where
+ * something else has already decided how wide it is.
+ *
+ * Everything from here down is sized in percentages — the stage flexes, the
+ * layers are `width: 100%`, the card is `width: 100%` plus an aspect ratio —
+ * and a percentage contributes *nothing* to an element's intrinsic width. So
+ * with `width: 100%` here too, the whole chain had no intrinsic width at all,
+ * and any shrink-to-fit parent resolved it to zero: a centred flex item, a
+ * float, a table cell, `width: fit-content`. The stage collapsed to nothing
+ * between the two arrows, the card took 100% of zero, and `aspect-ratio`
+ * turned that into no height either — a card measuring 0x0, which is how it
+ * was found, since `offsetWidth / offsetHeight` came out `NaN`.
+ *
+ * The length gives such a parent something to shrink *from*;
+ * `max-inline-size` is what lets it still shrink. It is the card's own canvas
+ * plus the arrows and their gaps, so a wide page centres the pile on the card
+ * rather than on empty stage, and the card lands at exactly the width
+ * `PersonCard` is drawn for.
+ */
 .deck-card-pile__frame {
   display: flex;
   align-items: center;
   gap: var(--deck-space-12);
-  width: 100%;
-  /* `PersonCard`'s own maximum plus the arrows and their gaps, so a wide page
-     centres the pile on the card rather than on empty stage. */
-  max-width: calc(760px + 2 * (40px + var(--deck-space-12)));
+  inline-size: calc(
+    760px + 2 * (40px + var(--deck-space-12) + var(--deck-card-pile-lean))
+  );
+  max-inline-size: 100%;
 }
 
+/* 400px is `PersonCard`'s portrait canvas — plus the arrows, for the same
+   reason the landscape figure includes them. Without them the frame's 400
+   was the card *and* the controls, which left a pinned-portrait pile on a
+   desktop showing a 296px card. Below `sm` the arrows are `display: none`
+   and the whole 400 goes to the card, which is where the number came from. */
 .deck-card-pile[data-card-orientation='portrait'] .deck-card-pile__frame {
-  max-width: 400px;
+  inline-size: calc(
+    400px + 2 * (40px + var(--deck-space-12) + var(--deck-card-pile-lean))
+  );
 }
 
 .deck-card-pile__arrow {
@@ -52,6 +91,12 @@
   min-width: 0;
   flex: 1;
   margin-block: 3% 4.5%;
+  /* Sideways too, and for the same reason — but taken out of the frame rather
+     than out of the card, which is why the frame's width above adds the same
+     amount back. A percentage here would have worked as a reservation and
+     cost the card 6% of itself at every width; the card's size is the point
+     of the component. */
+  margin-inline: var(--deck-card-pile-lean);
 }
 
 /* Peeking layers: absolutely positioned so they don't affect the stage's
