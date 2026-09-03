@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Avatar } from '../Avatar/Avatar'
 import type { CardShare } from './ShareFace'
-import { GlobeIcon, LinkedInIcon, PinIcon, ShareIcon } from './cardIcons'
+import { GlobeIcon, LinkedInIcon, PinIcon, QrCodeIcon } from './cardIcons'
 
 export interface CardCompanyPerson {
   name: string
@@ -101,7 +101,7 @@ export function CompanyFace({
               className="deck-person-card__chip deck-person-card__chip--action"
               onClick={onShare}
             >
-              <ShareIcon />
+              <QrCodeIcon />
               Share
             </button>
           ) : null}

@@ -47,12 +47,26 @@ const LinkedInIcon = () => (
   </svg>
 )
 
-const ShareIcon = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-    <circle cx="12" cy="4" r="2" fill="none" stroke="currentColor" strokeWidth="1.3" />
-    <circle cx="4" cy="8" r="2" fill="none" stroke="currentColor" strokeWidth="1.3" />
-    <circle cx="12" cy="12" r="2" fill="none" stroke="currentColor" strokeWidth="1.3" />
-    <path d="M5.7 7 10.3 5M5.7 9l4.6 2" stroke="currentColor" strokeWidth="1.3" />
+/* The card's own Share wears a QR code — see `cardIcons.tsx` for why. A
+   caller's own share control should say the same thing, so this matches. */
+const QrCodeIcon = () => (
+  <svg
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.3"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1" />
+    <rect x="9" y="2.5" width="4.5" height="4.5" rx="1" />
+    <rect x="2.5" y="9" width="4.5" height="4.5" rx="1" />
+    <path d="M9 9h2v2" />
+    <path d="M13.5 9h.01" />
+    <path d="M13.5 12v1.5H12" />
+    <path d="M9 13.5h.01" />
   </svg>
 )
 
@@ -94,7 +108,7 @@ const contactActions = (
       size="sm"
       round
     />
-    <IconButton label="Share card" icon={<ShareIcon />} size="sm" round />
+    <IconButton label="Share card" icon={<QrCodeIcon />} size="sm" round />
   </>
 )
 
@@ -309,7 +323,7 @@ function FlipHarness() {
         <>
           <IconButton size="sm" round label="Email" icon={<EmailIcon />} />
           <IconButton size="sm" round label="LinkedIn" icon={<LinkedInIcon />} />
-          <IconButton size="sm" round label="Share" icon={<ShareIcon />} />
+          <IconButton size="sm" round label="Share" icon={<QrCodeIcon />} />
         </>
       }
       footer={

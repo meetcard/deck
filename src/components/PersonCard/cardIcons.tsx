@@ -45,12 +45,29 @@ export const ArrowLeftIcon = () => (
   </svg>
 )
 
-export const ShareIcon = () => (
+/*
+ * The Share affordance wears a QR code rather than the usual three connected
+ * nodes.
+ *
+ * The nodes glyph is a promise about a menu — pick a destination, send it
+ * somewhere. That is not what this button does. It turns the card over to its
+ * code, to be held up and scanned by the person standing in front of you, and
+ * a picture of the thing you are about to see is a better description of that
+ * than a diagram of a network you are not going to touch.
+ *
+ * Drawn to Lucide's `qr-code` on Deck's 16 grid rather than scaled down from
+ * its 24: two thirds of a 24-unit coordinate is a fractional one, and at the
+ * size these render that lands the finder squares off the pixel.
+ */
+export const QrCodeIcon = () => (
   <svg {...base}>
-    <circle cx="12" cy="3.5" r="2" />
-    <circle cx="4" cy="8" r="2" />
-    <circle cx="12" cy="12.5" r="2" />
-    <path d="M5.8 7 10.2 4.5M5.8 9l4.4 2.5" />
+    <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1" />
+    <rect x="9" y="2.5" width="4.5" height="4.5" rx="1" />
+    <rect x="2.5" y="9" width="4.5" height="4.5" rx="1" />
+    <path d="M9 9h2v2" />
+    <path d="M13.5 9h.01" />
+    <path d="M13.5 12v1.5H12" />
+    <path d="M9 13.5h.01" />
   </svg>
 )
 

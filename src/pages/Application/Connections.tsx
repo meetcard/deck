@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { CalendarDays, Handshake, Mail, Share2 } from 'lucide-react'
+import { CalendarDays, Handshake, Mail, QrCode } from 'lucide-react'
 import { Button } from '../../components/Button/Button'
 import { CardPile } from '../../components/CardPile/CardPile'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
@@ -22,7 +22,7 @@ import './Connections.css'
 
    `IconButton` normalises every icon to 1em, which is right for a row of
    them and a touch too generous for this one: the mark is drawn nearly edge
-   to edge in its box where Mail and Share2 leave a margin, so at the same
+   to edge in its box where Mail and QrCode leave a margin, so at the same
    box size it reads larger than either. 15/16 is the ratio the glyph ships
    with elsewhere, written in `em` so it holds at every `IconButton` size
    rather than pinning the icon to one. */
@@ -347,7 +347,7 @@ export function Connections({
                     />
                     <IconButton
                       label={`Share ${card.name}'s card`}
-                      icon={<Share2 />}
+                      icon={<QrCode />}
                       size="sm"
                       round
                     />

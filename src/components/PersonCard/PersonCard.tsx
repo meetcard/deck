@@ -16,7 +16,7 @@ import {
   CloseIcon,
   LockIcon,
   PencilIcon,
-  ShareIcon,
+  QrCodeIcon,
 } from './cardIcons'
 import './PersonCard.css'
 
@@ -399,7 +399,7 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
                           className="deck-person-card__share"
                           onClick={() => setView('share')}
                         >
-                          <ShareIcon />
+                          <QrCodeIcon />
                           Share
                         </button>
                       ) : null}
