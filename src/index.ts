@@ -203,6 +203,13 @@ export type {
   AvatarShape,
 } from './components/Avatar'
 
+export { AvatarStack } from './components/AvatarStack'
+export type {
+  AvatarStackProps,
+  AvatarStackPerson,
+  AvatarStackSize,
+} from './components/AvatarStack'
+
 /* ---- Forms ----------------------------------------------------------- */
 export { Field } from './components/Field'
 export type { FieldProps } from './components/Field'
@@ -257,9 +264,25 @@ export { ContactCard } from './components/ContactCard'
 export type { ContactCardProps, ContactDetail } from './components/ContactCard'
 
 export { EventCard } from './components/EventCard'
-export type { EventCardProps } from './components/EventCard'
+export type { EventCardProps, EventCardLayout } from './components/EventCard'
 
 /* ---- Events ------------------------------------------------------------ */
+export { EventHero, EventHeroPanel } from './components/EventHero'
+export type {
+  EventHeroProps,
+  EventHeroPanelProps,
+  EventHeroEyebrowElement,
+} from './components/EventHero'
+
+export { EventAgenda } from './components/EventAgenda'
+export type { EventAgendaProps, AgendaEvent } from './components/EventAgenda'
+
+export { EventSchedule } from './components/EventSchedule'
+export type {
+  EventScheduleProps,
+  EventScheduleSlot,
+} from './components/EventSchedule'
+
 export { EventCalendar } from './components/EventCalendar'
 export type {
   EventCalendarProps,

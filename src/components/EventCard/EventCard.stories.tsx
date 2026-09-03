@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
+import { AvatarStack } from '../AvatarStack/AvatarStack'
 import { Button } from '../Button/Button'
 import { Stack } from '../Stack/Stack'
 import { EventCard } from './EventCard'
@@ -71,6 +72,86 @@ export const WithActions: Story = {
       </Button>
     ),
   },
+}
+
+/**
+ * The card standing on its own, for a grid. Room for the hour, the host, and
+ * a footer of whoever you came away with — none of which fits in a row.
+ */
+export const Tile: Story = {
+  args: {
+    layout: 'tile',
+    time: '9:00 AM',
+    location: 'Austin Convention Center',
+    host: 'Hannah Davis',
+    eyebrow: 'Attending',
+    status: 'upcoming',
+    footer: (
+      <AvatarStack
+        people={[
+          { name: 'Hannah Davis' },
+          { name: 'Marcus Lee' },
+          { name: 'Priya Shah' },
+          { name: 'Diego Romero' },
+          { name: 'Lena Fox' },
+        ]}
+        caption="5 cards exchanged"
+      />
+    ),
+  },
+  render: (args) => (
+    <div style={{ maxWidth: 360 }}>
+      <EventCard {...args} />
+    </div>
+  ),
+}
+
+/** Tiles in the grid they are drawn for. They stretch to a shared height. */
+export const TileGrid: Story = {
+  args: { layout: 'tile' },
+  render: (args) => (
+    <Stack
+      as="ul"
+      direction="row"
+      gap={12}
+      wrap
+      style={{ maxWidth: 760, listStyle: 'none', margin: 0, padding: 0 }}
+    >
+      <li style={{ flex: '1 1 300px' }}>
+        <EventCard
+          {...args}
+          eyebrow="Attending"
+          status="upcoming"
+          time="9:00 AM"
+          host="Hannah Davis"
+          location="Austin Convention Center"
+          footer={
+            <AvatarStack
+              people={[{ name: 'Hannah Davis' }, { name: 'Marcus Lee' }]}
+              caption="5 cards exchanged"
+            />
+          }
+        />
+      </li>
+      <li style={{ flex: '1 1 300px' }}>
+        <EventCard
+          {...args}
+          name="Boulder Climate Happy Hour, Rayback Collective"
+          startDate="2027-06-16"
+          time="5:30 PM"
+          location="Rayback Collective"
+          host="Hannah Davis"
+          eyebrow="Hosting"
+          footer={
+            <AvatarStack
+              people={[{ name: 'Mira Okafor' }, { name: 'Theo Marsh' }]}
+              caption="4 cards exchanged"
+            />
+          }
+        />
+      </li>
+    </Stack>
+  ),
 }
 
 /** The Events destination in the app. */

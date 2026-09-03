@@ -1,0 +1,87 @@
+.deck-avatar-stack {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-12);
+  min-width: 0;
+  font-family: var(--deck-font-sans);
+
+  /* The colour the rings are cut in. Defaults to the surface a stack most
+     often lands on; override it anywhere else, or each face wears a halo of
+     a surface that isn't there. */
+  --deck-avatar-stack-ring: var(--deck-color-background-elevated);
+}
+
+.deck-avatar-stack__faces {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+.deck-avatar-stack__face {
+  display: flex;
+  position: relative;
+  z-index: var(--deck-avatar-stack-depth, 0);
+}
+
+/* Every face but the first slides under the one before it. */
+.deck-avatar-stack__face + .deck-avatar-stack__face {
+  margin-inline-start: calc(-1 * var(--deck-avatar-stack-overlap));
+}
+
+/* The ring is what keeps two faces from reading as one blob. Drawn as a
+   shadow rather than a border so it sits outside the circle and doesn't eat
+   into the initials. */
+.deck-avatar-stack__face .deck-avatar,
+.deck-avatar-stack__more {
+  box-shadow: 0 0 0 2px var(--deck-avatar-stack-ring);
+}
+
+.deck-avatar-stack__more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  inline-size: var(--deck-avatar-stack-face);
+  block-size: var(--deck-avatar-stack-face);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-color-background-inset);
+  color: var(--deck-color-text-muted);
+  font-size: var(--deck-avatar-stack-more-size);
+  font-weight: var(--deck-font-weight-medium);
+  line-height: 1;
+  user-select: none;
+}
+
+.deck-avatar-stack__caption {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+}
+
+/* The face sizes mirror Avatar's own; the overlap is a third of each, which
+   is the most that can be taken before a two-letter monogram loses a
+   letter rather than an edge. */
+.deck-avatar-stack__faces--xs {
+  --deck-avatar-stack-face: 24px;
+  --deck-avatar-stack-overlap: var(--deck-space-8);
+  --deck-avatar-stack-more-size: var(--deck-font-size-label-xs);
+}
+
+.deck-avatar-stack__faces--sm {
+  --deck-avatar-stack-face: 32px;
+  --deck-avatar-stack-overlap: var(--deck-space-10);
+  --deck-avatar-stack-more-size: var(--deck-font-size-label-xs);
+}
+
+.deck-avatar-stack__faces--md {
+  --deck-avatar-stack-face: 40px;
+  --deck-avatar-stack-overlap: var(--deck-space-12);
+  --deck-avatar-stack-more-size: var(--deck-font-size-label-sm);
+}

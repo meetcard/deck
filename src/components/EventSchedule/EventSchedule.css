@@ -1,0 +1,52 @@
+.deck-event-schedule {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-event-schedule__slot {
+  display: flex;
+  align-items: baseline;
+  gap: var(--deck-space-16);
+  min-width: 0;
+  padding-block: var(--deck-space-12);
+  border-block-end: 1px solid var(--deck-color-border-default);
+}
+
+.deck-event-schedule__slot:last-child {
+  border-block-end: none;
+}
+
+/* A fixed gutter so the hours line up as a column and the day can be read
+   down the left edge without reading a single title. */
+.deck-event-schedule__time {
+  flex-shrink: 0;
+  inline-size: 80px;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.deck-event-schedule__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-2);
+  min-width: 0;
+}
+
+.deck-event-schedule__title {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-default);
+}
+
+.deck-event-schedule__description {
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+}
