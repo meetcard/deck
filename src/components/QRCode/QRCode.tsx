@@ -13,7 +13,7 @@ export interface QRCodeProps
    *
    * Not rendered. It is the code's accessible name, so someone who cannot
    * scan still learns where it goes. Surfaces that want the link readable —
-   * `ShareSheet` does — put it next to the code as copyable text, which is
+   * the share faces do — put it next to the code as copyable text, which is
    * more useful than a caption nobody can select.
    */
   value: string

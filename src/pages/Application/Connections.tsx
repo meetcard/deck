@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { CalendarDays, Handshake, Mail, QrCode } from 'lucide-react'
+import { CalendarDays, Handshake, Mail } from 'lucide-react'
 import { Button } from '../../components/Button/Button'
 import { CardPile } from '../../components/CardPile/CardPile'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
@@ -11,6 +11,7 @@ import { PersonCard } from '../../components/PersonCard/PersonCard'
 import type { CardTheme } from '../../components/PersonCard/PersonCard'
 import { PrivateNote } from '../../components/PrivateNote/PrivateNote'
 import type { ConnectionFeeling } from '../../components/PrivateNote/PrivateNote'
+import { sampleQrMatrixSvg } from '../../components/QRCode/sampleQrMatrix'
 import { Stack } from '../../components/Stack/Stack'
 import { Text } from '../../components/Text/Text'
 import './Connections.css'
@@ -147,6 +148,23 @@ const INITIAL: Connection[] = [
     location: 'Austin, Texas',
   },
 ]
+
+/* Deck encodes nothing — `QRCode` draws a plate around a matrix you supply.
+   The sample one the QRCode stories use, so a card turned over shows a real
+   code rather than a grey square pretending to be one. Same as `MyCards`. */
+const SampleQr = () => (
+  <span
+    style={{ display: 'block', width: '100%', height: '100%' }}
+    dangerouslySetInnerHTML={{ __html: sampleQrMatrixSvg }}
+  />
+)
+
+/* The line a recipient reads before deciding to follow the link. Who, and
+   what they do — the same two facts the card leads with. */
+const summaryFor = (card: Connection) =>
+  [card.name, [card.title, card.company].filter(Boolean).join(' at ')]
+    .filter(Boolean)
+    .join(', ')
 
 /**
  * The event the page opens on: the latest one that has actually happened,
@@ -331,6 +349,9 @@ export function Connections({
                     onHide={() => setFlipped(null)}
                   />
                 }
+                /* No Share among these. The card carries its own, because
+                   sharing turns the card over and only the card can do
+                   that — same as on My cards. */
                 contactActions={
                   <>
                     <IconButton
@@ -345,14 +366,15 @@ export function Connections({
                       size="sm"
                       round
                     />
-                    <IconButton
-                      label={`Share ${card.name}'s card`}
-                      icon={<QrCode />}
-                      size="sm"
-                      round
-                    />
                   </>
                 }
+                share={{
+                  value: `meetcard.io/${card.slug}`,
+                  summary: summaryFor(card),
+                  qr: <SampleQr />,
+                  onDownloadQr: () => {},
+                  onShareLinkedIn: () => {},
+                }}
                 footer={
                   <>
                     <Button size="sm" iconStart={<CalendarDays />}>

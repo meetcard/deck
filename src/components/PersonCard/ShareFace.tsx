@@ -5,11 +5,11 @@ import { QRCode } from '../QRCode/QRCode'
 import { DownloadIcon, LinkedInIcon, LinkIcon } from './cardIcons'
 
 /**
- * What a card hands over.
+ * What a card hands over — and, by the same type, what an `EventHero` does.
  *
- * Deliberately the same vocabulary as `ShareSheet`'s — `value`, `qrSrc`, the
- * two callbacks — because a card's link and a dialog's link are the same
- * link, and two names for it is how the two surfaces start drifting apart.
+ * One vocabulary across every surface that can be shared: `value`, the code,
+ * the two callbacks. A card's link and an event's link are the same kind of
+ * thing, and two names for it is how two surfaces start drifting apart.
  */
 export interface CardShare {
   /**

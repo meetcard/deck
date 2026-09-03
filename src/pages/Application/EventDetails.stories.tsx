@@ -53,7 +53,11 @@ export const Past: Story = {
   },
 }
 
-/** Sharing raises the same dialog every other shareable thing does. */
+/**
+ * Sharing turns the header over rather than raising a dialog — the same move
+ * a person's card and a company profile make. The event stays named while its
+ * code is showing, so you can see what you are handing over.
+ */
 export const Sharing: Story = {
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Share' }))
@@ -63,6 +67,15 @@ export const Sharing: Story = {
         'meetcard.io/events/revops',
       )
     })
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'RevOps Summit' }),
+    ).toBeVisible()
+    // The facts the hero was carrying stand down while the code is up, and
+    // the corner names the way back to them.
+    await expect(canvas.queryByText('9:00 AM – 4:30 PM')).not.toBeInTheDocument()
+    await expect(
+      canvas.getByRole('button', { name: 'Close share for RevOps Summit' }),
+    ).toBeVisible()
   },
 }
 

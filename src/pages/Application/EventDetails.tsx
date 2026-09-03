@@ -14,11 +14,11 @@ import { Badge } from '../../components/Badge/Badge'
 import { Button } from '../../components/Button/Button'
 import { Card } from '../../components/Card/Card'
 import { EventHero, EventHeroPanel } from '../../components/EventHero/EventHero'
+import type { EventHeroView } from '../../components/EventHero/EventHero'
 import { EventSchedule } from '../../components/EventSchedule/EventSchedule'
 import { Heading } from '../../components/Heading/Heading'
 import { IconButton } from '../../components/IconButton/IconButton'
 import { Link } from '../../components/Link/Link'
-import { ShareSheet } from '../../components/ShareSheet/ShareSheet'
 import { Stack } from '../../components/Stack/Stack'
 import { Tag } from '../../components/Tag/Tag'
 import { Text } from '../../components/Text/Text'
@@ -33,7 +33,7 @@ import type { AppEvent } from './eventsData'
 import './EventDetails.css'
 
 /* Deck encodes nothing — `QRCode` draws a plate around a matrix you supply.
-   The sample one the QRCode stories use, so the sheet shows a real code
+   The sample one the QRCode stories use, so the hero shows a real code
    rather than a grey square pretending to be one. Same as `MyCards`. */
 const SampleQr = () => (
   <span
@@ -63,14 +63,22 @@ export interface EventDetailsProps {
  * how the day runs, and who you came away with. The last of those is the one
  * the product exists for, so it ends by pointing at the pile itself.
  *
- * Nothing persists. The share sheet copies a link, and the calendar button
- * does what a prototype can honestly do about your calendar: nothing.
+ * Sharing turns the header over rather than raising a dialog: the event is
+ * the thing being handed across, and a panel on top of it would put what you
+ * are sharing behind the description of it. The same move a card makes.
+ *
+ * Nothing persists. Share copies a link, and the calendar button does what a
+ * prototype can honestly do about your calendar: nothing.
  */
 export function EventDetails({
   event = APP_EVENTS[0],
   today = TODAY,
 }: EventDetailsProps) {
-  const [sharing, setSharing] = useState(false)
+  /* Held here rather than in the hero because the control that opens it is
+     the page's: "Share" belongs in the row beside "Add to calendar", not
+     bolted to the header by a component that cannot know what else is in
+     that row. The hero owns the way back out. */
+  const [view, setView] = useState<EventHeroView>('detail')
 
   const soon = event.status === 'upcoming' && isSoon(event.date, today)
   const exchanged = event.attendees.length
@@ -96,6 +104,18 @@ export function EventDetails({
           level={1}
           name={event.name}
           theme={event.theme}
+          view={view}
+          onViewChange={setView}
+          closeShareLabel={`Close share for ${event.name}`}
+          share={{
+            value: link,
+            /* The line a recipient reads before deciding to follow it —
+               when and where, which is what the fact panels said before
+               the hero turned over. */
+            summary: `${formatFullDate(event.date)} · ${event.venue}`,
+            qr: <SampleQr />,
+            onDownloadQr: () => {},
+          }}
           badges={
             <>
               <Badge variant="subtle" size="sm">
@@ -153,14 +173,14 @@ export function EventDetails({
             <Button variant="secondary" size="sm" iconStart={<CalendarPlus />}>
               Add to calendar
             </Button>
-            {/* The code, not the share arrows: what this opens leads with a
-                QR to hold up, and the icon should say which of the two
-                sharing gestures you are about to get. */}
+            {/* The code, not the share arrows: what this opens is a QR to
+                hold up, and the icon should say which of the two sharing
+                gestures you are about to get. */}
             <Button
               variant="secondary"
               size="sm"
               iconStart={<QrCode />}
-              onClick={() => setSharing(true)}
+              onClick={() => setView('share')}
             >
               Share
             </Button>
@@ -246,18 +266,6 @@ export function EventDetails({
           </Stack>
         </Card>
       </Stack>
-
-      {/* `subject` is the noun in a fixed sentence, not a title — the same
-          dialog every other shareable thing in the product raises. */}
-      <ShareSheet
-        open={sharing}
-        onClose={() => setSharing(false)}
-        subject="event"
-        value={link}
-        onDownloadQr={() => {}}
-      >
-        <SampleQr />
-      </ShareSheet>
     </div>
   )
 }

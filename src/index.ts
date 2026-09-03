@@ -109,9 +109,6 @@ export type { SpinnerProps, SpinnerSize } from './components/Spinner'
 export { Sheet } from './components/Sheet'
 export type { SheetProps } from './components/Sheet'
 
-export { ShareSheet } from './components/ShareSheet'
-export type { ShareSheetProps } from './components/ShareSheet'
-
 export { AccountSheet, AccountSheetRow } from './components/AccountSheet'
 export type {
   AccountSheetProps,
@@ -272,6 +269,7 @@ export type {
   EventHeroProps,
   EventHeroPanelProps,
   EventHeroEyebrowElement,
+  EventHeroView,
 } from './components/EventHero'
 
 export { EventAgenda } from './components/EventAgenda'

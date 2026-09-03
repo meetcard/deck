@@ -1,12 +1,72 @@
-import { forwardRef } from 'react'
+import { forwardRef, useState } from 'react'
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react'
 import { cx } from '../../lib/cx'
+import { Button } from '../Button/Button'
+import { CopyField } from '../CopyField/CopyField'
 import { Link } from '../Link/Link'
+import { QRCode } from '../QRCode/QRCode'
 import type { CardTheme } from '../PersonCard/PersonCard'
+import type { CardShare } from '../PersonCard/ShareFace'
 import './EventHero.css'
+
+/*
+ * Hand-drawn, like every glyph in `src/components`: the published bundle
+ * carries no icon set. Deliberately the same drawings the card's own share
+ * face uses — the link, the download and the LinkedIn mark on a 16 grid at
+ * the house 1.3 stroke — because a code handed over from a hero and one
+ * handed over from a card are the same gesture and should not be two looks.
+ */
+const glyph = {
+  viewBox: '0 0 16 16',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.3,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  'aria-hidden': true,
+  focusable: false as const,
+}
+
+const CloseIcon = () => (
+  <svg {...glyph} strokeWidth={1.5}>
+    <path d="M4 4l8 8M12 4l-8 8" />
+  </svg>
+)
+
+const LinkIcon = () => (
+  <svg {...glyph}>
+    <path d="M6.5 9.5a2.5 2.5 0 0 0 3.5 0l2-2a2.5 2.5 0 0 0-3.5-3.5l-.5.5" />
+    <path d="M9.5 6.5a2.5 2.5 0 0 0-3.5 0l-2 2a2.5 2.5 0 0 0 3.5 3.5l.5-.5" />
+  </svg>
+)
+
+const DownloadIcon = () => (
+  <svg {...glyph}>
+    <path d="M8 2.5v7M5 7l3 3 3-3" />
+    <path d="M2.5 11.5v1a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1" />
+  </svg>
+)
+
+const LinkedInIcon = () => (
+  <svg {...glyph}>
+    <path d="M10.5 6.5A3 3 0 0 1 13.5 9.5v4h-2.5v-4a.75.75 0 0 0-1.5 0v4H7v-4a3 3 0 0 1 3.5-3Z" />
+    <rect x="2.5" y="6.5" width="2.5" height="7" />
+    <circle cx="3.75" cy="3.25" r="1.25" />
+  </svg>
+)
 
 /** Where the hero's caps line sits in the document outline. */
 export type EventHeroEyebrowElement = 'p' | 'h1' | 'h2'
+
+/**
+ * What the hero is currently showing: the event, or the code for it.
+ *
+ * Sharing is the event doing something, so it happens on the event — the
+ * same object, same cover, same colours, showing its code instead of its
+ * details. A dialog over the top would put the thing being shared behind the
+ * thing describing it.
+ */
+export type EventHeroView = 'detail' | 'share'
 
 export interface EventHeroProps
   extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
@@ -35,6 +95,26 @@ export interface EventHeroProps
   theme?: CardTheme
   /** A control pinned to the top corner — the owner's pencil. */
   action?: ReactNode
+  /**
+   * The event's link, and what the hero shows when it is turned over to be
+   * scanned.
+   *
+   * The same shape a card hands over, and deliberately the same type: an
+   * event's link and a person's link are the same kind of thing, and two
+   * names for it is how two surfaces start drifting apart.
+   *
+   * The hero does not raise the control — an event page puts "Share" in its
+   * own row of actions, next to "Add to calendar" — so pass `view` alongside
+   * it, or read `onViewChange` and let the hero keep its own.
+   */
+  share?: CardShare
+  /** Which face the hero is showing. Omit to let it keep its own. */
+  view?: EventHeroView
+  /** The face it starts on. Default `"detail"`. */
+  defaultView?: EventHeroView
+  onViewChange?: (view: EventHeroView) => void
+  /** Accessible name for the control that puts the code away. */
+  closeShareLabel?: string
   /** Everything below the name: facts, panels, actions. */
   children?: ReactNode
 }
@@ -63,6 +143,11 @@ export interface EventHeroProps
  * most of the screen on blurred picture above the words, and the words are
  * what the header is for.
  *
+ * Given a `share`, the hero can turn to show the event's code in place of its
+ * details — the same move a `PersonCard` makes, and for the same reason. The
+ * name stays put while it does, so you can see what you are handing over and
+ * the page keeps its heading.
+ *
  * @example
  * <EventHero
  *   name="RevOps Summit"
@@ -86,6 +171,11 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
       coverSrc,
       theme,
       action,
+      share,
+      view,
+      defaultView = 'detail',
+      onViewChange,
+      closeShareLabel = 'Close share',
       children,
       className,
       style,
@@ -94,6 +184,14 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
     ref,
   ) {
     const Name = `h${level}` as const
+
+    const [selfView, setSelfView] = useState<EventHeroView>(defaultView)
+    const currentView = view ?? selfView
+    const setView = (next: EventHeroView) => {
+      if (view === undefined) setSelfView(next)
+      onViewChange?.(next)
+    }
+    const sharing = currentView === 'share' && Boolean(share)
 
     return (
       <section
@@ -129,7 +227,21 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
           <div className="deck-event-hero__wash" />
         </div>
 
-        {action ? (
+        {/* One control in the corner, and which one it is says where you are:
+            a pencil edits the event you are looking at, a cross puts the code
+            away and gives the event back. */}
+        {sharing ? (
+          <div className="deck-event-hero__action">
+            <button
+              type="button"
+              className="deck-event-hero__close"
+              onClick={() => setView('detail')}
+            >
+              <CloseIcon />
+              <span className="deck-visually-hidden">{closeShareLabel}</span>
+            </button>
+          </div>
+        ) : action ? (
           <div className="deck-event-hero__action">{action}</div>
         ) : null}
 
@@ -145,7 +257,10 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
           ) : null}
 
           <div className="deck-event-hero__body">
-            {badges ? (
+            {/* "Attending", "Soon" — facts about the event that are yours
+                rather than the recipient's, so they go away with the rest of
+                the details when the hero turns over. */}
+            {badges && !sharing ? (
               <div className="deck-event-hero__badges">{badges}</div>
             ) : null}
 
@@ -159,7 +274,68 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
               )}
             </Name>
 
-            {children}
+            {sharing && share ? (
+              <div className="deck-event-hero__share">
+                {/* Light in both themes, as `QRCode`'s own plate is: a scanner
+                    needs a quiet zone, and the hero's ground is a photograph
+                    under a wash of somebody's brand colour. */}
+                <div className="deck-event-hero__qr">
+                  <QRCode value={share.value} src={share.qrSrc} size="md">
+                    {share.qr}
+                  </QRCode>
+                </div>
+
+                <div className="deck-event-hero__share-body">
+                  {/* Not a heading: the event's name above it is the hero's
+                      heading whichever face is showing, and this is the
+                      instruction for the plate beside it. */}
+                  <p className="deck-event-hero__share-title">
+                    Scan or copy the link
+                  </p>
+
+                  {share.summary ? (
+                    <p className="deck-event-hero__share-summary">
+                      {share.summary}
+                    </p>
+                  ) : null}
+
+                  <CopyField
+                    label="Share link"
+                    value={share.value}
+                    icon={<LinkIcon />}
+                    size="sm"
+                    className="deck-event-hero__link"
+                  />
+
+                  {share.onDownloadQr || share.onShareLinkedIn ? (
+                    <div className="deck-event-hero__share-actions">
+                      {share.onDownloadQr ? (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          iconStart={<DownloadIcon />}
+                          onClick={share.onDownloadQr}
+                        >
+                          Download QR
+                        </Button>
+                      ) : null}
+                      {share.onShareLinkedIn ? (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          iconStart={<LinkedInIcon />}
+                          onClick={share.onShareLinkedIn}
+                        >
+                          Share on LinkedIn
+                        </Button>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ) : (
+              children
+            )}
           </div>
         </div>
       </section>

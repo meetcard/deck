@@ -6,7 +6,17 @@ import { AvatarStack } from '../AvatarStack/AvatarStack'
 import { Badge } from '../Badge/Badge'
 import { Button } from '../Button/Button'
 import { IconButton } from '../IconButton/IconButton'
+import { sampleQrMatrixSvg } from '../QRCode/sampleQrMatrix'
 import { EventHero, EventHeroPanel } from './EventHero'
+
+/* Deck encodes nothing — the matrix is supplied. This is the real code the
+   QRCode stories use. */
+const Matrix = () => (
+  <span
+    style={{ display: 'block', width: '100%', height: '100%' }}
+    dangerouslySetInnerHTML={{ __html: sampleQrMatrixSvg }}
+  />
+)
 
 /* Drawn here rather than imported, for the reason every icon in
    `src/components` is: the published bundle carries no icon set. Lucide's
@@ -204,6 +214,57 @@ export const AsAnEventPage: Story = {
       canvas.getByRole('heading', { level: 1, name: 'RevOps Summit' }),
     ).toBeVisible()
   },
+}
+
+const share = {
+  value: 'meetcard.io/events/revops',
+  summary: 'Tuesday, May 18, 2027 · Austin Convention Center',
+  qr: <Matrix />,
+  onDownloadQr: () => {},
+}
+
+/**
+ * The hero turned over to be scanned.
+ *
+ * Not a dialog. The event is the thing being handed across, so it happens on
+ * the event — same cover, same colours, its code where its details were. The
+ * name stays put, so you can see what you are about to hand over.
+ *
+ * The control that opens this belongs to the page (an event page puts Share
+ * next to Add to calendar), so the caller drives `view`. The hero owns the
+ * way back out.
+ */
+export const Sharing: Story = {
+  args: {
+    ...AsAnEventPage.args,
+    share,
+    defaultView: 'share',
+  },
+  play: async ({ canvas }) => {
+    // The event is still named while its code is showing.
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'RevOps Summit' }),
+    ).toBeVisible()
+    // Someone who cannot scan still reaches the destination.
+    await expect(
+      canvas.getByRole('img', { name: 'QR code for meetcard.io/events/revops' }),
+    ).toBeVisible()
+    await expect(canvas.getByLabelText('Share link')).toHaveValue(
+      'meetcard.io/events/revops',
+    )
+    // The pencil stands down; the corner is the way back out. Asserted
+    // rather than clicked, so this story stays a picture of the share face
+    // — turning back is covered in `EventHero.test.tsx`.
+    await expect(
+      canvas.getByRole('button', { name: 'Close share' }),
+    ).toBeVisible()
+    await expect(canvas.queryByRole('button', { name: 'Edit event' })).toBeNull()
+  },
+}
+
+/** With a cover under it — the code keeps its own light plate to stay scannable. */
+export const SharingOverACover: Story = {
+  args: { ...Sharing.args, coverSrc: coverImage },
 }
 
 /**

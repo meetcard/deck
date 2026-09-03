@@ -60,6 +60,12 @@
   --deck-color-border-focus: var(--deck-event-hero-fg);
   --deck-color-background-subtle: var(--deck-event-hero-surface);
   --deck-color-background-inset: var(--deck-event-hero-surface);
+  /* Fields, too — `CopyField` paints its input on `background-elevated`, and
+     a page-coloured box on a photograph is the one thing that would give the
+     glass away. Re-pointed with the rest rather than overridden per control,
+     so anything with an input in it lands right for the same reason a
+     `Button` does. */
+  --deck-color-background-elevated: var(--deck-event-hero-surface);
   --deck-color-action-primary: var(--deck-event-hero-fg);
   --deck-color-action-primary-hover: var(--deck-event-hero-fg);
   --deck-color-action-primary-pressed: var(--deck-event-hero-fg);
@@ -239,7 +245,9 @@
 }
 
 .deck-event-hero__action:hover,
-.deck-event-hero__action:focus-within {
+.deck-event-hero__action:focus-within,
+/* Except when it is the way back out of the code — see `__close`. */
+.deck-event-hero__action:has(.deck-event-hero__close) {
   opacity: 1;
 }
 
@@ -258,6 +266,114 @@
     inset-block-start: var(--deck-space-28);
     inset-inline-end: var(--deck-space-28);
   }
+}
+
+/* ---- The code ---------------------------------------------------------- */
+
+/*
+ * The hero turned over: the event's code where its details were.
+ *
+ * A row on anything with room for one, and it wraps rather than shrinking —
+ * a QR code squeezed to fit beside a link is a code nobody can scan, and the
+ * hero grows to fit its content anyway (see the note on `__content`).
+ */
+.deck-event-hero__share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-16);
+}
+
+.deck-event-hero__qr {
+  flex: none;
+}
+
+/* The plate keeps its own light ground — that is the contract in
+   `QRCode.css` and it is not the hero's to override — but drops the hairline
+   border, which is a page-coloured line doing nothing against white. */
+.deck-event-hero__qr .deck-qrcode {
+  border-color: transparent;
+  box-shadow: 0 8px 24px -8px rgba(12, 14, 13, 0.5);
+}
+
+/* Takes the rest of the row, and is the part that drops below the code when
+   there is not enough of one. 15rem is a copy field with a readable link in
+   it; under that the two would be sharing a line neither can use. */
+.deck-event-hero__share-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+  flex: 1 1 15rem;
+  min-width: 0;
+}
+
+.deck-event-hero__share-title {
+  margin: 0;
+  font-size: var(--deck-font-size-body-md);
+  line-height: var(--deck-line-height-body-md);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-event-hero-fg);
+}
+
+/* The line a recipient would read to decide whether to follow the link —
+   when, and where. Two lines at most: half of that sentence is not worth
+   having, so it clamps rather than truncating mid-fact. */
+.deck-event-hero__share-summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-event-hero-fg-muted);
+}
+
+/* Frosted like the panels beside it. The colours already come from the
+   hero's re-pointed tokens; this is the one thing a token cannot say. */
+.deck-event-hero__link .deck-copy-field__input {
+  border-radius: var(--deck-radius-full);
+  backdrop-filter: blur(8px);
+}
+
+.deck-event-hero__share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--deck-space-8);
+  margin-block-start: var(--deck-space-4);
+}
+
+/* The cross that puts the code away, in the corner the pencil uses. Full
+   opacity where the pencil is quiet: the pencil is an offer, and this is the
+   way back out of a face you are currently looking at. */
+.deck-event-hero__close {
+  display: grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-event-hero-surface);
+  box-shadow: inset 0 0 0 1px var(--deck-event-hero-ring);
+  color: var(--deck-event-hero-fg);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background-color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-event-hero__close:hover {
+  background-color: var(--deck-event-hero-surface-hover);
+}
+
+.deck-event-hero__close:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-event-hero-fg);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-event-hero__close svg {
+  inline-size: 16px;
+  block-size: 16px;
 }
 
 /* ---- Panels ------------------------------------------------------------ */
@@ -346,7 +462,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .deck-event-hero-panel--interactive,
-  .deck-event-hero__action {
+  .deck-event-hero__action,
+  .deck-event-hero__close {
     transition-duration: 0ms;
   }
 }
