@@ -26,6 +26,7 @@ import { Switch } from '../../components/Switch/Switch'
 import { Tag } from '../../components/Tag/Tag'
 import { Text } from '../../components/Text/Text'
 import { Textarea } from '../../components/Textarea/Textarea'
+import { BookingEmbed } from './BookingEmbed'
 import {
   PrefixInput,
   SettingsFooter,
@@ -618,6 +619,10 @@ export function SettingsCompany() {
                 onChange={(changeEvent) => setTeamLink(changeEvent.target.value)}
               />
             </div>
+
+            {/* The company's own identifier, the same one its share link
+                carries — one company, one handle, wherever it is quoted. */}
+            <BookingEmbed type="team" identifier={`@${COMPANY.slug}`} />
 
             <SettingsRow
               icon={<CalendarClock />}

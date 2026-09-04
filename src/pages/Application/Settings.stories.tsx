@@ -58,6 +58,36 @@ export const SwitchingCards: Story = {
 }
 
 /**
+ * The embed snippet is generated, not stored: switching the display rewrites
+ * the line you would paste, so what is on screen is always what would run.
+ */
+export const EmbeddingTheBooker: Story = {
+  play: async ({ canvas, userEvent }) => {
+    // The person's own handle, so the widget opens the booker their card does.
+    await expect(
+      canvas.getByText(/meetcard-book type="person" handle="alex@northwind"/, {
+        selector: 'code',
+      }),
+    ).toBeVisible()
+
+    await userEvent.click(canvas.getByRole('radio', { name: 'Button' }))
+
+    await waitFor(async () => {
+      await expect(
+        canvas.getByText(/display="button"/, { selector: 'code' }),
+      ).toBeVisible()
+    })
+
+    /* The control names itself for what it does, and there is only one of it
+       on the panel — copying is not tested here, because a clipboard write is
+       the browser's business and not the panel's. */
+    await expect(
+      canvas.getByRole('button', { name: 'Copy embed code' }),
+    ).toBeVisible()
+  },
+}
+
+/**
  * The nav is real links, and the page intercepts them the way a router would.
  * Choosing a section swaps the panel without leaving the page.
  */
@@ -187,6 +217,15 @@ export const Company: Story = {
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole('heading', { level: 2, name: 'Company settings' }),
+    ).toBeVisible()
+
+    /* The same band as Profile's, about the team's booker rather than one
+       person's — `company`, not `handle`, and the identifier the company's
+       own share link carries. */
+    await expect(
+      canvas.getByText(/meetcard-book type="team" company="@northwind"/, {
+        selector: 'code',
+      }),
     ).toBeVisible()
   },
 }

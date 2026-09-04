@@ -34,6 +34,7 @@ import { Textarea } from '../../components/Textarea/Textarea'
 import { TimeSlotPicker } from '../../components/TimeSlotPicker/TimeSlotPicker'
 import type { TimeSlot } from '../../components/TimeSlotPicker/TimeSlotPicker'
 import { providerIcons } from '../../components/ProviderButton/providerIcons'
+import { BookingEmbed } from './BookingEmbed'
 import {
   PrefixInput,
   SettingsFooter,
@@ -538,6 +539,10 @@ export function SettingsProfile() {
                 }
               />
             </div>
+
+            {/* The card's own handle, so the widget someone pastes onto their
+                site opens the same booker the card does. */}
+            <BookingEmbed type="person" identifier={card.slug} />
 
             <SettingsRow
               icon={<CalendarClock />}
