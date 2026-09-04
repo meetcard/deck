@@ -260,6 +260,15 @@ export type { CompanyCardProps } from './components/CompanyCard'
 export { ContactCard } from './components/ContactCard'
 export type { ContactCardProps, ContactDetail } from './components/ContactCard'
 
+export { PersonList } from './components/PersonList'
+export type { PersonListProps, PersonListItem } from './components/PersonList'
+
+export { FollowUpList } from './components/FollowUpList'
+export type {
+  FollowUpListProps,
+  FollowUpItem,
+} from './components/FollowUpList'
+
 export { EventCard } from './components/EventCard'
 export type { EventCardProps, EventCardLayout } from './components/EventCard'
 
@@ -299,6 +308,3 @@ export type {
   EventTimelineProps,
   TimelineEvent,
 } from './components/EventTimeline'
-
-export { AttendeeList } from './components/AttendeeList'
-export type { AttendeeListProps, EventAttendee } from './components/AttendeeList'

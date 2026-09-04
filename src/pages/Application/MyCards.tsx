@@ -15,24 +15,22 @@ import { Heading } from '../../components/Heading/Heading'
 import { IconButton } from '../../components/IconButton/IconButton'
 import { Input } from '../../components/Input/Input'
 import { PersonCard } from '../../components/PersonCard/PersonCard'
-import type { CardTheme } from '../../components/PersonCard/PersonCard'
 import { Select } from '../../components/Select/Select'
 import { Sheet } from '../../components/Sheet/Sheet'
 import { Stack } from '../../components/Stack/Stack'
 import { Text } from '../../components/Text/Text'
 import { cx } from '../../lib/cx'
-import { sampleQrMatrixSvg } from '../../components/QRCode/sampleQrMatrix'
+import {
+  CARD_KINDS,
+  CARD_THEMES,
+  MY_CARDS,
+  NORTHWIND,
+  linkFor,
+  summaryFor,
+} from './cardsData'
+import type { MyCard, MyCardKind } from './cardsData'
+import { SampleQr } from './SampleQr'
 import './MyCards.css'
-
-/* Deck encodes nothing — `QRCode` draws a plate around a matrix you supply.
-   This is the sample one the QRCode stories use, so the page shows a real
-   code rather than a grey square pretending to be one. */
-const SampleQr = () => (
-  <span
-    style={{ display: 'block', width: '100%', height: '100%' }}
-    dangerouslySetInnerHTML={{ __html: sampleQrMatrixSvg }}
-  />
-)
 
 /* Lucide has no LinkedIn glyph — it is a trademark, and Lucide ships none.
    Traced to match the set it sits with, in `em` so it holds at whatever size
@@ -54,107 +52,6 @@ const LinkedInIcon = () => (
     <circle cx="4" cy="4" r="2" />
   </svg>
 )
-
-/* ---- Model ------------------------------------------------------------- */
-
-/**
- * Which of your cards this is.
- *
- * `kind` rather than `variant`: the system already spends `variant` on visual
- * treatment (Button, Badge, ChoiceGroup), and this is not that — it is which
- * of your selves you are handing over.
- */
-export type MyCardKind = 'Business' | 'Personal'
-
-export interface MyCard {
-  /** Stable key, and the card's public slug — "ben@meetcard". */
-  slug: string
-  kind: MyCardKind
-  name: string
-  tagline?: string
-  /**
-   * Role. `PersonCard` and `ContactCard` both call this `title`; only
-   * `Exchange` says `role`, and that disagreement should not spread.
-   */
-  title?: string
-  company?: string
-  location?: string
-}
-
-const KINDS: MyCardKind[] = ['Business', 'Personal']
-
-/*
- * A palette per kind of card, not per person.
- *
- * The work card carries the brand you work under; the personal one is
- * deliberately quieter, a warm graphite that reads as the same object off duty
- * rather than as a second company. In the product these come from whatever the
- * card is branded with — a company's colours, uploaded with its mark — and the
- * page only has to hand them to the card.
- */
-const THEMES: Record<MyCardKind, CardTheme> = {
-  Business: { primary: '#2E6E5B', accent: '#C66A4A' },
-  Personal: { primary: '#3A3F3D', accent: '#9A8F82' },
-}
-
-/** Alex Rivera is the signed-in person everywhere else in the shell. */
-const INITIAL: MyCard[] = [
-  {
-    slug: 'alex@northwind',
-    kind: 'Business',
-    name: 'Alex Rivera',
-    tagline: "Let's find the overlap.",
-    title: 'Design Lead',
-    company: 'Northwind Studio',
-    location: 'Boulder, Colorado',
-  },
-  {
-    slug: 'alex',
-    kind: 'Personal',
-    name: 'Alex Rivera',
-    tagline: 'Off the clock.',
-    title: 'Personal profile',
-    location: 'Boulder, Colorado',
-  },
-]
-
-const linkFor = (card: MyCard) => `meetcard.io/${card.slug}`
-
-/* The line a recipient reads before deciding to follow the link. Who, and
-   what they do — the same two facts the card leads with. */
-const summaryFor = (card: MyCard) =>
-  [card.name, [card.title, card.company].filter(Boolean).join(' at ')]
-    .filter(Boolean)
-    .join(', ')
-
-/*
- * The company behind the work card, reachable from its name.
- *
- * Its own link and its own snapshot: sharing from here hands over the
- * company, not the person who happens to be showing it.
- */
-const COMPANY = {
-  name: 'Northwind Studio',
-  headline: 'Meet people. Remember them.',
-  description:
-    'Northwind turns in-person introductions into durable professional relationships — one card, one conversation at a time.',
-  website: 'northwind.studio',
-  location: 'Boulder, CO',
-  linkedInHref: 'https://www.linkedin.com/company/northwind-studio',
-  people: [
-    { name: 'Alex Rivera' },
-    { name: 'Priya Nair' },
-    { name: 'Tom Okonkwo' },
-  ],
-  peopleTotal: 12,
-  share: {
-    value: 'meetcard.io/@northwind',
-    summary: 'Northwind Studio',
-    qr: <SampleQr />,
-    onDownloadQr: () => {},
-    onShareLinkedIn: () => {},
-  },
-}
 
 /* ---- Page -------------------------------------------------------------- */
 
@@ -186,7 +83,7 @@ export interface MyCardsProps {
  *   A control that let you pin one would be offering a choice the room has
  *   already made.
  */
-export function MyCards({ cards: seed = INITIAL }: MyCardsProps) {
+export function MyCards({ cards: seed = MY_CARDS }: MyCardsProps) {
   const [cards, setCards] = useState<MyCard[]>(seed)
   const [index, setIndex] = useState(0)
   const [editing, setEditing] = useState(false)
@@ -266,7 +163,7 @@ export function MyCards({ cards: seed = INITIAL }: MyCardsProps) {
                 key={card.slug}
                 name={card.name}
                 kind={card.kind}
-                theme={THEMES[card.kind]}
+                theme={CARD_THEMES[card.kind]}
                 tagline={card.tagline}
                 title={card.title}
                 company={card.company}
@@ -301,7 +198,7 @@ export function MyCards({ cards: seed = INITIAL }: MyCardsProps) {
                   onShareLinkedIn: () => {},
                 }}
                 companyProfile={
-                  card.company === COMPANY.name ? COMPANY : undefined
+                  card.company === NORTHWIND.name ? NORTHWIND : undefined
                 }
                 footer={
                   <>
@@ -405,7 +302,7 @@ export function MyCards({ cards: seed = INITIAL }: MyCardsProps) {
             label="Kind"
             value={draftKind}
             onChange={(event) => setDraftKind(event.target.value as MyCardKind)}
-            options={KINDS.map((kind) => ({ value: kind, label: kind }))}
+            options={CARD_KINDS.map((kind) => ({ value: kind, label: kind }))}
           />
           <Input
             label="Name"

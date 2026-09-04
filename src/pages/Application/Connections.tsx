@@ -8,12 +8,17 @@ import type { TimelineEvent } from '../../components/EventTimeline/EventTimeline
 import { Heading } from '../../components/Heading/Heading'
 import { IconButton } from '../../components/IconButton/IconButton'
 import { PersonCard } from '../../components/PersonCard/PersonCard'
-import type { CardTheme } from '../../components/PersonCard/PersonCard'
 import { PrivateNote } from '../../components/PrivateNote/PrivateNote'
-import type { ConnectionFeeling } from '../../components/PrivateNote/PrivateNote'
-import { sampleQrMatrixSvg } from '../../components/QRCode/sampleQrMatrix'
 import { Stack } from '../../components/Stack/Stack'
 import { Text } from '../../components/Text/Text'
+import { summaryFor } from './cardsData'
+import {
+  APP_CONNECTIONS,
+  CONNECTIONS_TODAY,
+  CONNECTION_EVENTS,
+} from './connectionsData'
+import type { Connection } from './connectionsData'
+import { SampleQr } from './SampleQr'
 import './Connections.css'
 
 /* Lucide dropped its brand marks, so LinkedIn is drawn here — Lucide's own
@@ -44,127 +49,6 @@ const LinkedInIcon = () => (
     <circle cx="4" cy="4" r="2" />
   </svg>
 )
-
-/* ---- Model ------------------------------------------------------------- */
-
-export interface Connection {
-  /** Stable key — the person's card slug. */
-  slug: string
-  /** Which event you met at — an `id` from the timeline's events. */
-  eventId: string
-  name: string
-  tagline?: string
-  title?: string
-  company?: string
-  location?: string
-  avatarSrc?: string
-  /**
-   * The colours their card is branded with. Someone else's card is the one
-   * place a palette is not yours to choose, so the page carries whatever came
-   * with the card rather than tinting everyone the same green.
-   */
-  theme?: CardTheme
-  /** What you wrote on the back of their card, if anything. */
-  note?: string
-  feeling?: ConnectionFeeling
-}
-
-/*
- * The events these cards came from. Dated either side of the line's "today"
- * so the sample shows all three of a timeline's states at once — one behind,
- * one selected, one still ahead — which is also what the mockups show.
- */
-const EVENTS: TimelineEvent[] = [
-  {
-    id: 'saastr-annual',
-    name: 'SaaStr Annual',
-    date: '2027-09-09',
-    location: 'San Francisco, CA',
-  },
-  {
-    id: 'founders-dinner',
-    name: 'Founders Dinner',
-    date: '2027-11-12',
-    location: 'Denver, CO',
-  },
-  {
-    id: 'revops-summit',
-    name: 'RevOps Summit',
-    date: '2028-01-22',
-    location: 'Chicago, IL',
-  },
-]
-
-const INITIAL: Connection[] = [
-  {
-    slug: 'ben@meetcard',
-    theme: { primary: '#2E6E5B', accent: '#C66A4A' },
-    eventId: 'founders-dinner',
-    name: 'Ben Ackles',
-    tagline: 'What a lovable guy',
-    title: 'Builder',
-    company: 'MeetCard',
-    location: 'Boulder, Colorado',
-    note: 'Met at the Front Range meetup — wants to talk about the deck metaphor.',
-    feeling: 'hot',
-  },
-  {
-    slug: 'grace@sextant',
-    theme: { primary: '#2F4858', accent: '#E0A458' },
-    eventId: 'founders-dinner',
-    name: 'Grace Okafor',
-    tagline: 'Ask me about supply chains.',
-    title: 'Head of Operations',
-    company: 'Sextant',
-    location: 'Denver, Colorado',
-  },
-  {
-    slug: 'mika@ply',
-    theme: { primary: '#4A3B5C', accent: '#C9A227' },
-    eventId: 'founders-dinner',
-    name: 'Mika Tanaka',
-    tagline: 'Always three prototypes deep.',
-    title: 'Principal Engineer',
-    company: 'Ply',
-    location: 'Seattle, Washington',
-  },
-  {
-    slug: 'renee@harborlight',
-    eventId: 'saastr-annual',
-    name: 'Renée Ashford',
-    tagline: 'Pricing is a product.',
-    title: 'VP Revenue',
-    company: 'Harborlight',
-    location: 'San Francisco, California',
-    note: 'Wants the deck demo before their Q1 planning.',
-  },
-  {
-    slug: 'devon@northbound',
-    eventId: 'saastr-annual',
-    name: 'Devon Iyer',
-    tagline: 'Runs on conference coffee.',
-    title: 'Founder',
-    company: 'Northbound',
-    location: 'Austin, Texas',
-  },
-]
-
-/* Deck encodes nothing — `QRCode` draws a plate around a matrix you supply.
-   The sample one the QRCode stories use, so a card turned over shows a real
-   code rather than a grey square pretending to be one. Same as `MyCards`. */
-const SampleQr = () => (
-  <span
-    style={{ display: 'block', width: '100%', height: '100%' }}
-    dangerouslySetInnerHTML={{ __html: sampleQrMatrixSvg }}
-  />
-)
-
-/* The line a recipient reads before deciding to follow the link. Who, and
-   what they do — the same two facts the card leads with. */
-const summaryFor = (card: Connection) =>
-  [card.name, [card.title, card.company].filter(Boolean).join(' at ')]
-    .filter(Boolean)
-    .join(', ')
 
 /**
  * The event the page opens on: the latest one that has actually happened,
@@ -211,13 +95,13 @@ export interface ConnectionsProps {
  * Nothing persists. Notes written here live for as long as the page does.
  */
 export function Connections({
-  connections = INITIAL,
-  events = EVENTS,
+  connections = APP_CONNECTIONS,
+  events = CONNECTION_EVENTS,
   defaultEventId,
   /* The sample data lives in 2027, so the line needs a present to be read
      from or every event on it is still to come. A caller bringing real
      events brings its own today with them. */
-  today = '2027-12-01',
+  today = CONNECTIONS_TODAY,
 }: ConnectionsProps) {
   const [cards, setCards] = useState<Connection[]>(connections)
   const [index, setIndex] = useState(0)
