@@ -18,7 +18,7 @@ export interface ChoiceOption {
   disabled?: boolean
 }
 
-export type ChoiceGroupVariant = 'pill' | 'tile'
+export type ChoiceGroupVariant = 'pill' | 'tile' | 'segmented'
 
 export interface ChoiceGroupProps {
   label: ReactNode
@@ -31,6 +31,12 @@ export interface ChoiceGroupProps {
   /**
    * `pill` hugs its content for short labels that wrap freely; `tile` lays
    * the options out in equal-width columns for comparable choices.
+   *
+   * `segmented` is the quiet one: a single track holding all the options,
+   * with the selected one raised out of it rather than filled in brand
+   * green. For a choice that is a property of the thing on screen — how a
+   * connection felt — rather than an action being taken, a saturated fill
+   * overstates it, and it leaves nowhere for the option's own colour to go.
    */
   variant?: ChoiceGroupVariant
   /** Column count for `tile`. Collapses to one column on narrow screens. */

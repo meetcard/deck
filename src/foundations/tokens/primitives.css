@@ -29,4 +29,35 @@
   --deck-primitive-green-tint: #eaf3ef;
   --deck-primitive-clay-tint: #faf0eb;
   --deck-primitive-hairline-strong: #d6cdbe;
+
+  /* Temperature — the three answers to "how did this connection feel?".
+     A scale needs three hues you can tell apart at 14px, and the brand sheet
+     has only one warm family: clay, brick and signal green put "hot" and
+     "warm" within 8 degrees of hue of each other and made "cold" the same
+     green as every selected control in the product.
+
+     These are brighter than anything else in Deck, and that is the point.
+     They appear once, on a 14px icon, on the one answer someone has chosen —
+     the smallest and most deliberate place in the product to spend colour.
+     A muted set was tried first and read as three shades of brown.
+
+     See `--deck-color-feeling-*` for the contrast these are held to, which
+     is a floor of 3:1 only where the icon carries meaning on its own. Here
+     it never does: the word Hot sits beside the flame at 16.8:1. */
+  --deck-primitive-rose: #ff2056;
+  --deck-primitive-amber: #fe9a00;
+  --deck-primitive-sky: #00a6f4;
+
+  /* Graphite — a true neutral grey, which the brand sheet also lacked. Every
+     grey in Deck until now leaned warm (mist, hairline, sand) because they
+     are all mixed toward paper. An unselected control needs to recede
+     without picking up a colour temperature of its own, since it sits two
+     pixels from an icon whose whole job is temperature. */
+  --deck-primitive-graphite: #66635d;
+
+  /* Chalk — the recessed chip, and the hairline around the track that holds
+     it. Warmer and lighter than sand, which at #ede7dd is a surface you
+     notice; these are meant to be felt rather than seen. */
+  --deck-primitive-chalk: #f3f2ee;
+  --deck-primitive-chalk-line: #e3e1dd;
 }

@@ -4,7 +4,7 @@ import { Badge } from '../Badge/Badge'
 import { Sheet } from '../Sheet/Sheet'
 import './AccountSheet.css'
 
-/* Hand-drawn rather than imported, for the reason `ShareSheet` gives:
+/* Hand-drawn rather than imported, for the reason every glyph in here is:
    `src/components` ships in the published bundle and stays free of runtime
    dependencies. 1.5 is the house stroke at this 16 grid. */
 const iconProps = {

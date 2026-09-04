@@ -51,3 +51,39 @@ export const Decorative: Story = {
 export const Strong: Story = {
   args: { strong: true },
 }
+
+/**
+ * A caption set into the rule, for the "OR" between a form and the row of
+ * SSO providers beside it. Renders `<div role="separator">` rather than
+ * `<hr>` — a void element has nowhere to put the words.
+ */
+export const Labelled: Story = {
+  args: { label: 'OR' },
+  render: (args) => (
+    <Stack gap={12}>
+      <Text>Sign in with your email</Text>
+      <Divider {...args} />
+      <Text>Sign in with a provider</Text>
+    </Stack>
+  ),
+  play: async ({ canvas }) => {
+    const separator = canvas.getByRole('separator')
+    await expect(separator).toHaveAttribute('aria-orientation', 'horizontal')
+    await expect(separator).toHaveTextContent('OR')
+  },
+}
+
+/** A caption needs a horizontal rule; `vertical` ignores it. */
+export const LabelledVerticalFallsBack: Story = {
+  args: { label: 'OR', orientation: 'vertical' },
+  render: (args) => (
+    <Stack direction="row" gap={12} align="center">
+      <Text>Left</Text>
+      <Divider {...args} />
+      <Text>Right</Text>
+    </Stack>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('separator')).toBeEmptyDOMElement()
+  },
+}

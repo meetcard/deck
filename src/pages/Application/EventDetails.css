@@ -1,0 +1,109 @@
+.app-event-details {
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+  padding: var(--deck-space-16);
+  font-family: var(--deck-font-sans);
+}
+
+.app-event-details__container {
+  width: 100%;
+  /* Narrower than the index. One event is a column of prose, a schedule and a
+     list of names — none of which reads well at a desk monitor's width. */
+  max-width: 48rem;
+}
+
+@media (min-width: 768px) {
+  .app-event-details {
+    padding: var(--deck-space-32);
+  }
+}
+
+.app-event-details__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--deck-space-6);
+  align-self: flex-start;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+}
+
+/* ---- On the cover ------------------------------------------------------- */
+
+.app-event-details__host {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-8);
+  margin: 0;
+  min-width: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  /* The hero re-points this to its own on-glass value. */
+  color: var(--deck-color-text-muted);
+}
+
+.app-event-details__host strong {
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+}
+
+/* The host's job title is the first thing worth dropping on a phone: it is
+   context about a name that is already there, and it costs a whole line. */
+.app-event-details__host-role {
+  display: none;
+}
+
+.app-event-details__facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--deck-space-12);
+}
+
+.app-event-details__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-12);
+}
+
+@media (min-width: 640px) {
+  .app-event-details__host-role {
+    display: inline;
+  }
+
+  .app-event-details__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---- Sections ----------------------------------------------------------- */
+
+/* Each section labels itself in the brand's caps, the way `MyCards` does —
+   small enough to read as a label, real enough to be an `h2`. */
+.app-event-details__eyebrow {
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+  font-weight: var(--deck-font-weight-semibold);
+  color: var(--deck-color-text-brand);
+}
+
+.app-event-details__section {
+  border-radius: var(--deck-radius-3xl);
+}
+
+.app-event-details__expected {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-6);
+}
+
+.app-event-details__people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--deck-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

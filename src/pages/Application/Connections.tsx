@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { CalendarDays, Handshake, Mail, Share2 } from 'lucide-react'
+import { CalendarDays, Handshake, Mail } from 'lucide-react'
 import { Button } from '../../components/Button/Button'
 import { CardPile } from '../../components/CardPile/CardPile'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
@@ -8,8 +8,10 @@ import type { TimelineEvent } from '../../components/EventTimeline/EventTimeline
 import { Heading } from '../../components/Heading/Heading'
 import { IconButton } from '../../components/IconButton/IconButton'
 import { PersonCard } from '../../components/PersonCard/PersonCard'
+import type { CardTheme } from '../../components/PersonCard/PersonCard'
 import { PrivateNote } from '../../components/PrivateNote/PrivateNote'
 import type { ConnectionFeeling } from '../../components/PrivateNote/PrivateNote'
+import { sampleQrMatrixSvg } from '../../components/QRCode/sampleQrMatrix'
 import { Stack } from '../../components/Stack/Stack'
 import { Text } from '../../components/Text/Text'
 import './Connections.css'
@@ -21,7 +23,7 @@ import './Connections.css'
 
    `IconButton` normalises every icon to 1em, which is right for a row of
    them and a touch too generous for this one: the mark is drawn nearly edge
-   to edge in its box where Mail and Share2 leave a margin, so at the same
+   to edge in its box where Mail and QrCode leave a margin, so at the same
    box size it reads larger than either. 15/16 is the ratio the glyph ships
    with elsewhere, written in `em` so it holds at every `IconButton` size
    rather than pinning the icon to one. */
@@ -56,6 +58,12 @@ export interface Connection {
   company?: string
   location?: string
   avatarSrc?: string
+  /**
+   * The colours their card is branded with. Someone else's card is the one
+   * place a palette is not yours to choose, so the page carries whatever came
+   * with the card rather than tinting everyone the same green.
+   */
+  theme?: CardTheme
   /** What you wrote on the back of their card, if anything. */
   note?: string
   feeling?: ConnectionFeeling
@@ -90,6 +98,7 @@ const EVENTS: TimelineEvent[] = [
 const INITIAL: Connection[] = [
   {
     slug: 'ben@meetcard',
+    theme: { primary: '#2E6E5B', accent: '#C66A4A' },
     eventId: 'founders-dinner',
     name: 'Ben Ackles',
     tagline: 'What a lovable guy',
@@ -101,6 +110,7 @@ const INITIAL: Connection[] = [
   },
   {
     slug: 'grace@sextant',
+    theme: { primary: '#2F4858', accent: '#E0A458' },
     eventId: 'founders-dinner',
     name: 'Grace Okafor',
     tagline: 'Ask me about supply chains.',
@@ -110,6 +120,7 @@ const INITIAL: Connection[] = [
   },
   {
     slug: 'mika@ply',
+    theme: { primary: '#4A3B5C', accent: '#C9A227' },
     eventId: 'founders-dinner',
     name: 'Mika Tanaka',
     tagline: 'Always three prototypes deep.',
@@ -137,6 +148,23 @@ const INITIAL: Connection[] = [
     location: 'Austin, Texas',
   },
 ]
+
+/* Deck encodes nothing — `QRCode` draws a plate around a matrix you supply.
+   The sample one the QRCode stories use, so a card turned over shows a real
+   code rather than a grey square pretending to be one. Same as `MyCards`. */
+const SampleQr = () => (
+  <span
+    style={{ display: 'block', width: '100%', height: '100%' }}
+    dangerouslySetInnerHTML={{ __html: sampleQrMatrixSvg }}
+  />
+)
+
+/* The line a recipient reads before deciding to follow the link. Who, and
+   what they do — the same two facts the card leads with. */
+const summaryFor = (card: Connection) =>
+  [card.name, [card.title, card.company].filter(Boolean).join(' at ')]
+    .filter(Boolean)
+    .join(', ')
 
 /**
  * The event the page opens on: the latest one that has actually happened,
@@ -302,6 +330,7 @@ export function Connections({
                 key={card.slug}
                 name={card.name}
                 avatarSrc={card.avatarSrc}
+                theme={card.theme}
                 tagline={card.tagline}
                 title={card.title}
                 company={card.company}
@@ -320,6 +349,9 @@ export function Connections({
                     onHide={() => setFlipped(null)}
                   />
                 }
+                /* No Share among these. The card carries its own, because
+                   sharing turns the card over and only the card can do
+                   that — same as on My cards. */
                 contactActions={
                   <>
                     <IconButton
@@ -334,14 +366,15 @@ export function Connections({
                       size="sm"
                       round
                     />
-                    <IconButton
-                      label={`Share ${card.name}'s card`}
-                      icon={<Share2 />}
-                      size="sm"
-                      round
-                    />
                   </>
                 }
+                share={{
+                  value: `meetcard.io/${card.slug}`,
+                  summary: summaryFor(card),
+                  qr: <SampleQr />,
+                  onDownloadQr: () => {},
+                  onShareLinkedIn: () => {},
+                }}
                 footer={
                   <>
                     <Button size="sm" iconStart={<CalendarDays />}>

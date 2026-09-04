@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn } from 'storybook/test'
+import { aspectRatioOf } from '../../test/measure'
 import { Button } from '../Button/Button'
 import { PersonCard } from '../PersonCard/PersonCard'
 import { CardPile } from './CardPile'
@@ -16,8 +17,31 @@ const meta = {
    * is clipped by the canvas edge and the card the story is about is the
    * one thing you cannot see whole. Every surface that uses a pile centres
    * it (`MyCards`, `Connections`); the story should show it the same way.
+   *
+   * Centred by a full-width box rather than by `layout: 'centered'`, though,
+   * and that distinction is not cosmetic. Storybook's centred layout makes
+   * the story a shrink-to-fit flex item, and a pile fills the width it is
+   * given — so it was being asked to size itself from nothing. It obliged:
+   * the card rendered at 0x0 in every story in this file, which surfaced as
+   * `offsetWidth / offsetHeight` being `NaN` in the ratio assertions below.
+   * The component no longer collapses that far, but a story should exercise
+   * it the way `MyCards` and `Connections` actually use it — inside
+   * something that has a width — rather than in a box that has none.
    */
-  parameters: { layout: 'centered' },
+  parameters: { layout: 'fullscreen' },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          boxSizing: 'border-box',
+          width: '100%',
+          padding: 'var(--deck-space-24)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     label: "Ada's saved cards",
     onActiveIndexChange: fn(),
@@ -94,6 +118,66 @@ export const SwipeAdvances: Story = {
       ),
     ).toBeVisible()
     await expect(args.onActiveIndexChange).toHaveBeenCalledWith(1)
+  },
+}
+
+/**
+ * A press that lands on a control inside the card belongs to that control,
+ * not to the pile — even when the pointer then travels far enough to have
+ * been a swipe.
+ *
+ * This guards a bug that shipped past a test which appeared to cover it.
+ * `CardPile` captured every pointerdown, and pointer capture retargets the
+ * pointerup that follows, so a real browser resolved the click on the common
+ * ancestor rather than on the button: nothing on the front card could be
+ * clicked. `userEvent.click` did not catch it because it synthesizes a click
+ * on the element it is given instead of letting the browser work the target
+ * out from the pointer sequence — which is exactly the step that was broken.
+ *
+ * So the assertion here is on the pointer sequence, not on a click: press on
+ * the button, move past the drag threshold, release. The pile must not have
+ * advanced, and the button must have heard about it.
+ */
+export const PressingAControlDoesNotDrag: Story = {
+  render: (args) => (
+    <CardPile {...args}>
+      <PersonCard
+        name="Ada Lovelace"
+        title="Card one"
+        footer={<Button size="sm">Share card</Button>}
+      />
+      <PersonCard name="Grace Hopper" title="Card two" />
+    </CardPile>
+  ),
+  play: async ({ canvas, userEvent, args }) => {
+    const share = canvas.getByRole('button', { name: 'Share card' })
+    const front = share.closest('.deck-card-pile__layer--front') as HTMLElement
+
+    await userEvent.pointer([
+      { keys: '[MouseLeft>]', target: share, coords: { x: 200, y: 0 } },
+      { target: share, coords: { x: 40, y: 0 } },
+    ])
+
+    /*
+     * Asserted mid-gesture, on the transform, because that is the only part
+     * of this that is observable immediately. `advance` reports the new index
+     * from inside a 220ms timeout, so checking `onActiveIndexChange` straight
+     * after the release passes whether or not the pile moved — the call has
+     * simply not happened yet. The card's offset is set synchronously as the
+     * pointer moves, so a pile that was dragging is already 160px out here.
+     */
+    await expect(front.style.transform).toContain('translateX(0px)')
+
+    await userEvent.pointer([
+      { keys: '[/MouseLeft]', target: share, coords: { x: 40, y: 0 } },
+    ])
+
+    // And past the timeout, the pile is still showing the same card.
+    await new Promise((resolve) => setTimeout(resolve, 350))
+    await expect(
+      canvas.getByRole('heading', { name: 'Ada Lovelace' }),
+    ).toBeVisible()
+    await expect(args.onActiveIndexChange).not.toHaveBeenCalled()
   },
 }
 
@@ -282,7 +366,7 @@ export const Portrait: Story = {
     )!
 
     // 4/7 = 0.571, allowing a pixel of rounding.
-    const ratio = card.offsetWidth / card.offsetHeight
+    const ratio = aspectRatioOf(card, 'the front card')
     await expect(ratio).toBeGreaterThan(0.55)
     await expect(ratio).toBeLessThan(0.59)
     // Nothing spills out of a box that cannot grow, in either orientation.
@@ -336,7 +420,7 @@ export const UniformCards: Story = {
     }
 
     // 7/4 = 1.75, allowing a pixel of rounding at this width.
-    const ratio = first.offsetWidth / first.offsetHeight
+    const ratio = aspectRatioOf(first, 'the front card')
     await expect(ratio).toBeGreaterThan(1.72)
     await expect(ratio).toBeLessThan(1.78)
   },

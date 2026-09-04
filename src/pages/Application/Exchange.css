@@ -20,24 +20,34 @@
 
 /* ---- The animated stage ------------------------------------------------ */
 
-/* A fixed-height well so the sheet does not resize under the cards as they
-   move — the surface staying still is what makes the cards read as moving. */
+/* A fixed-height well that outlives every stage, including the receipt. The
+   surface staying still is what makes the cards read as moving — and because
+   the same well is still there at the end, the cards arrive rather than
+   reappear somewhere else. */
 .exchange__stage {
+  --exchange-card-w: 200px;
+
   position: relative;
   height: 168px;
   border-radius: var(--deck-radius-xl);
   background-color: var(--deck-color-background-subtle);
   overflow: hidden;
+  transition: height var(--deck-duration-slow) var(--deck-ease-standard);
 }
 
+/* Anchored at the well's centre and moved only by `transform`. Every stage
+   is then one interpolable transform list — offsets in percentages of the
+   card, so the narrower mobile card takes its geometry with it. */
 .exchange-card {
   position: absolute;
   box-sizing: border-box;
   top: 50%;
+  left: 50%;
   display: flex;
   align-items: center;
   gap: var(--deck-space-10);
-  width: 200px;
+  width: var(--exchange-card-w);
+  margin-left: calc(var(--exchange-card-w) / -2);
   padding: var(--deck-space-10) var(--deck-space-12);
   border: 1px solid var(--deck-color-border-default);
   border-radius: var(--deck-radius-lg);
@@ -45,6 +55,7 @@
   box-shadow: var(--deck-shadow-md);
   transition:
     transform var(--deck-duration-slow) var(--deck-ease-standard),
+    box-shadow var(--deck-duration-slow) var(--deck-ease-standard),
     opacity var(--deck-duration-slow) var(--deck-ease-standard);
 }
 
@@ -70,28 +81,74 @@
 
 /* Beat one — the cards lean toward each other, like two hands meeting. */
 .exchange__stage--greeting .exchange-card--mine {
-  left: 8px;
-  transform: translateY(-50%) rotate(-7deg);
+  transform: translate(-53%, -50%) rotate(-7deg);
 }
 
 .exchange__stage--greeting .exchange-card--theirs {
-  right: 8px;
-  transform: translateY(-50%) rotate(7deg);
+  transform: translate(53%, -50%) rotate(7deg);
 }
 
-/* Beat two — they slide across each other and flatten out. The crossing is
-   the whole point: it is what says *mutual* rather than *sent*. */
-/* 18px, not 34: far enough that the cards visibly move into each other,
-   close enough that the lower card is still more than an avatar. */
+/* Beat two — the cards pass *through* each other and swap sides. The crossing
+   is the whole point: it is what says *mutual* rather than *sent*, and it is
+   why each card ends up under the other person's label. */
+/* 30%, not 53%: the cards are mid-pass here, overlapping by most of a card,
+   which is what reads as one going behind the other. */
 .exchange__stage--trading .exchange-card--mine {
-  left: 8px;
-  transform: translate(18px, -50%) rotate(-2deg);
+  transform: translate(30%, -50%) rotate(-2deg);
 }
 
 .exchange__stage--trading .exchange-card--theirs {
-  right: 8px;
-  transform: translate(-18px, -50%) rotate(2deg);
+  transform: translate(-30%, -50%) rotate(2deg);
   z-index: 1;
+}
+
+/* Beat three — they come to rest on their new sides, flat and level, and sit
+   down into the well: the shadow lifts because they have stopped moving. The
+   14px drop is the room the labels fade into. */
+/* The well grows by the height of the two things that only exist at rest —
+   the labels above the cards and the seal below them. Growing is the one
+   size change it makes, and it happens on the same easing as the cards. */
+.exchange__stage--done {
+  height: 196px;
+}
+
+.exchange__stage--done .exchange-card--mine {
+  transform: translate(53%, calc(-50% + 14px)) rotate(0deg);
+  box-shadow: var(--deck-shadow-sm);
+}
+
+.exchange__stage--done .exchange-card--theirs {
+  transform: translate(-53%, calc(-50% + 14px)) rotate(0deg);
+  box-shadow: var(--deck-shadow-sm);
+  z-index: 1;
+}
+
+/* The labels the cards land under. Same anchoring and the same ±53% as the
+   card they belong to, so they cannot drift apart. */
+.exchange__slot-label {
+  position: absolute;
+  top: calc(50% - 46px);
+  left: 50%;
+  width: var(--exchange-card-w);
+  margin-left: calc(var(--exchange-card-w) / -2);
+  padding-left: var(--deck-space-4);
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+.exchange__slot-label--mine {
+  transform: translateX(53%);
+}
+
+.exchange__slot-label--theirs {
+  transform: translateX(-53%);
+}
+
+.exchange__stage--done .exchange__slot-label {
+  opacity: 1;
 }
 
 /* The seal that appears where the two cards cross. */
@@ -113,25 +170,70 @@
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.6);
   transition:
+    top var(--deck-duration-slow) var(--deck-ease-standard),
     opacity var(--deck-duration-base) var(--deck-ease-standard),
     transform var(--deck-duration-base) var(--deck-ease-standard);
 }
 
-.exchange__seal > svg {
+/* Stacked rather than swapped: the handshake becomes the check in place. */
+.exchange__seal-icon {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  transition: opacity var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+.exchange__seal-icon > svg {
   width: 15px;
   height: 15px;
 }
 
-.exchange__stage--trading .exchange__seal {
+.exchange__seal-icon--check {
+  opacity: 0;
+}
+
+.exchange__stage--trading .exchange__seal,
+.exchange__stage--done .exchange__seal {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
 
-/* ---- Receipt ----------------------------------------------------------- */
+/* At rest the seal drops clear of the cards, which have separated and taken
+   the crossing point with them. */
+.exchange__stage--done .exchange__seal {
+  top: calc(100% - 24px);
+}
+
+.exchange__stage--done .exchange__seal-icon--hands {
+  opacity: 0;
+}
+
+.exchange__stage--done .exchange__seal-icon--check {
+  opacity: 1;
+}
+
+/* ---- Below the well ---------------------------------------------------- */
+
+/* The half that genuinely does change between exchanging and exchanged. It
+   dissolves in rather than cutting, so the well above it stays the thing the
+   eye is holding on to. */
+.exchange__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-16);
+  animation: exchange-aside-in var(--deck-duration-slow)
+    var(--deck-ease-entrance) both;
+}
+
+@keyframes exchange-aside-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
 
 .exchange__badge,
-.exchange__saved,
-.exchange__identity {
+.exchange__note {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -151,7 +253,7 @@
   font-weight: var(--deck-font-weight-semibold);
 }
 
-.exchange__saved {
+.exchange__note--panel {
   padding: var(--deck-space-10);
   border-radius: var(--deck-radius-lg);
   background-color: var(--deck-color-background-subtle);
@@ -167,32 +269,6 @@
   height: 14px;
 }
 
-.exchange__receipt {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--deck-space-12);
-}
-
-.exchange__slot {
-  display: flex;
-  flex-direction: column;
-  gap: var(--deck-space-8);
-}
-
-.exchange__slot-label {
-  text-transform: uppercase;
-  letter-spacing: var(--deck-tracking-caps);
-}
-
-/* Static in the receipt: the cards have arrived, so they sit flat and fill
-   their column rather than keeping the absolute placement they fly in. */
-.exchange__slot .exchange-card {
-  position: static;
-  width: 100%;
-  transform: none;
-  box-shadow: none;
-}
-
 /* minmax(0, 1fr) rather than 1fr: a bare 1fr floors at the content's min
    width, and "Save contact" alone measures wider than a third of the sheet,
    which pushed the row out of its container. */
@@ -203,20 +279,68 @@
 }
 
 @media (max-width: 640px) {
-  .exchange__receipt {
-    grid-template-columns: 1fr;
-  }
-
   /* Three icon+label buttons need ~383px of text on a 301px row. Stacking is
      honest; shrinking them would just clip the labels. */
   .exchange__next {
     grid-template-columns: 1fr;
   }
 
-  /* Two 200px cards in a ~300px well overlap by 80px, which buries most of
-     the lower card. Narrower cards keep both readable while still crossing. */
-  .exchange__stage .exchange-card {
-    width: 170px;
+  /* Two 200px cards in a ~300px well would leave nothing of the lower one.
+     Narrower cards keep both readable while still crossing. */
+  .exchange__stage {
+    --exchange-card-w: 170px;
+  }
+
+  /* Pulled in from ±53%: at full spread the cards would hang off the edges of
+     a phone-width well. */
+  .exchange__stage--greeting .exchange-card--mine {
+    transform: translate(-35%, -50%) rotate(-7deg);
+  }
+
+  .exchange__stage--greeting .exchange-card--theirs {
+    transform: translate(35%, -50%) rotate(7deg);
+  }
+
+  .exchange__stage--trading .exchange-card--mine {
+    transform: translate(25%, -50%) rotate(-2deg);
+  }
+
+  .exchange__stage--trading .exchange-card--theirs {
+    transform: translate(-25%, -50%) rotate(2deg);
+  }
+
+  /* Side by side does not fit, so the cards settle into a stack instead —
+     received above shared. Still the same two nodes coming to rest in the
+     same well, just along the other axis. */
+  .exchange__stage--done {
+    height: 248px;
+  }
+
+  .exchange__stage--done .exchange-card--theirs {
+    transform: translate(0, calc(-50% - 49px)) rotate(0deg);
+  }
+
+  .exchange__stage--done .exchange-card--mine {
+    transform: translate(0, calc(-50% + 69px)) rotate(0deg);
+  }
+
+  /* Measured from the top of the well rather than its middle: in a stack the
+     labels sit at fixed offsets down the column, not either side of a
+     centre line. */
+  .exchange__stage--done .exchange__slot-label--theirs {
+    top: var(--deck-space-12);
+    transform: translateX(0);
+  }
+
+  .exchange__stage--done .exchange__slot-label--mine {
+    top: 130px;
+    transform: translateX(0);
+  }
+
+  /* The stack leaves no clear space for it, and the check on the badge
+     below already carries the same message. */
+  .exchange__stage--done .exchange__seal {
+    opacity: 0;
   }
 }
 
@@ -224,8 +348,15 @@
    the receipt on open rather than animating. This is belt-and-braces for any
    transition that would otherwise still run. */
 @media (prefers-reduced-motion: reduce) {
+  .exchange__stage,
   .exchange-card,
-  .exchange__seal {
+  .exchange__slot-label,
+  .exchange__seal,
+  .exchange__seal-icon {
     transition: none;
+  }
+
+  .exchange__aside {
+    animation: none;
   }
 }

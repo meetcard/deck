@@ -1,0 +1,763 @@
+.settings {
+  padding: var(--deck-space-16);
+  font-family: var(--deck-font-sans);
+}
+
+@media (min-width: 768px) {
+  .settings {
+    padding: var(--deck-space-32);
+  }
+}
+
+.settings__container {
+  width: 100%;
+  /* Wide enough for a 240px rail plus a panel that still holds a comfortable
+     measure of prose, and no wider — settings are read, not scanned. */
+  max-width: 68rem;
+  margin-inline: auto;
+}
+
+.settings__layout {
+  display: grid;
+  gap: var(--deck-space-16);
+}
+
+/* 768px is `breakpoints.md`, the same line `SettingsNav` swaps its own
+   control on and the shell swaps its navigation on. A custom property cannot
+   be used in a media condition, which is why the number is written out. */
+@media (min-width: 768px) {
+  .settings__layout {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: var(--deck-space-32);
+    align-items: start;
+  }
+}
+
+.settings__nav {
+  position: sticky;
+  /* Clears `AppBar` when it is sticky, which it is in the shell. */
+  top: var(--deck-space-16);
+}
+
+.settings__panel-column {
+  min-width: 0;
+}
+
+/* ---- Panel -------------------------------------------------------------- */
+
+.settings__panel {
+  border-radius: var(--deck-radius-3xl);
+}
+
+.settings__panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+}
+
+.settings__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-6);
+  margin: 0;
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  font-weight: var(--deck-font-weight-semibold);
+  letter-spacing: var(--deck-tracking-caps);
+  text-transform: uppercase;
+  color: var(--deck-color-text-brand);
+}
+
+.settings__eyebrow-icon > svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.settings__lede {
+  max-width: 44rem;
+}
+
+.settings__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-6);
+  margin-block-end: var(--deck-space-4);
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.settings__breadcrumb svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---- Section ------------------------------------------------------------ */
+
+.settings__section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--deck-space-12);
+  flex-wrap: wrap;
+}
+
+.settings__section-title {
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  font-weight: var(--deck-font-weight-semibold);
+  letter-spacing: var(--deck-tracking-caps);
+  text-transform: uppercase;
+  color: var(--deck-color-text-brand);
+}
+
+.settings__section-lede {
+  margin-block-start: var(--deck-space-4);
+  max-width: 44rem;
+}
+
+.settings__section-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-8);
+}
+
+/* ---- Row ---------------------------------------------------------------- */
+
+.settings__row {
+  padding: var(--deck-space-16);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-2xl);
+  background-color: var(--deck-color-background-subtle);
+}
+
+.settings__row--danger {
+  border-color: var(--deck-color-status-error-border);
+  background-color: var(--deck-color-status-error-background);
+}
+
+.settings__row-main {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-12);
+}
+
+.settings__row-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--deck-radius-lg);
+  background-color: var(--deck-color-background-default);
+  color: var(--deck-color-text-muted);
+}
+
+.settings__row-icon > svg,
+.settings__row-icon > img {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.settings__row--danger .settings__row-icon {
+  color: var(--deck-color-status-error-text);
+}
+
+.settings__row-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.settings__row-title {
+  margin: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  font-weight: var(--deck-font-weight-semibold);
+  color: var(--deck-color-text-default);
+}
+
+.settings__row-description {
+  margin: var(--deck-space-2) 0 0;
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+}
+
+.settings__row-action {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--deck-space-8);
+}
+
+.settings__row-body {
+  margin-block-start: var(--deck-space-16);
+  padding-block-start: var(--deck-space-16);
+  border-top: 1px solid var(--deck-color-border-default);
+}
+
+/* A row whose action wraps under the text rather than squeezing it. */
+@media (max-width: 479px) {
+  .settings__row-main {
+    flex-wrap: wrap;
+  }
+
+  .settings__row-action {
+    width: 100%;
+  }
+}
+
+/* ---- Lists -------------------------------------------------------------- */
+
+.settings__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---- Field groups ------------------------------------------------------- */
+
+.settings__pair,
+.settings__triple {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--deck-space-16);
+}
+
+@media (min-width: 640px) {
+  .settings__pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .settings__triple {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/*
+ * A control's chrome around a fixed prefix and an editable remainder.
+ *
+ * `Input`'s own `iconStart` is a 40px slot for a glyph; "linkedin.com/" does
+ * not fit in it. So the border, radius and focus ring move to the wrapper and
+ * the input inside goes bare — the one place this area redraws a control
+ * rather than composing one.
+ */
+.settings__prefix {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-2);
+  /* `.deck-control--md`'s own metrics, written out — this box has to line up
+     beside a real `Input` in the same grid row. */
+  min-height: 40px;
+  padding-inline: var(--deck-space-12);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-lg);
+  background-color: var(--deck-color-background-elevated);
+  transition: border-color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.settings__prefix:hover {
+  border-color: var(--deck-color-border-strong);
+}
+
+.settings__prefix:focus-within {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+  border-color: var(--deck-color-border-focus);
+}
+
+.settings__prefix-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--deck-color-text-muted);
+}
+
+.settings__prefix-icon > svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.settings__prefix-text {
+  flex-shrink: 0;
+  font-size: var(--deck-font-size-body-md);
+  line-height: var(--deck-line-height-body-md);
+  color: var(--deck-color-text-muted);
+  white-space: nowrap;
+}
+
+.settings__prefix-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--deck-space-8) 0;
+  border: none;
+  background: none;
+  outline: none;
+  font: inherit;
+  font-size: var(--deck-font-size-body-md);
+  line-height: var(--deck-line-height-body-md);
+  color: var(--deck-color-text-default);
+}
+
+/* A `Switch` reads as a setting rather than one more field, so it sits in a
+   band of its own — the same treatment `AddEvent` gives its toggles. */
+.settings__band {
+  padding: var(--deck-space-16);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-2xl);
+  background-color: var(--deck-color-background-subtle);
+}
+
+.settings__note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--deck-space-8);
+  margin: 0;
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+}
+
+.settings__note svg {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  margin-block-start: 2px;
+}
+
+.settings__code {
+  padding: var(--deck-space-4) var(--deck-space-8);
+  border-radius: var(--deck-radius-md);
+  background-color: var(--deck-color-background-inset);
+  font-family: var(--deck-font-mono);
+  font-size: var(--deck-font-size-body-xs);
+  word-break: break-all;
+}
+
+/* ---- Embed snippet ------------------------------------------------------ */
+
+/* The copy control sits over the code rather than beside it, so the block
+   keeps the full width of the column for the lines it has to show. */
+.settings__snippet {
+  position: relative;
+}
+
+.settings__snippet-code {
+  margin: 0;
+  padding: var(--deck-space-8) var(--deck-space-12);
+  /* Room for the copy button, so a wrapped line never runs under it. */
+  padding-inline-end: var(--deck-space-40);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-xl);
+  background-color: var(--deck-color-background-inset);
+  color: var(--deck-color-text-default);
+  font-family: var(--deck-font-mono);
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-sm);
+  /* Keeps the two lines two lines, and folds whatever is too long for the
+     column instead of hiding it past an edge. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.settings__snippet-copy {
+  position: absolute;
+  inset-block-start: var(--deck-space-4);
+  inset-inline-end: var(--deck-space-4);
+}
+
+/* ---- Footer ------------------------------------------------------------- */
+
+.settings__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--deck-space-12);
+  padding-block-start: var(--deck-space-20);
+  border-top: 1px solid var(--deck-color-border-default);
+}
+
+.settings__footer-actions {
+  display: flex;
+  gap: var(--deck-space-8);
+  margin-inline-start: auto;
+}
+
+/* ---- Profile: photo ----------------------------------------------------- */
+
+.settings__photo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-16);
+}
+
+.settings__photo-frame {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* The badge on the photo, and the button beside it, are two labels for one
+   `<input type="file">`. The input is the only tab stop, so the ring has to
+   be drawn on a label rather than on the control that has focus. It lands on
+   the text button, which is the one that names the input. */
+.settings__photo-edit {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  cursor: pointer;
+}
+
+.settings__photo:has(.settings__file:focus-visible) .settings__photo-upload {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.settings__photo-upload {
+  cursor: pointer;
+}
+
+/* ---- Profile: calls to action ------------------------------------------- */
+
+.settings__cta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--deck-space-8);
+  padding: var(--deck-space-12);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-2xl);
+  background-color: var(--deck-color-background-subtle);
+}
+
+@media (min-width: 640px) {
+  .settings__cta {
+    grid-template-columns: auto minmax(0, 14rem) minmax(0, 1fr);
+  }
+}
+
+.settings__cta-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--deck-color-text-muted);
+  cursor: grab;
+}
+
+.settings__cta-handle > svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---- Availability ------------------------------------------------------- */
+
+/* A group of toggles is a fieldset, not a labelled div — "Available days" has
+   to name all seven of them to a screen reader, and only a legend does that. */
+.settings__fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.settings__legend {
+  padding: 0;
+  margin-block-end: var(--deck-space-8);
+  font-size: var(--deck-font-size-label-sm);
+  line-height: var(--deck-line-height-label-sm);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+}
+
+.settings__days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--deck-space-6);
+}
+
+.settings__preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--deck-space-16);
+}
+
+@media (min-width: 640px) {
+  .settings__preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---- Company: brand ----------------------------------------------------- */
+
+.settings__swatch {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-8);
+}
+
+/*
+ * A native colour well. Browsers draw their own control here, so this only
+ * squares it off and gives it the same border as its neighbours.
+ */
+.settings__swatch-input {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-lg);
+  background: none;
+  cursor: pointer;
+}
+
+.settings__swatch-input::-webkit-color-swatch-wrapper {
+  padding: 3px;
+}
+
+.settings__swatch-input::-webkit-color-swatch {
+  border: none;
+  border-radius: var(--deck-radius-md);
+}
+
+.settings__swatch-hex {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--deck-font-mono);
+  text-transform: uppercase;
+}
+
+.settings__brand-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-8);
+  padding: var(--deck-space-16);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-2xl);
+  background-color: var(--deck-color-background-subtle);
+}
+
+.settings__brand-chip {
+  padding: var(--deck-space-8) var(--deck-space-16);
+  border-radius: var(--deck-radius-full);
+  font-size: var(--deck-font-size-label-sm);
+  line-height: var(--deck-line-height-label-sm);
+  font-weight: var(--deck-font-weight-semibold);
+  color: #fff;
+}
+
+/*
+ * 7:4, the ratio the card's company profile crops its cover to. Showing a
+ * 4:3 frame here and a landscape one on the card would be asking someone to
+ * compose a picture for a shape they never see.
+ */
+.settings__cover {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  aspect-ratio: 7 / 4;
+  max-width: 24rem;
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-2xl);
+  background-color: var(--deck-color-background-inset);
+}
+
+.settings__cover-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.settings__cover-empty {
+  padding: var(--deck-space-16);
+  text-align: center;
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+}
+
+/* The native file input is hidden but not removed — it is still what the
+   label operates and what the keyboard reaches. */
+.settings__file:focus-visible + label {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.settings__file + label {
+  cursor: pointer;
+}
+
+/* ---- Billing ------------------------------------------------------------ */
+
+.settings__plan-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--deck-space-16);
+  padding: var(--deck-space-20);
+  border: 1px solid var(--deck-color-border-brand);
+  border-radius: var(--deck-radius-2xl);
+  background-color: var(--deck-color-background-brand-subtle);
+}
+
+.settings__stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--deck-space-4);
+}
+
+.settings__stepper-value {
+  min-width: 2.5rem;
+  text-align: center;
+  font-size: var(--deck-font-size-body-md);
+  line-height: var(--deck-line-height-body-md);
+  font-weight: var(--deck-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.settings__card-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 30px;
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-md);
+  background-color: var(--deck-color-background-default);
+  font-size: var(--deck-font-size-label-xs);
+  font-weight: var(--deck-font-weight-bold);
+  letter-spacing: var(--deck-tracking-caps);
+  color: var(--deck-color-text-default);
+}
+
+/* ---- Plans -------------------------------------------------------------- */
+
+.settings__plans {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--deck-space-16);
+  align-items: stretch;
+}
+
+@media (min-width: 900px) {
+  .settings__plans {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.settings__plan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-12);
+  height: 100%;
+  border-radius: var(--deck-radius-2xl);
+}
+
+.settings__plan--current {
+  border-color: var(--deck-color-border-brand);
+}
+
+.settings__plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--deck-space-4);
+  margin: 0;
+}
+
+.settings__plan-amount {
+  font-size: var(--deck-font-size-heading-lg);
+  line-height: var(--deck-line-height-heading-lg);
+  font-weight: var(--deck-font-weight-bold);
+  color: var(--deck-color-text-default);
+}
+
+.settings__plan-period {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.settings__plan-features {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.settings__plan-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--deck-space-8);
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-default);
+}
+
+.settings__plan-feature svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-block-start: 3px;
+  color: var(--deck-color-text-brand);
+}
+
+/* ---- Team --------------------------------------------------------------- */
+
+.settings__member {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-12);
+  padding: var(--deck-space-12) var(--deck-space-16);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-2xl);
+  background-color: var(--deck-color-background-subtle);
+}
+
+.settings__member-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.settings__member-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-6);
+  margin: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  font-weight: var(--deck-font-weight-semibold);
+}
+
+.settings__member-email {
+  margin: var(--deck-space-2) 0 0;
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.settings__member-role {
+  flex-shrink: 0;
+}
+
+/* The role select is a control in a dense row, so it drops its own label to
+   the accessible layer — the row's name is already beside it. */
+.settings__member-role select {
+  min-width: 7.5rem;
+}

@@ -77,6 +77,40 @@
   --deck-color-status-error-text: var(--deck-primitive-clay-text);
   --deck-color-status-error-border: var(--deck-primitive-brick-deep);
 
+  /* Feeling — how a connection felt. Deliberately not the status colours:
+     a cold connection is not an error and a hot one is not a success, and
+     borrowing those would put the product's judgement on someone you met.
+
+     Contrast, stated plainly because these are the only values in Deck that
+     do not clear 3:1 on their own surface: on the chalk chip they measure
+     3.35, 1.91 and 2.42 to 1. WCAG 1.4.11 applies to graphics *required to
+     understand the content*, and none of these are — every option is
+     labelled in words beside the icon at 16.8:1, the selected one is
+     `aria-checked`, and the chip's own fill marks it independently of hue.
+     The icon is the third signal, not the only one.
+
+     If one of these ever becomes the sole indicator — an icon-only variant,
+     a legend, a dot with no label — it needs a darker value first. */
+  --deck-color-feeling-hot: var(--deck-primitive-rose);
+  --deck-color-feeling-warm: var(--deck-primitive-amber);
+  --deck-color-feeling-cold: var(--deck-primitive-sky);
+
+  /* Inset — a band set into a surface rather than laid on top of it: the
+     card's detail line, and anywhere else a strip needs to read as part of
+     what is behind it. `background-subtle` is the wrong weight for this. It
+     is Sand, a page-level surface, and on a white card it lands as a beige
+     block heavy enough to become the first thing the eye finds — ahead of
+     the name. Chalk is a quarter of the way there. */
+  --deck-color-background-inset: var(--deck-primitive-chalk);
+
+  /* Segmented control — a track holding its options, with the chosen one
+     recessed into it. Light sinks the chip below the track; see the dark
+     block, which lifts it instead. */
+  --deck-color-segmented-track: var(--deck-primitive-paper);
+  --deck-color-segmented-track-border: var(--deck-primitive-chalk-line);
+  --deck-color-segmented-chip: var(--deck-primitive-chalk);
+  --deck-color-segmented-muted: var(--deck-primitive-graphite);
+
   /**
    * Solid fills.
    *
@@ -155,6 +189,24 @@
     --deck-color-status-error-text: #d38e75;
     --deck-color-status-error-border: #b56a5a;
 
+    /* Rose is lifted for dark — at #ff2056 it drops to 2.91 on the dark chip,
+       the one place these read worse than in light. Amber and sky are the
+       light values unchanged: on #333f3f they measure 5.11 and 4.03. */
+    --deck-color-feeling-hot: #ff5c7f;
+    --deck-color-feeling-warm: #fe9a00;
+    --deck-color-feeling-cold: #00a6f4;
+
+    /* One step up from the page rather than down, for the same reason the
+       segmented chip inverts below: a darker band on a dark card is a hole. */
+    --deck-color-background-inset: #333f3f;
+
+    /* Inverted: dark raises the chip out of the track rather than sinking
+       it in, because a recess in a dark scheme reads as a hole. */
+    --deck-color-segmented-track: #242d2d;
+    --deck-color-segmented-track-border: #3a4545;
+    --deck-color-segmented-chip: #333f3f;
+    --deck-color-segmented-muted: #acaca6;
+
     /* Bright fills with Ink as the on-color — see the light block above. */
     --deck-color-solid-neutral: #acaca6;
     --deck-color-solid-brand: #6fc3aa;
@@ -211,6 +263,24 @@
   --deck-color-status-error-background: #44312b;
   --deck-color-status-error-text: #d38e75;
   --deck-color-status-error-border: #b56a5a;
+
+  /* Rose is lifted for dark — at #ff2056 it drops to 2.91 on the dark chip,
+     the one place these read worse than in light. Amber and sky are the
+     light values unchanged: on #333f3f they measure 5.11 and 4.03. */
+  --deck-color-feeling-hot: #ff5c7f;
+  --deck-color-feeling-warm: #fe9a00;
+  --deck-color-feeling-cold: #00a6f4;
+
+  /* One step up from the page rather than down, for the same reason the
+     segmented chip inverts below: a darker band on a dark card is a hole. */
+  --deck-color-background-inset: #333f3f;
+
+  /* Inverted: dark raises the chip out of the track rather than sinking
+     it in, because a recess in a dark scheme reads as a hole. */
+  --deck-color-segmented-track: #242d2d;
+  --deck-color-segmented-track-border: #3a4545;
+  --deck-color-segmented-chip: #333f3f;
+  --deck-color-segmented-muted: #acaca6;
 
   /* Bright fills with Ink as the on-color — see the light block above. */
   --deck-color-solid-neutral: #acaca6;

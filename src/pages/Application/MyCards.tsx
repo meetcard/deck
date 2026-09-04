@@ -1,19 +1,59 @@
 import { useMemo, useState } from 'react'
-import { IdCard, Pencil, Plus, QrCode } from 'lucide-react'
+import {
+  Calendar,
+  Handshake,
+  Mail,
+  MessageSquare,
+  Phone,
+  Plus,
+} from 'lucide-react'
 import { Avatar } from '../../components/Avatar/Avatar'
 import { Badge } from '../../components/Badge/Badge'
 import { Button } from '../../components/Button/Button'
 import { CardPile } from '../../components/CardPile/CardPile'
 import { Heading } from '../../components/Heading/Heading'
+import { IconButton } from '../../components/IconButton/IconButton'
 import { Input } from '../../components/Input/Input'
 import { PersonCard } from '../../components/PersonCard/PersonCard'
+import type { CardTheme } from '../../components/PersonCard/PersonCard'
 import { Select } from '../../components/Select/Select'
-import { ShareSheet } from '../../components/ShareSheet/ShareSheet'
 import { Sheet } from '../../components/Sheet/Sheet'
 import { Stack } from '../../components/Stack/Stack'
 import { Text } from '../../components/Text/Text'
 import { cx } from '../../lib/cx'
+import { sampleQrMatrixSvg } from '../../components/QRCode/sampleQrMatrix'
 import './MyCards.css'
+
+/* Deck encodes nothing — `QRCode` draws a plate around a matrix you supply.
+   This is the sample one the QRCode stories use, so the page shows a real
+   code rather than a grey square pretending to be one. */
+const SampleQr = () => (
+  <span
+    style={{ display: 'block', width: '100%', height: '100%' }}
+    dangerouslySetInnerHTML={{ __html: sampleQrMatrixSvg }}
+  />
+)
+
+/* Lucide has no LinkedIn glyph — it is a trademark, and Lucide ships none.
+   Traced to match the set it sits with, in `em` so it holds at whatever size
+   the card gives it. Same drawing as the one on Connections. */
+const LinkedInIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ width: '0.9375em', height: '0.9375em' }}
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+)
 
 /* ---- Model ------------------------------------------------------------- */
 
@@ -43,6 +83,20 @@ export interface MyCard {
 
 const KINDS: MyCardKind[] = ['Business', 'Personal']
 
+/*
+ * A palette per kind of card, not per person.
+ *
+ * The work card carries the brand you work under; the personal one is
+ * deliberately quieter, a warm graphite that reads as the same object off duty
+ * rather than as a second company. In the product these come from whatever the
+ * card is branded with — a company's colours, uploaded with its mark — and the
+ * page only has to hand them to the card.
+ */
+const THEMES: Record<MyCardKind, CardTheme> = {
+  Business: { primary: '#2E6E5B', accent: '#C66A4A' },
+  Personal: { primary: '#3A3F3D', accent: '#9A8F82' },
+}
+
 /** Alex Rivera is the signed-in person everywhere else in the shell. */
 const INITIAL: MyCard[] = [
   {
@@ -66,13 +120,47 @@ const INITIAL: MyCard[] = [
 
 const linkFor = (card: MyCard) => `meetcard.io/${card.slug}`
 
+/* The line a recipient reads before deciding to follow the link. Who, and
+   what they do — the same two facts the card leads with. */
+const summaryFor = (card: MyCard) =>
+  [card.name, [card.title, card.company].filter(Boolean).join(' at ')]
+    .filter(Boolean)
+    .join(', ')
+
+/*
+ * The company behind the work card, reachable from its name.
+ *
+ * Its own link and its own snapshot: sharing from here hands over the
+ * company, not the person who happens to be showing it.
+ */
+const COMPANY = {
+  name: 'Northwind Studio',
+  headline: 'Meet people. Remember them.',
+  description:
+    'Northwind turns in-person introductions into durable professional relationships — one card, one conversation at a time.',
+  website: 'northwind.studio',
+  location: 'Boulder, CO',
+  linkedInHref: 'https://www.linkedin.com/company/northwind-studio',
+  people: [
+    { name: 'Alex Rivera' },
+    { name: 'Priya Nair' },
+    { name: 'Tom Okonkwo' },
+  ],
+  peopleTotal: 12,
+  share: {
+    value: 'meetcard.io/@northwind',
+    summary: 'Northwind Studio',
+    qr: <SampleQr />,
+    onDownloadQr: () => {},
+    onShareLinkedIn: () => {},
+  },
+}
+
 /* ---- Page -------------------------------------------------------------- */
 
 export interface MyCardsProps {
   /** Seeds the page. Edits stay local — Deck has no data layer. */
   cards?: MyCard[]
-  /** Opens the share sheet on mount, for stories. */
-  shareOpen?: boolean
 }
 
 /**
@@ -98,11 +186,10 @@ export interface MyCardsProps {
  *   A control that let you pin one would be offering a choice the room has
  *   already made.
  */
-export function MyCards({ cards: seed = INITIAL, shareOpen = false }: MyCardsProps) {
+export function MyCards({ cards: seed = INITIAL }: MyCardsProps) {
   const [cards, setCards] = useState<MyCard[]>(seed)
   const [index, setIndex] = useState(0)
   const [editing, setEditing] = useState(false)
-  const [sharing, setSharing] = useState(shareOpen)
   const [creating, setCreating] = useState(false)
   const [draftKind, setDraftKind] = useState<MyCardKind>('Business')
   const [draftName, setDraftName] = useState('')
@@ -159,12 +246,13 @@ export function MyCards({ cards: seed = INITIAL, shareOpen = false }: MyCardsPro
 
         <Stack gap={12}>
           <div className="my-cards__section-heading">
-            <Heading level={2} size="xs" className="my-cards__eyebrow">
+            <Heading
+              level={2}
+              size="xs"
+              className="my-cards__eyebrow my-cards__eyebrow--brand"
+            >
               Your cards
             </Heading>
-            <Text size="sm" tone="muted">
-              {index + 1} / {cards.length}
-            </Text>
           </div>
 
           <CardPile
@@ -176,25 +264,52 @@ export function MyCards({ cards: seed = INITIAL, shareOpen = false }: MyCardsPro
             {cards.map((card) => (
               <PersonCard
                 key={card.slug}
-                eyebrow={card.kind}
                 name={card.name}
+                kind={card.kind}
+                theme={THEMES[card.kind]}
                 tagline={card.tagline}
                 title={card.title}
                 company={card.company}
                 location={card.location}
+                /* The pencil is on the card because the card is the thing it
+                   edits, and the editor opens directly beneath it. */
+                onEdit={() => setEditing((open) => !open)}
+                editLabel={editing ? 'Close card editor' : 'Edit card'}
+                /* No Share here. The card carries its own, because sharing
+                   turns the card over and only the card can do that. */
+                contactActions={
+                  <>
+                    <IconButton label={`Call ${card.name}`} icon={<Phone />} round />
+                    <IconButton
+                      label={`Message ${card.name}`}
+                      icon={<MessageSquare />}
+                      round
+                    />
+                    <IconButton label={`Email ${card.name}`} icon={<Mail />} round />
+                    <IconButton
+                      label={`${card.name} on LinkedIn`}
+                      icon={<LinkedInIcon />}
+                      round
+                    />
+                  </>
+                }
+                share={{
+                  value: linkFor(card),
+                  summary: summaryFor(card),
+                  qr: <SampleQr />,
+                  onDownloadQr: () => {},
+                  onShareLinkedIn: () => {},
+                }}
+                companyProfile={
+                  card.company === COMPANY.name ? COMPANY : undefined
+                }
                 footer={
                   <>
-                    <Button size="sm" iconStart={<QrCode />} onClick={() => setSharing(true)}>
-                      Share card
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      iconStart={<Pencil />}
-                      aria-expanded={editing}
-                      onClick={() => setEditing((open) => !open)}
-                    >
-                      Edit card
+                    <Button iconStart={<Calendar />}>Book a time</Button>
+                    {/* Disabled, and honestly so: exchanging cards takes two
+                        people, and this is your own card in your own hand. */}
+                    <Button variant="secondary" iconStart={<Handshake />} disabled>
+                      Exchange cards
                     </Button>
                   </>
                 }
@@ -258,19 +373,19 @@ export function MyCards({ cards: seed = INITIAL, shareOpen = false }: MyCardsPro
                         linkFor(card)}
                     </Text>
                   </span>
-                  <IdCard className="my-cards__row-icon" aria-hidden="true" />
+                  {/* The row for the card on top of the pile says so in
+                      words. It is the one row whose state a colour alone
+                      would have to carry, and "Showing" is shorter than any
+                      legend explaining a highlight. */}
+                  {i === index ? (
+                    <span className="my-cards__row-showing">Showing</span>
+                  ) : null}
                 </button>
               </li>
             ))}
           </ul>
         </Stack>
       </Stack>
-
-      <ShareSheet
-        open={sharing}
-        onClose={() => setSharing(false)}
-        value={linkFor(active)}
-      />
 
       {/* Only a kind and a name. Everything else is a field on the card you
           are about to be looking at, so asking for it twice is asking twice. */}

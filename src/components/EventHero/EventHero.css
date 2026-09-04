@@ -1,0 +1,542 @@
+/**
+ * EventHero
+ *
+ * A photograph with words on it, which puts every colour in here outside the
+ * reach of Deck's palette: the values below have to hold against an arbitrary
+ * picture, not against the page, so they are literal rather than semantic
+ * tokens. Same contract as `PersonCard`'s glass, and the same reason.
+ *
+ * Contrast is checked by hand, because axe will not judge text over an image.
+ * The ground is two layers: a wash of the event's own colour, and a scrim of
+ * near-black over it. The scrim is what makes the result independent of the
+ * photograph, which can be anything.
+ *
+ * Measured against the worst photograph — solid white — under Deck's own
+ * brand green, white text lands at 5.4:1 at the top (where the eyebrow sits),
+ * 5:1 across the middle band, and past 15:1 at the foot, which is where the
+ * name, the meta lines and the panels all sit. Every real cover is darker
+ * than white, so those are floors rather than estimates.
+ *
+ * The split of work between the two layers is the load-bearing part. The wash
+ * stays translucent the whole way down and the scrim does all the darkening:
+ * an opaque wash guarantees contrast just as well and erases the picture
+ * doing it, which defeats the point of having a cover at all.
+ *
+ * The contract that makes those numbers hold: `theme.primary` is a
+ * mid-to-dark brand colour, as the card palettes all are. A near-white brand
+ * would lift the top band under a near-white photograph to about 3:1, and no
+ * amount of scrim short of hiding the picture fixes that — the fix is not to
+ * brand an event in cream.
+ *
+ * Which is also why the eyebrow is at full opacity rather than the 0.72 the
+ * lines below it use. It sits in the lightest band, and it is 11px: caps,
+ * weight and tracking already mark it as an eyebrow, so dimming it would
+ * spend the one band with the least headroom on hierarchy it does not need.
+ */
+
+.deck-event-hero {
+  --deck-event-hero-base: #0c0e0d;
+  --deck-event-hero-brand: var(--deck-color-background-brand);
+  --deck-event-hero-accent: var(--deck-event-hero-brand);
+
+  --deck-event-hero-fg: #ffffff;
+  --deck-event-hero-fg-muted: rgba(255, 255, 255, 0.82);
+  --deck-event-hero-fg-subtle: rgba(255, 255, 255, 0.72);
+  --deck-event-hero-surface: rgba(255, 255, 255, 0.14);
+  --deck-event-hero-surface-hover: rgba(255, 255, 255, 0.24);
+  --deck-event-hero-ring: rgba(255, 255, 255, 0.28);
+
+  /*
+   * Deck's tokens, re-pointed at the glass — the same mechanism `PersonCard`
+   * uses, and for the same reason: a caller should be able to drop an
+   * ordinary `Button` or `Badge` into the hero and have it come out right,
+   * rather than every control in the system growing an `on-hero` variant.
+   */
+  --deck-color-text-default: var(--deck-event-hero-fg);
+  --deck-color-text-muted: var(--deck-event-hero-fg-muted);
+  --deck-color-text-inverse: var(--deck-event-hero-base);
+  --deck-color-border-default: var(--deck-event-hero-ring);
+  --deck-color-border-strong: var(--deck-event-hero-fg);
+  --deck-color-border-focus: var(--deck-event-hero-fg);
+  --deck-color-background-subtle: var(--deck-event-hero-surface);
+  --deck-color-background-inset: var(--deck-event-hero-surface);
+  /* Fields, too — `CopyField` paints its input on `background-elevated`, and
+     a page-coloured box on a photograph is the one thing that would give the
+     glass away. Re-pointed with the rest rather than overridden per control,
+     so anything with an input in it lands right for the same reason a
+     `Button` does. */
+  --deck-color-background-elevated: var(--deck-event-hero-surface);
+  --deck-color-action-primary: var(--deck-event-hero-fg);
+  --deck-color-action-primary-hover: var(--deck-event-hero-fg);
+  --deck-color-action-primary-pressed: var(--deck-event-hero-fg);
+  --deck-color-action-primary-text: var(--deck-event-hero-base);
+  --deck-color-action-secondary: var(--deck-event-hero-surface);
+  --deck-color-action-secondary-border: var(--deck-event-hero-ring);
+  --deck-color-action-secondary-text: var(--deck-event-hero-fg);
+  /* The stack's rings are cut in the glass, not in a page surface. There is
+     no flat colour behind the faces to cut them in, so they take the hero's
+     own hairline — enough to separate one face from the next without
+     painting a pale halo onto the photograph. */
+  --deck-avatar-stack-ring: var(--deck-event-hero-ring);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--deck-radius-3xl);
+  background-color: var(--deck-event-hero-base);
+  color: var(--deck-event-hero-fg);
+  font-family: var(--deck-font-sans);
+}
+
+/* ---- The ground -------------------------------------------------------- */
+
+.deck-event-hero__ground {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.deck-event-hero__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Scaled past the edges because a blur samples past them, and would
+     otherwise fade the hero's own corners to grey. */
+  transform: scale(1.06);
+  filter: blur(4px);
+}
+
+.deck-event-hero__wash {
+  position: absolute;
+  inset: 0;
+  background-image:
+    /* The scrim — the layer that makes contrast independent of the picture
+       and of the brand. Lighter through the middle so the photograph is
+       still visible as a photograph. */
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--deck-event-hero-base) 40%, transparent) 0%,
+      color-mix(in srgb, var(--deck-event-hero-base) 40%, transparent) 40%,
+      color-mix(in srgb, var(--deck-event-hero-base) 85%, transparent) 100%
+    ),
+    /* The wash — the event's colour. Translucent all the way down, so the
+       photograph stays a photograph; the darkening is the scrim's job, not
+       this layer's. */
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--deck-event-hero-brand) 55%, transparent) 0%,
+      color-mix(in oklab, var(--deck-event-hero-brand) 50%, transparent) 40%,
+      color-mix(in oklab, var(--deck-event-hero-brand) 45%, transparent) 100%
+    );
+}
+
+/*
+ * No cover.
+ *
+ * With no photograph there is nothing for the wash to protect, and a vertical
+ * screen over a flat colour is just a darker flat colour. So the ground is
+ * drawn instead: the event's two colours across the diagonal, the same figure
+ * the agenda paints on its thumbnails, so an event with no picture still
+ * looks like a particular event rather than like a missing one.
+ *
+ * The scrim stays, lighter through the middle. It is doing a different job
+ * here — holding the eyebrow at the top corner, which is where a pale accent
+ * would otherwise put white text at about 3:1. With Deck's own palette the
+ * bands measure 5.1:1, 9:1 and past 15:1 top to bottom.
+ */
+.deck-event-hero--flat .deck-event-hero__wash {
+  background-image:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--deck-event-hero-base) 40%, transparent) 0%,
+      color-mix(in srgb, var(--deck-event-hero-base) 30%, transparent) 40%,
+      color-mix(in srgb, var(--deck-event-hero-base) 82%, transparent) 100%
+    ),
+    linear-gradient(
+      155deg,
+      var(--deck-event-hero-accent) 0%,
+      var(--deck-event-hero-brand) 55%,
+      color-mix(in oklab, var(--deck-event-hero-brand) 55%, var(--deck-event-hero-base))
+        100%
+    );
+}
+
+/* ---- The frame --------------------------------------------------------- */
+
+/*
+ * Landscape at every width, deliberately.
+ *
+ * The design this is drawn from turns portrait on a phone, and the result is
+ * two thirds of a small screen spent on blurred photograph with the words
+ * crushed into the bottom. The words are what a header is for.
+ *
+ * The ratio lives on this box rather than on the section because this one
+ * keeps `overflow: visible`: a box with a preferred aspect ratio takes its
+ * content as a floor only while it is not clipping, so putting the two on the
+ * same element would trade "grows to fit a long name" for "cuts one off".
+ * The section does the clipping, for the rounded corners.
+ */
+.deck-event-hero__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--deck-space-16);
+  box-sizing: border-box;
+  aspect-ratio: 7 / 4;
+  padding: var(--deck-space-20);
+}
+
+.deck-event-hero__eyebrow {
+  margin: 0;
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  font-weight: var(--deck-font-weight-semibold);
+  letter-spacing: var(--deck-tracking-caps);
+  text-transform: uppercase;
+  /* Full white, not `fg-subtle` — see the note at the top of this file. */
+  color: var(--deck-event-hero-fg);
+}
+
+.deck-event-hero__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-12);
+  /* Pushed to the foot when the ratio leaves room, which is where the words
+     belong: the top of a cover is the part of the picture worth seeing. */
+  margin-block-start: auto;
+  min-width: 0;
+}
+
+.deck-event-hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-8);
+}
+
+.deck-event-hero__name {
+  margin: 0;
+  font-size: var(--deck-font-size-display-sm);
+  line-height: var(--deck-line-height-display-sm);
+  font-weight: var(--deck-font-weight-semibold);
+  letter-spacing: var(--deck-tracking-display);
+  color: var(--deck-event-hero-fg);
+  text-wrap: balance;
+}
+
+.deck-event-hero__name a {
+  color: inherit;
+}
+
+/* Quiet until wanted, like `PersonCard`'s pencil: this is the owner's own
+   affordance, sitting on top of the thing it edits. */
+.deck-event-hero__action {
+  position: absolute;
+  inset-block-start: var(--deck-space-20);
+  inset-inline-end: var(--deck-space-20);
+  z-index: 1;
+  opacity: 0.55;
+  transition: opacity var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-event-hero__action:hover,
+.deck-event-hero__action:focus-within,
+/* Except when it is the way back out of the code — see `__close`. */
+.deck-event-hero__action:has(.deck-event-hero__close) {
+  opacity: 1;
+}
+
+@media (min-width: 768px) {
+  .deck-event-hero__content {
+    gap: var(--deck-space-20);
+    padding: var(--deck-space-28);
+  }
+
+  .deck-event-hero__name,
+  .deck-event-hero__share-title {
+    font-size: var(--deck-font-size-display-md);
+    line-height: var(--deck-line-height-display-md);
+  }
+
+  .deck-event-hero__action {
+    inset-block-start: var(--deck-space-28);
+    inset-inline-end: var(--deck-space-28);
+  }
+}
+
+/* ---- The code ---------------------------------------------------------- */
+
+/*
+ * The hero turned over: the event's code where its details were.
+ *
+ * Laid out as `PersonCard`'s share face is, because a person meets both and
+ * they are one gesture: the code on the left at the same share of the width,
+ * and beside it a caps line, the instruction at heading size, the link, the
+ * chip naming what is being handed over, and the two actions.
+ *
+ * The card draws that in `--deck-card-u`, a unit that scales with the card as
+ * an object. The hero is not an object at a fixed ratio — it is a header that
+ * grows with its content — so the same figure is drawn on the token scale
+ * here. Proportions match; the mechanism cannot.
+ *
+ * It wraps rather than shrinking. A QR code squeezed to fit beside a link is
+ * a code nobody can scan, and the hero grows to fit its content anyway (see
+ * the note on `__content`).
+ */
+.deck-event-hero__share {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-24);
+}
+
+.deck-event-hero__qr {
+  flex: none;
+}
+
+/* The plate keeps its own light ground — that is the contract in
+   `QRCode.css` and it is not the hero's to override — but drops the hairline
+   border, which is a page-coloured line doing nothing against white, and
+   takes the card's drop shadow so it sits on the picture rather than in it. */
+.deck-event-hero__qr .deck-qrcode {
+  border-color: transparent;
+  box-shadow: 0 8px 24px -8px rgba(12, 14, 13, 0.5);
+}
+
+/* Takes the rest of the row, and is the part that drops below the code when
+   there is not enough of one. 15rem is a copy field with a readable link in
+   it; under that the two would be sharing a line neither can use. */
+.deck-event-hero__share-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 15rem;
+  min-width: 0;
+}
+
+/* Full white, where the card's is subtle. The card's ground is a portrait
+   under a wash it controls; this one may be any photograph, and an 11px caps
+   line in the hero's lighter middle band has no headroom to give away. Same
+   argument as the hero's own eyebrow, at the top of this file. */
+.deck-event-hero__share-eyebrow {
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  font-weight: var(--deck-font-weight-semibold);
+  letter-spacing: var(--deck-tracking-caps);
+  text-transform: uppercase;
+  color: var(--deck-event-hero-fg);
+}
+
+/* The size the name has on the other face, so turning the hero over trades
+   one heading-sized line for another instead of collapsing the hierarchy. */
+.deck-event-hero__share-title {
+  margin: var(--deck-space-4) 0 0;
+  font-size: var(--deck-font-size-display-sm);
+  line-height: var(--deck-line-height-display-sm);
+  font-weight: var(--deck-font-weight-semibold);
+  letter-spacing: var(--deck-tracking-display);
+  color: var(--deck-event-hero-fg);
+}
+
+/* Frosted like the panels beside it. The colours already come from the
+   hero's re-pointed tokens; this is the one thing a token cannot say. */
+.deck-event-hero__link {
+  margin-block-start: var(--deck-space-16);
+}
+
+.deck-event-hero__link .deck-copy-field__input {
+  border-radius: var(--deck-radius-full);
+  backdrop-filter: blur(8px);
+}
+
+/* The card's detail chip, which is where the card puts the person's name and
+   what they do. Here it is the event's name and when it is — what you check
+   before handing the code to someone. Two lines at most: the tail of that
+   sentence is worth less than the box staying the size it was. */
+.deck-event-hero__share-summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin-block-start: var(--deck-space-16);
+  padding: var(--deck-space-12) var(--deck-space-16);
+  border-radius: var(--deck-radius-2xl);
+  background-color: var(--deck-event-hero-surface);
+  box-shadow: inset 0 0 0 1px var(--deck-event-hero-ring);
+  backdrop-filter: blur(8px);
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  font-weight: var(--deck-font-weight-semibold);
+  color: var(--deck-event-hero-fg);
+}
+
+/* Still the hero's heading, set inline so the chip reads as one line. It
+   keeps the element and loses the display type — a page that gave up its
+   `h1` while you shared it would have no title. */
+.deck-event-hero__share-name {
+  display: inline;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.deck-event-hero__share-name a {
+  color: inherit;
+}
+
+/* Two of them, side by side, as the card's footer is. `auto-fit` rather than
+   a fixed pair so the row breaks on a phone instead of setting two buttons
+   in half a thumb each. */
+.deck-event-hero__share-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--deck-space-12);
+  margin-block-start: var(--deck-space-16);
+}
+
+/* A single action should not stretch the width of the face and read as the
+   only thing on it. */
+.deck-event-hero__share-actions:has(> :only-child) {
+  grid-template-columns: max-content;
+}
+
+/* Centred rather than sat at the foot. There is one object on this face and
+   a column beside it, and the hero's usual "words at the bottom of the
+   picture" arrangement is for a face that has a picture worth seeing. */
+.deck-event-hero--sharing .deck-event-hero__content {
+  justify-content: center;
+}
+
+.deck-event-hero--sharing .deck-event-hero__body {
+  margin-block-start: 0;
+}
+
+/* The cross that puts the code away, in the corner the pencil uses. Full
+   opacity where the pencil is quiet: the pencil is an offer, and this is the
+   way back out of a face you are currently looking at. */
+.deck-event-hero__close {
+  display: grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--deck-radius-full);
+  background-color: var(--deck-event-hero-surface);
+  box-shadow: inset 0 0 0 1px var(--deck-event-hero-ring);
+  color: var(--deck-event-hero-fg);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background-color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-event-hero__close:hover {
+  background-color: var(--deck-event-hero-surface-hover);
+}
+
+.deck-event-hero__close:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-event-hero-fg);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-event-hero__close svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+/* ---- Panels ------------------------------------------------------------ */
+
+.deck-event-hero-panel {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--deck-space-12);
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--deck-space-12) var(--deck-space-16);
+  border-radius: var(--deck-radius-2xl);
+  background-color: var(--deck-event-hero-surface);
+  box-shadow: inset 0 0 0 1px var(--deck-event-hero-ring);
+  /* Frosted rather than merely translucent, so the panel reads as a pane set
+     into the picture instead of a rectangle of fog over it. */
+  backdrop-filter: blur(8px);
+  color: var(--deck-event-hero-fg);
+  text-decoration: none;
+}
+
+.deck-event-hero-panel--interactive {
+  align-items: center;
+  transition: background-color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-event-hero-panel--interactive:hover {
+  background-color: var(--deck-event-hero-surface-hover);
+}
+
+.deck-event-hero-panel--interactive:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-event-hero-fg);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-event-hero-panel__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: var(--deck-radius-xl);
+  background-color: var(--deck-event-hero-surface-hover);
+}
+
+.deck-event-hero-panel__icon > svg {
+  inline-size: 18px;
+  block-size: 18px;
+}
+
+.deck-event-hero-panel__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.deck-event-hero-panel__eyebrow {
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  font-weight: var(--deck-font-weight-semibold);
+  letter-spacing: var(--deck-tracking-caps);
+  text-transform: uppercase;
+  color: var(--deck-event-hero-fg-subtle);
+}
+
+.deck-event-hero-panel__title {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-event-hero-fg);
+}
+
+.deck-event-hero-panel__description {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-event-hero-fg-muted);
+}
+
+.deck-event-hero-panel__trailing {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-event-hero-panel--interactive,
+  .deck-event-hero__action,
+  .deck-event-hero__close {
+    transition-duration: 0ms;
+  }
+}

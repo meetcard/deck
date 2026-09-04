@@ -5,7 +5,17 @@ import { Button } from '../Button/Button'
 import { IconButton } from '../IconButton/IconButton'
 import { PrivateNote } from '../PrivateNote/PrivateNote'
 import type { ConnectionFeeling } from '../PrivateNote/PrivateNote'
+import { sampleQrMatrixSvg } from '../QRCode/sampleQrMatrix'
 import { PersonCard } from './PersonCard'
+
+/* Deck encodes nothing — the matrix is supplied. This is the real code the
+   QRCode stories use. */
+const Matrix = () => (
+  <span
+    style={{ display: 'block', width: '100%', height: '100%' }}
+    dangerouslySetInnerHTML={{ __html: sampleQrMatrixSvg }}
+  />
+)
 
 const EmailIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -37,12 +47,26 @@ const LinkedInIcon = () => (
   </svg>
 )
 
-const ShareIcon = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-    <circle cx="12" cy="4" r="2" fill="none" stroke="currentColor" strokeWidth="1.3" />
-    <circle cx="4" cy="8" r="2" fill="none" stroke="currentColor" strokeWidth="1.3" />
-    <circle cx="12" cy="12" r="2" fill="none" stroke="currentColor" strokeWidth="1.3" />
-    <path d="M5.7 7 10.3 5M5.7 9l4.6 2" stroke="currentColor" strokeWidth="1.3" />
+/* The card's own Share wears a QR code — see `cardIcons.tsx` for why. A
+   caller's own share control should say the same thing, so this matches. */
+const QrCodeIcon = () => (
+  <svg
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.3"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1" />
+    <rect x="9" y="2.5" width="4.5" height="4.5" rx="1" />
+    <rect x="2.5" y="9" width="4.5" height="4.5" rx="1" />
+    <path d="M9 9h2v2" />
+    <path d="M13.5 9h.01" />
+    <path d="M13.5 12v1.5H12" />
+    <path d="M9 13.5h.01" />
   </svg>
 )
 
@@ -84,7 +108,7 @@ const contactActions = (
       size="sm"
       round
     />
-    <IconButton label="Share card" icon={<ShareIcon />} size="sm" round />
+    <IconButton label="Share card" icon={<QrCodeIcon />} size="sm" round />
   </>
 )
 
@@ -109,7 +133,11 @@ const meta = {
     tagline: 'What a lovable guy',
   },
   render: (args) => (
-    <div style={{ maxWidth: 420 }}>
+    /* Wider than the card used to be shown at. The card scales as one object
+       now, so the frame it is given is the only thing deciding how large it
+       is — and at 420px the type on it is the size of type on a real card
+       held at arm's length, which is not how anyone reviews a design. */
+    <div style={{ maxWidth: 640 }}>
       <PersonCard {...args} />
     </div>
   ),
@@ -154,6 +182,121 @@ export const WithPrivateNote: Story = {
   },
 }
 
+/**
+ * A card carries its own colours, and everything on it follows: the wash, the
+ * glass, and the brand the primary button's label is set in. The buttons here
+ * are ordinary `Button`s — they read the card's palette because they are on
+ * it, not because they were told they would be.
+ */
+export const Branded: Story = {
+  args: {
+    contactActions,
+    footer,
+    kind: 'Business',
+    theme: { primary: '#2E6E5B', accent: '#C66A4A' },
+  },
+}
+
+/** The same card, another company's colours. */
+export const BrandedElsewhere: Story = {
+  args: {
+    ...Branded.args,
+    name: 'Sam Ellery',
+    title: 'CEO',
+    company: 'Trail & Co',
+    tagline: 'Runs long, talks fast',
+    theme: { primary: '#3B4A6B', accent: '#E0A458' },
+  },
+}
+
+/**
+ * The owner's own card. The chip says which of your selves this is — the one
+ * thing on the card the person you hand it to never sees — and the pencil
+ * edits the thing it sits on.
+ */
+export const YourOwnCard: Story = {
+  args: {
+    contactActions,
+    footer,
+    kind: 'Personal',
+    theme: { primary: '#3A3F3D', accent: '#9A8F82' },
+    onEdit: () => {},
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('button', { name: 'Edit card' }),
+    ).toBeVisible()
+  },
+}
+
+/**
+ * The same object stood on its short edge. Orientation is not the card's own
+ * decision — an ancestor declares it, and `CardPile` does so from the room it
+ * has. Nothing is added or removed, only read straight down.
+ */
+export const Portrait: Story = {
+  args: { contactActions, footer, kind: 'Business' },
+  render: (args) => (
+    <div data-card-orientation="portrait" style={{ maxWidth: 360 }}>
+      <PersonCard {...args} />
+    </div>
+  ),
+}
+
+const share = {
+  value: 'meetcard.io/ben@meetcard',
+  summary: 'Ben Ackles, Builder at MeetCard',
+  qr: <Matrix />,
+  onDownloadQr: () => {},
+  onShareLinkedIn: () => {},
+}
+
+const companyProfile = {
+  name: 'MeetCard',
+  headline: 'Meet people. Remember them.',
+  description:
+    'MeetCard turns in-person introductions into durable professional connections.',
+  website: 'meetcard.io',
+  location: 'Boulder, CO',
+  linkedInHref: 'https://www.linkedin.com/company/meetcard',
+  people: [{ name: 'Ben Ackles' }, { name: 'Ada Lovelace' }, { name: 'Grace Hopper' }],
+  peopleTotal: 12,
+  share: {
+    value: 'meetcard.io/@meetcard',
+    summary: 'MeetCard',
+    qr: <Matrix />,
+    onDownloadQr: () => {},
+    onShareLinkedIn: () => {},
+  },
+}
+
+/**
+ * Sharing is the card doing something, so it happens on the card. Not a
+ * dialog: a panel over the top would put the thing being shared behind the
+ * thing describing it.
+ */
+export const Sharing: Story = {
+  args: { contactActions, footer, kind: 'Business', share, view: 'share' },
+}
+
+/**
+ * The company behind the card, reached from its name. You wondered who they
+ * work for while holding their card, so the answer is on it.
+ */
+export const TheCompany: Story = {
+  args: {
+    contactActions,
+    footer,
+    companyProfile,
+    view: 'company',
+  },
+}
+
+/** Sharing from the company hands over the company, not the person. */
+export const SharingTheCompany: Story = {
+  args: { ...TheCompany.args, share, view: 'company-share' },
+}
+
 /** A long name still fits — it truncates rather than breaking the layout. */
 export const LongName: Story = {
   args: {
@@ -180,7 +323,7 @@ function FlipHarness() {
         <>
           <IconButton size="sm" round label="Email" icon={<EmailIcon />} />
           <IconButton size="sm" round label="LinkedIn" icon={<LinkedInIcon />} />
-          <IconButton size="sm" round label="Share" icon={<ShareIcon />} />
+          <IconButton size="sm" round label="Share" icon={<QrCodeIcon />} />
         </>
       }
       footer={

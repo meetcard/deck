@@ -1,0 +1,185 @@
+.deck-event-agenda,
+.deck-event-agenda__events {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-event-agenda__day {
+  padding-block: var(--deck-space-20);
+  border-block-end: 1px solid var(--deck-color-border-default);
+}
+
+.deck-event-agenda__day:last-child {
+  border-block-end: none;
+}
+
+.deck-event-agenda__day-heading {
+  display: flex;
+  align-items: baseline;
+  gap: var(--deck-space-8);
+  margin-block-end: var(--deck-space-12);
+}
+
+.deck-event-agenda__date {
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
+  font-weight: var(--deck-font-weight-semibold);
+  color: var(--deck-color-text-default);
+}
+
+.deck-event-agenda__weekday {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.deck-event-agenda__events {
+  gap: var(--deck-space-16);
+}
+
+/*
+ * The row.
+ *
+ * A grid rather than nested flex rows, because the faces underneath have to
+ * start at the cover's edge rather than at the text's — they belong to the
+ * whole row, not to the name. Named areas keep that relationship legible
+ * when the columns change at the breakpoint.
+ *
+ * Below `sm` the involvement badges drop under the body instead of competing
+ * with the name for a 375px line: the design this follows keeps them beside
+ * it and truncates "Boulder Climate Happy Hour" to "Boulder Cl…", which
+ * spends the row's whole point to save one line.
+ */
+.deck-event-agenda__event {
+  --deck-event-agenda-brand: var(--deck-color-background-brand);
+  --deck-event-agenda-accent: var(--deck-event-agenda-brand);
+
+  display: grid;
+  grid-template-columns: max-content max-content minmax(0, 1fr);
+  grid-template-areas:
+    'time cover body'
+    'time cover badges'
+    'time stack stack';
+  align-items: start;
+  column-gap: var(--deck-space-12);
+  row-gap: var(--deck-space-8);
+  min-width: 0;
+}
+
+.deck-event-agenda__time {
+  grid-area: time;
+  padding-block-start: var(--deck-space-2);
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+  white-space: nowrap;
+}
+
+.deck-event-agenda__cover {
+  grid-area: cover;
+  position: relative;
+  overflow: hidden;
+  inline-size: 64px;
+  block-size: 48px;
+  border-radius: var(--deck-radius-lg);
+  border: 1px solid var(--deck-color-border-default);
+  /* The event's colour at postage-stamp size — enough for two events to be
+     told apart in a list before either has a photograph. */
+  background-image: linear-gradient(
+    135deg,
+    var(--deck-event-agenda-brand),
+    var(--deck-event-agenda-accent)
+  );
+}
+
+.deck-event-agenda__cover-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.deck-event-agenda__body {
+  grid-area: body;
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-4);
+  min-width: 0;
+}
+
+.deck-event-agenda__name {
+  margin: 0;
+  font-size: var(--deck-font-size-heading-md);
+  line-height: var(--deck-line-height-heading-md);
+  font-weight: var(--deck-font-weight-regular);
+  color: var(--deck-color-text-default);
+}
+
+.deck-event-agenda__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-4) var(--deck-space-16);
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.deck-event-agenda__fact {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--deck-space-6);
+  min-width: 0;
+}
+
+.deck-event-agenda__fact-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+.deck-event-agenda__fact-icon > svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.deck-event-agenda__badges {
+  grid-area: badges;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-6);
+}
+
+.deck-event-agenda__stack {
+  grid-area: stack;
+  /* The page behind an agenda is the default surface, not an elevated card. */
+  --deck-avatar-stack-ring: var(--deck-color-background-default);
+}
+
+@media (min-width: 640px) {
+  .deck-event-agenda__event {
+    grid-template-columns: max-content max-content minmax(0, 1fr) max-content;
+    grid-template-areas:
+      'time cover body badges'
+      'time stack stack stack';
+    column-gap: var(--deck-space-16);
+  }
+
+  .deck-event-agenda__badges {
+    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .deck-event-agenda__time {
+    inline-size: 64px;
+  }
+}

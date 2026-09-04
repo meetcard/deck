@@ -89,6 +89,12 @@ export type { IconButtonProps } from './components/IconButton'
 export { Link } from './components/Link'
 export type { LinkProps, LinkTone } from './components/Link'
 
+export { ProviderButton } from './components/ProviderButton'
+export type {
+  ProviderButtonProps,
+  AuthProvider,
+} from './components/ProviderButton'
+
 /* ---- Feedback -------------------------------------------------------- */
 export { Banner } from './components/Banner'
 export type { BannerProps, BannerTone } from './components/Banner'
@@ -102,9 +108,6 @@ export type { SpinnerProps, SpinnerSize } from './components/Spinner'
 /* ---- Overlays -------------------------------------------------------- */
 export { Sheet } from './components/Sheet'
 export type { SheetProps } from './components/Sheet'
-
-export { ShareSheet } from './components/ShareSheet'
-export type { ShareSheetProps } from './components/ShareSheet'
 
 export { AccountSheet, AccountSheetRow } from './components/AccountSheet'
 export type {
@@ -197,6 +200,13 @@ export type {
   AvatarShape,
 } from './components/Avatar'
 
+export { AvatarStack } from './components/AvatarStack'
+export type {
+  AvatarStackProps,
+  AvatarStackPerson,
+  AvatarStackSize,
+} from './components/AvatarStack'
+
 /* ---- Forms ----------------------------------------------------------- */
 export { Field } from './components/Field'
 export type { FieldProps } from './components/Field'
@@ -204,6 +214,12 @@ export type { ControlSize } from './components/Field/Field'
 
 export { Input } from './components/Input'
 export type { InputProps } from './components/Input'
+
+export { PasswordInput } from './components/PasswordInput'
+export type {
+  PasswordInputProps,
+  PasswordPurpose,
+} from './components/PasswordInput'
 
 export { Textarea } from './components/Textarea'
 export type { TextareaProps } from './components/Textarea'
@@ -228,7 +244,15 @@ export { CardPile } from './components/CardPile'
 export type { CardPileProps, CardPileOrientation } from './components/CardPile'
 
 export { PersonCard } from './components/PersonCard'
-export type { PersonCardProps } from './components/PersonCard'
+export type {
+  PersonCardProps,
+  PersonCardPrivateNote,
+  PersonCardView,
+  CardTheme,
+  CardShare,
+  CardCompanyProfile,
+  CardCompanyPerson,
+} from './components/PersonCard'
 
 export { CompanyCard } from './components/CompanyCard'
 export type { CompanyCardProps } from './components/CompanyCard'
@@ -237,9 +261,26 @@ export { ContactCard } from './components/ContactCard'
 export type { ContactCardProps, ContactDetail } from './components/ContactCard'
 
 export { EventCard } from './components/EventCard'
-export type { EventCardProps } from './components/EventCard'
+export type { EventCardProps, EventCardLayout } from './components/EventCard'
 
 /* ---- Events ------------------------------------------------------------ */
+export { EventHero, EventHeroPanel } from './components/EventHero'
+export type {
+  EventHeroProps,
+  EventHeroPanelProps,
+  EventHeroEyebrowElement,
+  EventHeroView,
+} from './components/EventHero'
+
+export { EventAgenda } from './components/EventAgenda'
+export type { EventAgendaProps, AgendaEvent } from './components/EventAgenda'
+
+export { EventSchedule } from './components/EventSchedule'
+export type {
+  EventScheduleProps,
+  EventScheduleSlot,
+} from './components/EventSchedule'
+
 export { EventCalendar } from './components/EventCalendar'
 export type {
   EventCalendarProps,

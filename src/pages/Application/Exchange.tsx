@@ -81,14 +81,17 @@ const NEXT: Record<Exclude<Stage, 'done'>, Stage> = {
 /* ---- Card ------------------------------------------------------------- */
 
 /**
- * The small card that flies during the exchange.
+ * The small card that flies during the exchange and stays put after it.
  *
  * Deliberately not `PersonCard`: that is the full business-card artifact and
  * the canonical child of `CardPile`, sized to real card proportions with
  * room for contact actions and a private note. Here the card is a motion
- * affordance — it is rotated, half-occluded, and on screen for under a
- * second — so it carries only what survives at that size. Type and colour
- * still come from Deck so it does not drift from the real thing.
+ * affordance first — rotated, half-occluded, crossing another card — so it
+ * carries only what survives at that size. Type and colour still come from
+ * Deck so it does not drift from the real thing.
+ *
+ * The same node is what you are left looking at on the receipt, which is the
+ * point: it has to read at both ends of the movement.
  */
 function FlyingCard({
   person,
@@ -154,6 +157,12 @@ const THEM: ExchangePerson = {
  * then crossing is what makes a *mutual* exchange legible. A spinner would
  * say "waiting" and not say "both directions".
  *
+ * It is one content area from open to receipt. The cards are never rebuilt:
+ * they lean, cross, swap sides, and settle under their labels in the same
+ * well, so "exchanged" is the end of a movement you watched rather than a
+ * screen that replaced the one you were looking at. Only the block beneath
+ * the well changes hands, and it dissolves.
+ *
  * Under `prefers-reduced-motion` it renders the receipt immediately. Deck
  * collapses durations to 0ms in that mode, which for a sequence that carries
  * state would flash all three captions in one frame — so this skips the beats
@@ -195,6 +204,8 @@ export function Exchange({
     setOpen(false)
   }
 
+  const done = stage === 'done'
+
   const title =
     stage === 'greeting'
       ? 'Shaking hands…'
@@ -202,8 +213,7 @@ export function Exchange({
         ? 'Exchanging cards…'
         : 'Cards exchanged'
 
-  const description =
-    stage === 'done'
+  const description = done
       ? `You and ${them.name.split(' ')[0]} now have each other's contact.`
       : 'Both cards are being shared — no typing needed.'
 
@@ -229,73 +239,103 @@ export function Exchange({
           {title}
         </p>
 
-        {stage === 'done' ? (
-          <Stack gap={16}>
-            <p className="exchange__badge">
-              <span className="exchange__badge-icon">{CheckIcon}</span>
-              Exchange complete
-            </p>
+        <Stack gap={16}>
+          {/*
+            One well, all three stages. The receipt used to be a separate
+            grid, which meant the cards were destroyed at the end of the
+            trade and rebuilt somewhere else — the arrival, the part that
+            matters, was the one beat that cut. These are the same two nodes
+            throughout, so the cards *land* where they come to rest, and the
+            labels fade in over them.
 
-            <div className="exchange__receipt">
-              <div className="exchange__slot">
-                <Text size="xs" tone="muted" className="exchange__slot-label">
-                  You received
-                </Text>
-                <FlyingCard person={them} side="theirs" />
-              </div>
-              <div className="exchange__slot">
-                <Text size="xs" tone="muted" className="exchange__slot-label">
-                  You shared
-                </Text>
-                <FlyingCard person={me} side="mine" />
-              </div>
-            </div>
-
-            <p className="exchange__saved">
-              <span className="exchange__badge-icon">{CheckIcon}</span>
-              Saved to both MeetCard networks
-            </p>
-
-            {/* The moment should lead somewhere: these are what you actually
-                do next, while you are still standing in front of them. */}
-            <div className="exchange__next">
-              <Button variant="secondary" iconStart={NoteIcon}>
-                Add note
-              </Button>
-              <Button variant="secondary" iconStart={CalendarIcon}>
-                Book time
-              </Button>
-              <Button variant="secondary" iconStart={SaveIcon}>
-                Save contact
-              </Button>
-            </div>
-
-            <Button fullWidth onClick={close}>
-              Done
-            </Button>
-          </Stack>
-        ) : (
-          <Stack gap={16}>
-            <div
-              className={`exchange__stage exchange__stage--${stage}`}
-              aria-hidden="true"
+            It is only decorative while it is moving. At rest it is the
+            receipt, and the names in it are the content.
+          */}
+          <div
+            className={`exchange__stage exchange__stage--${stage}`}
+            aria-hidden={done ? undefined : true}
+          >
+            <Text
+              size="xs"
+              tone="muted"
+              className="exchange__slot-label exchange__slot-label--theirs"
             >
-              <FlyingCard person={me} side="mine" />
-              <FlyingCard person={them} side="theirs" />
-              <span className="exchange__seal">{HandshakeIcon}</span>
-            </div>
+              You received
+            </Text>
+            <Text
+              size="xs"
+              tone="muted"
+              className="exchange__slot-label exchange__slot-label--mine"
+            >
+              You shared
+            </Text>
 
-            <p className="exchange__identity">
-              <span className="exchange__badge-icon">{CheckIcon}</span>
-              Signed in as <strong>{me.name.split(' ')[0]}</strong> ·{' '}
-              {me.company}
-            </p>
+            <FlyingCard person={me} side="mine" />
+            <FlyingCard person={them} side="theirs" />
 
-            <Button variant="ghost" size="sm">
-              Not you? Share a different card
-            </Button>
-          </Stack>
-        )}
+            {/* Both icons live in the seal and cross-fade. Swapping the
+                element would cut where everything else dissolves. */}
+            <span className="exchange__seal">
+              <span className="exchange__seal-icon exchange__seal-icon--hands">
+                {HandshakeIcon}
+              </span>
+              <span className="exchange__seal-icon exchange__seal-icon--check">
+                {CheckIcon}
+              </span>
+            </span>
+          </div>
+
+          {/* Keyed on the stage so the swap under the well is a dissolve
+              rather than a cut. The line directly under the well holds its
+              place across the swap — identity going in, receipt coming out —
+              so the eye has something that does not move. */}
+          <div className="exchange__aside" key={done ? 'done' : 'busy'}>
+            {done ? (
+              <>
+                <p className="exchange__badge">
+                  <span className="exchange__badge-icon">{CheckIcon}</span>
+                  Exchange complete
+                </p>
+
+                <p className="exchange__note exchange__note--panel">
+                  <span className="exchange__badge-icon">{CheckIcon}</span>
+                  Saved to both MeetCard networks
+                </p>
+
+                {/* The moment should lead somewhere: these are what you
+                    actually do next, while you are still standing in front
+                    of them. */}
+                <div className="exchange__next">
+                  <Button variant="secondary" iconStart={NoteIcon}>
+                    Add note
+                  </Button>
+                  <Button variant="secondary" iconStart={CalendarIcon}>
+                    Book time
+                  </Button>
+                  <Button variant="secondary" iconStart={SaveIcon}>
+                    Save contact
+                  </Button>
+                </div>
+
+                <Button fullWidth onClick={close}>
+                  Done
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="exchange__note">
+                  <span className="exchange__badge-icon">{CheckIcon}</span>
+                  Signed in as <strong>{me.name.split(' ')[0]}</strong> ·{' '}
+                  {me.company}
+                </p>
+
+                <Button variant="ghost" size="sm">
+                  Not you? Share a different card
+                </Button>
+              </>
+            )}
+          </div>
+        </Stack>
       </Sheet>
     </div>
   )

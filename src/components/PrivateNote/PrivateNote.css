@@ -1,12 +1,21 @@
 /* Dashed throughout: the card's face is set type, this is a pencil mark.
-   The dashes are what say "written by you, not published". */
+   The dashes are what say "written by you, not published".
+
+   Tighter than the card's own 20px because this face has a height budget the
+   front does not: the shell is a fixed 7/4 object, and everything here has to
+   fit inside it. Measured before this change, the content wanted 240px in a
+   227px box and the note field was clipped off the bottom edge of the card.
+
+   16px padding and an 8px rhythm give back 20 of those pixels, and the rest
+   comes from the heading and the field below. The chrome shrinks so the
+   writing area does not have to. */
 .deck-private-note {
   display: flex;
   flex-direction: column;
-  gap: var(--deck-space-12);
+  gap: var(--deck-space-8);
   box-sizing: border-box;
   block-size: 100%;
-  padding: var(--deck-space-20);
+  padding: var(--deck-space-16);
   background-color: var(--deck-color-background-elevated);
   border: 1px dashed var(--deck-color-border-default);
   border-radius: var(--deck-radius-xl);
@@ -38,10 +47,13 @@
   block-size: 14px;
 }
 
+/* `label-md` rather than `lg`. On a face this size the question is a prompt
+   above a field, not a section title — and the four pixels of type plus four
+   of line height are four percent of the height the note field was short. */
 .deck-private-note__heading {
   margin: 0;
-  font-size: var(--deck-font-size-label-lg);
-  line-height: var(--deck-line-height-label-lg);
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
   font-weight: var(--deck-font-weight-semibold);
   color: var(--deck-color-text-default);
 }
@@ -56,21 +68,151 @@
   display: inline-flex;
 }
 
+/* 14px, not 15. On a 24 grid at stroke 2 the even size lands the strokes on
+   whole pixels; 15 put the sun's spokes on half-pixels and greyed them. */
 .deck-private-note__feeling-icon > svg {
-  inline-size: 15px;
-  block-size: 15px;
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+/* ---- The note ---------------------------------------------------------- */
+
+.deck-private-note__rule {
+  margin: 0;
+  border: 0;
+  border-block-start: 1px dashed var(--deck-color-border-default);
+}
+
+/* Closed, the note is a line of prose with a pencil beside it, on the quiet
+   fill it will still be sitting on once it opens — the closed state should
+   look like the field it becomes, not like a gap where one might go.
+
+   `background-inset`, not `background-subtle`. Subtle is Sand, a page-level
+   surface: on a white card it lands as a beige block, and at this size —
+   the better part of the card's back — it becomes the first thing the eye
+   finds. Chalk is a quarter of the way there, which is all this needs.
+
+   Sized to its content rather than `flex: 1`. Filled, the box is visible, so
+   stretching it to the bottom of the card would draw a large empty panel
+   under a single line of text. The floor keeps it a comfortable target. */
+.deck-private-note__trigger {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--deck-space-8);
+  min-block-size: 44px;
+  padding: var(--deck-space-8);
+  margin: 0;
+  /* Held transparent rather than absent, so the hover below adds no width
+     and nothing shifts under the pointer. */
+  border: 1px dashed transparent;
+  border-radius: var(--deck-radius-lg);
+  background-color: var(--deck-color-background-inset);
+  font: inherit;
+  text-align: start;
+  color: var(--deck-color-text-default);
+  cursor: pointer;
+  transition: border-color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+/* The hover is the dashed border the open field has, arriving early: the
+   control shows you what it turns into rather than just lighting up. */
+.deck-private-note__trigger:hover {
+  border-color: var(--deck-color-border-default);
+}
+
+.deck-private-note__trigger:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+/* Matches the open field's type, so opening the editor does not reset the
+   note in a different size. Clamped rather than scrolled: closed, this is a
+   reminder of what is there — the whole of it is one press away. */
+.deck-private-note__preview {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  flex: 1;
+  min-inline-size: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+}
+
+/* The unwritten note is the placeholder it would have had, in the colour a
+   placeholder is — the closed state should look like the field it opens. */
+.deck-private-note__preview--empty {
+  color: var(--deck-color-text-muted);
+}
+
+.deck-private-note__pencil {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--deck-color-text-muted);
+  transition: color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-private-note__pencil > svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.deck-private-note__trigger:hover .deck-private-note__pencil {
+  color: var(--deck-color-text-default);
 }
 
 /* The note is the surface's main event once a feeling is picked, so it takes
    whatever height is left rather than sitting at a fixed three rows. */
+/* The floor goes on the flex item, not only on the textarea inside it. The
+   textarea is `block-size: 100%` of this wrapper, so a floor set only there
+   let the wrapper shrink to 25px while the field went on painting 60 — over
+   the top of the Cancel and Save beneath it. Held here, the shortfall becomes
+   overflow, which the card's back already scrolls. */
 .deck-private-note__field {
   display: flex;
   flex: 1;
-  min-block-size: 0;
+  min-block-size: 60px;
 }
 
+/* Open, the surface wants about 26px more than the back of a card has: the
+   chrome above was already trimmed once to fit, and Cancel and Save are new
+   weight on top of it.
+
+   The heading pays for them. While you are writing, "How did this connection
+   feel?" is a caption on a control that is still sitting right there with
+   your answer lit up in it — the only thing on this face that is not doing
+   work. It goes visually hidden rather than away, so the region keeps its
+   name and a screen reader still hears the question.
+
+   Tried first and rejected: scrolling the surface with the actions pinned.
+   Sticky wins the argument by covering what it is pinned over, so Save sat on
+   top of the last line of the note. Space you do not have is not something a
+   scrollbar can lend you. */
+.deck-private-note__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--deck-space-8);
+}
+
+/* `Textarea` carries a global `min-height: 80px` — a sensible floor for a
+   textarea on a page, and the thing that was actually breaking this card. The
+   field is `flex: 1`, but a flex item cannot shrink below its own minimum, so
+   the textarea held 80px it did not have and pushed the overflow out through
+   the bottom of the shell. Released here, and only here, so `flex: 1` decides:
+   the field becomes exactly the room the chrome above it did not take.
+   Everywhere else the floor still applies, and this surface sets its own on
+   the wrapper above — three lines rather than the global five.
+
+   `body-sm` for the same reason the heading dropped a step. At 16px the two
+   lines of a typical note filled the field to its edge with nowhere to put a
+   third; at 14px the same note leaves a line spare, which is what makes this
+   feel like somewhere to write rather than somewhere to fit. */
 .deck-private-note__field textarea {
   block-size: 100%;
+  min-block-size: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
   border-style: dashed;
 }
 
@@ -79,15 +221,36 @@
    owns rather than by reaching into ChoiceGroup's markup — that coupling
    would break silently the next time ChoiceGroup changes shape. Only the
    icon is tinted; the label and the control keep the system's colours so
-   contrast is unaffected. */
-.deck-private-note__feeling-icon--hot {
-  color: var(--deck-color-solid-error);
+   contrast is unaffected.
+
+   The colour belongs to the *chosen* answer. Tinting all three at once
+   turned the row into a palette — three colours competing before you had
+   said anything — and it left the selected state to be carried by the brand
+   fill underneath, where the icon then sat at 1.13:1 and disappeared. Now
+   the unselected icons are the same muted ink as their labels, and picking
+   one is what brings its colour up. Position and label still say which is
+   which, so this reinforces the answer rather than encoding it. */
+/* Inherits the control's own colour, so an unselected icon is exactly the
+   grey of the label beside it rather than a second grey chosen separately. */
+.deck-private-note__feeling-icon {
+  color: inherit;
+  transition: color var(--deck-duration-fast) var(--deck-ease-standard);
 }
 
-.deck-private-note__feeling-icon--warm {
-  color: var(--deck-color-status-warning-text);
+.deck-choice-group__input:checked
+  + .deck-choice-group__control
+  .deck-private-note__feeling-icon--hot {
+  color: var(--deck-color-feeling-hot);
 }
 
-.deck-private-note__feeling-icon--cold {
-  color: var(--deck-color-text-brand);
+.deck-choice-group__input:checked
+  + .deck-choice-group__control
+  .deck-private-note__feeling-icon--warm {
+  color: var(--deck-color-feeling-warm);
+}
+
+.deck-choice-group__input:checked
+  + .deck-choice-group__control
+  .deck-private-note__feeling-icon--cold {
+  color: var(--deck-color-feeling-cold);
 }
