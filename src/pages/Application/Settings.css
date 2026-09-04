@@ -342,6 +342,38 @@
   word-break: break-all;
 }
 
+/* ---- Embed snippet ------------------------------------------------------ */
+
+/* The copy control sits over the code rather than beside it, so the block
+   keeps the full width of the column for the lines it has to show. */
+.settings__snippet {
+  position: relative;
+}
+
+.settings__snippet-code {
+  margin: 0;
+  padding: var(--deck-space-8) var(--deck-space-12);
+  /* Room for the copy button, so a wrapped line never runs under it. */
+  padding-inline-end: var(--deck-space-40);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-xl);
+  background-color: var(--deck-color-background-inset);
+  color: var(--deck-color-text-default);
+  font-family: var(--deck-font-mono);
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-sm);
+  /* Keeps the two lines two lines, and folds whatever is too long for the
+     column instead of hiding it past an edge. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.settings__snippet-copy {
+  position: absolute;
+  inset-block-start: var(--deck-space-4);
+  inset-inline-end: var(--deck-space-4);
+}
+
 /* ---- Footer ------------------------------------------------------------- */
 
 .settings__footer {
