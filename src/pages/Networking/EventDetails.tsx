@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { AttendeeList } from '../../components/AttendeeList/AttendeeList'
-import type { EventAttendee } from '../../components/AttendeeList/AttendeeList'
 import { Badge } from '../../components/Badge/Badge'
 import { Card } from '../../components/Card/Card'
 import { EventMetaList } from '../../components/EventMetaList/EventMetaList'
 import { Heading } from '../../components/Heading/Heading'
 import { Link } from '../../components/Link/Link'
+import { PersonList } from '../../components/PersonList/PersonList'
+import type { PersonListItem } from '../../components/PersonList/PersonList'
 import { RsvpControl } from '../../components/RsvpControl/RsvpControl'
 import type { RsvpCounts, RsvpStatus } from '../../components/RsvpControl/RsvpControl'
 import { Stack } from '../../components/Stack/Stack'
@@ -15,7 +15,7 @@ import './EventDetails.css'
 
 /* ---- Demo data -------------------------------------------------------- */
 
-const ATTENDEES: EventAttendee[] = [
+const ATTENDEES: PersonListItem[] = [
   {
     name: 'Ben Ackles',
     role: 'Product Marketing',
@@ -127,7 +127,7 @@ export function EventDetails() {
                 {ATTENDEES.length} attending
               </Text>
             </div>
-            <AttendeeList attendees={ATTENDEES} />
+            <PersonList label="Who's attending" people={ATTENDEES} />
           </Stack>
         </Card>
 

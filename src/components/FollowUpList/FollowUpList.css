@@ -1,0 +1,99 @@
+/*
+ * The one module on a dashboard that asks rather than reports, so it is the
+ * one painted in the brand. Everything around it is a white panel on paper;
+ * this is a green one, and that difference is the whole point.
+ */
+.deck-follow-up-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-12);
+  box-sizing: border-box;
+  padding: var(--deck-space-16);
+  background-color: var(--deck-color-background-brand-subtle);
+  border: 1px solid var(--deck-color-border-brand);
+  border-radius: var(--deck-radius-2xl);
+  font-family: var(--deck-font-sans);
+}
+
+.deck-follow-up-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--deck-space-8);
+}
+
+/* An eyebrow rather than a title: it labels the panel it sits on, and the
+   panel is small. Still a real heading — the section is named by it. */
+.deck-follow-up-list__title {
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  font-weight: var(--deck-font-weight-semibold);
+  letter-spacing: var(--deck-tracking-caps);
+  text-transform: uppercase;
+  color: var(--deck-color-text-brand);
+}
+
+.deck-follow-up-list__empty {
+  margin: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.deck-follow-up-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deck-follow-up-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-8);
+  min-width: 0;
+
+  /*
+   * `Avatar` fills itself with the same token this panel is painted in, so
+   * on the panel it would come out as an outline around nothing. Re-pointed
+   * to the raised surface it is standing on — the mechanism `PersonCard`
+   * uses for the same reason, and smaller than an `on-tint` prop on Avatar
+   * that every future component would have to remember to pass.
+   */
+  --deck-color-background-brand-subtle: var(--deck-color-background-elevated);
+}
+
+.deck-follow-up-list__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.deck-follow-up-list__name {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Wraps where the name truncates, and deliberately so: a clipped name is
+   still the person, but "Met at RevOps · 2 day…" has lost the half that says
+   how overdue this is. The row is allowed the second line instead. */
+.deck-follow-up-list__context {
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+}
+
+/* The row's whole reason for existing, so it never gives up its width to a
+   long name — the name truncates instead. */
+.deck-follow-up-list__action {
+  flex-shrink: 0;
+  border-radius: var(--deck-radius-full);
+}

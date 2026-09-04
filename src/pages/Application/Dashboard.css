@@ -1,0 +1,90 @@
+.dashboard {
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+  padding: var(--deck-space-32) var(--deck-space-16);
+  font-family: var(--deck-font-sans);
+}
+
+.dashboard__container {
+  width: 100%;
+  /* Wide enough for a card at a size worth showing plus a column of its own
+     beside it. Past this the two columns stop being a pair and become two
+     things that happen to be on the same page. */
+  max-width: 60rem;
+}
+
+/* ---- The card and what it is asking for -------------------------------- */
+
+/*
+ * One column on a phone: the card, then the queue under it. The card leads in
+ * both arrangements — it is the subject, and a stat above it would be a fact
+ * about something the reader cannot see yet.
+ */
+.dashboard__lead {
+  display: grid;
+  gap: var(--deck-space-16);
+}
+
+.dashboard__card {
+  /* The card sizes itself from the column it is in and centres in whatever is
+     left, so on a phone it does not sit against one edge. */
+  display: flex;
+  justify-content: center;
+}
+
+.dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--deck-space-8);
+}
+
+@media (min-width: 768px) {
+  /*
+   * 3:2 rather than equal columns. The card holds a fixed 7:4 shape and
+   * everything inside it is a fraction of its width, so a column narrower
+   * than this shrinks the type on the card itself — the tiles and the queue
+   * beside it are ordinary text and lose nothing by being narrow.
+   */
+  .dashboard__lead {
+    grid-template-columns: 3fr 2fr;
+    align-items: start;
+  }
+
+  .dashboard__card {
+    justify-content: start;
+  }
+}
+
+/* ---- The two summaries ------------------------------------------------- */
+
+.dashboard__panels {
+  display: grid;
+  gap: var(--deck-space-24);
+}
+
+@media (min-width: 768px) {
+  .dashboard__panels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--deck-space-16);
+    align-items: start;
+  }
+}
+
+/* The heading and its way out, on one line. Baseline-aligned so the small
+   link sits on the heading's own line rather than in the middle of it. */
+.dashboard__panel-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--deck-space-8);
+}
+
+.dashboard__events {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
