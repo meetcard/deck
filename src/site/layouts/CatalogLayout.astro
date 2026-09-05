@@ -1,0 +1,261 @@
+---
+/**
+ * The shell every catalog page shares: sidebar, content column, footer.
+ *
+ * Wraps Layout.astro rather than replacing it, so canonical URLs, OG tags and
+ * the font preconnects stay in one place. The sidebar is generated from
+ * `navTree()`, which means a new component appears here the moment it has a
+ * story — there is no list to maintain.
+ */
+import Layout from './Layout.astro'
+import SiteFooter from '../components/SiteFooter.astro'
+import { navTree } from '../lib/catalog'
+
+interface Props {
+  title: string
+  description?: string
+  /** Path of the current page, used to mark the sidebar link. */
+  current: string
+  /** The matching page in Storybook, if this page has one. */
+  storybookHref?: string
+}
+
+const { title, description, current, storybookHref } = Astro.props
+const sections = navTree()
+
+/**
+ * Where Storybook lives.
+ *
+ * In production it sits under this site at /storybook/ — Netlify copies
+ * `storybook-static` there after the build. The Astro dev server knows nothing
+ * about that copy, so in dev those links would 404; `npm run storybook` puts it
+ * on 6006 instead. Same link, right target in both places.
+ */
+const storybookBase = import.meta.env.DEV ? 'http://localhost:6006/' : '/storybook/'
+const storybookLink = (href: string) =>
+  import.meta.env.DEV ? href.replace(/^\/storybook\//, storybookBase) : href
+---
+
+<Layout title={`${title} — Deck`} description={description}>
+  <div class="shell deck-root">
+    <a class="skip" href="#content">Skip to content</a>
+
+    <header class="masthead">
+      <a class="masthead__brand" href="/">Deck</a>
+      <nav class="masthead__links" aria-label="Sections">
+        {sections.map((section) => <a href={section.href}>{section.label}</a>)}
+        <a href={storybookBase}>Storybook</a>
+      </nav>
+    </header>
+
+    <div class="shell__body">
+      <nav class="sidebar" aria-label="Catalog">
+        {
+          sections.map((section) => (
+            <div class="sidebar__section">
+              <a class="sidebar__heading" href={section.href}>{section.label}</a>
+              {section.groups.map((group) => (
+                <div class="sidebar__group">
+                  {section.groups.length > 1 && (
+                    <p class="sidebar__group-label">{group.label}</p>
+                  )}
+                  <ul class="sidebar__list">
+                    {group.items.map((item) => (
+                      <li>
+                        <a
+                          href={item.href}
+                          aria-current={item.href === current ? 'page' : undefined}
+                        >
+                          {item.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          ))
+        }
+      </nav>
+
+      <main class="content" id="content">
+        <slot />
+
+        {
+          storybookHref && (
+            <p class="content__escape">
+              <a href={storybookLink(storybookHref)}>
+                Open in Storybook
+                <span aria-hidden="true"> →</span>
+              </a>
+              <span class="content__escape-note">
+                for controls, the a11y panel and the interaction runner.
+              </span>
+            </p>
+          )
+        }
+      </main>
+    </div>
+
+    <SiteFooter />
+  </div>
+</Layout>
+
+<style>
+  .shell {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .skip {
+    position: absolute;
+    inset-inline-start: -9999px;
+  }
+
+  .skip:focus {
+    position: static;
+    display: inline-block;
+    padding: var(--deck-space-8) var(--deck-space-12);
+  }
+
+  .masthead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--deck-space-16);
+    flex-wrap: wrap;
+    padding: var(--deck-space-16) var(--deck-space-24);
+    border-bottom: 1px solid var(--deck-color-border-default);
+  }
+
+  .masthead__brand {
+    font-weight: 700;
+    font-size: var(--deck-font-size-body-lg);
+    color: var(--deck-color-text-default);
+    text-decoration: none;
+  }
+
+  .masthead__links {
+    display: flex;
+    gap: var(--deck-space-16);
+    flex-wrap: wrap;
+  }
+
+  .masthead__links a {
+    color: var(--deck-color-text-muted);
+    text-decoration: none;
+    font-size: var(--deck-font-size-body-sm);
+  }
+
+  .masthead__links a:hover {
+    color: var(--deck-color-text-default);
+  }
+
+  .shell__body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: var(--deck-space-32);
+    /*
+     * No `align-items: start` here. It would shrink each grid item to its own
+     * content, and a sticky element can only travel within its parent's box —
+     * so the sidebar would scroll away with the page instead of sticking.
+     * Stretched items give it the full column to move along.
+     */
+    padding: var(--deck-space-24);
+    max-width: 1400px;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .sidebar {
+    position: sticky;
+    /* Clears the masthead, which scrolls away above it. */
+    top: var(--deck-space-24);
+    max-height: calc(100dvh - var(--deck-space-48));
+    overflow-y: auto;
+    padding-inline-end: var(--deck-space-8);
+  }
+
+  .sidebar__section + .sidebar__section {
+    margin-top: var(--deck-space-24);
+  }
+
+  .sidebar__heading {
+    display: block;
+    font-size: var(--deck-font-size-body-sm);
+    font-weight: 600;
+    color: var(--deck-color-text-default);
+    text-decoration: none;
+    margin-bottom: var(--deck-space-8);
+  }
+
+  .sidebar__group + .sidebar__group {
+    margin-top: var(--deck-space-12);
+  }
+
+  .sidebar__group-label {
+    margin: 0 0 var(--deck-space-4);
+    font-size: var(--deck-font-size-body-xs, 12px);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--deck-color-text-muted);
+  }
+
+  .sidebar__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .sidebar__list a {
+    display: block;
+    padding: 3px var(--deck-space-8);
+    border-radius: var(--deck-radius-sm, 6px);
+    font-size: var(--deck-font-size-body-sm);
+    color: var(--deck-color-text-muted);
+    text-decoration: none;
+  }
+
+  .sidebar__list a:hover {
+    background: var(--deck-color-background-subtle);
+    color: var(--deck-color-text-default);
+  }
+
+  .sidebar__list a[aria-current='page'] {
+    background: var(--deck-color-background-brand-subtle);
+    color: var(--deck-color-text-brand);
+    font-weight: 500;
+  }
+
+  .content {
+    min-width: 0;
+    padding-bottom: var(--deck-space-48);
+  }
+
+  .content__escape {
+    margin-top: var(--deck-space-48);
+    padding-top: var(--deck-space-16);
+    border-top: 1px solid var(--deck-color-border-default);
+    font-size: var(--deck-font-size-body-sm);
+  }
+
+  .content__escape-note {
+    color: var(--deck-color-text-muted);
+    margin-inline-start: var(--deck-space-4);
+  }
+
+  @media (max-width: 1024px) {
+    .shell__body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: static;
+      max-height: none;
+      border-bottom: 1px solid var(--deck-color-border-default);
+      padding-bottom: var(--deck-space-16);
+    }
+  }
+</style>

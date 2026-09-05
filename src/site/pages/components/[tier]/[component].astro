@@ -1,0 +1,27 @@
+---
+/**
+ * One page per component: /components/atoms/button/
+ *
+ * The tier stays in the path because it is how the system is organised — the
+ * sidebar, the story titles and CONTRIBUTING.md all speak in atoms, molecules
+ * and organisms, and a URL that drops it would be the only place that does not.
+ */
+import CatalogLayout from '../../../layouts/CatalogLayout.astro'
+import ShowcaseArticle from '../../../components/ShowcaseArticle.astro'
+import { componentPages } from '../../../lib/catalog'
+
+export function getStaticPaths() {
+  return componentPages.map((page) => ({ params: page.params, props: { page } }))
+}
+
+const { page } = Astro.props
+---
+
+<CatalogLayout
+  title={page.name}
+  description={page.description?.split('\n')[0]}
+  current={page.href}
+  storybookHref={page.storybookHref}
+>
+  <ShowcaseArticle page={page} />
+</CatalogLayout>

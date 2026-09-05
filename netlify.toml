@@ -1,6 +1,11 @@
 # Deploys deck.meetcard.io, not the npm package:
-#   /           → the Astro landing page (src/site → dist/site)
+#   /           → the Astro docs site (src/site → dist/site)
 #   /storybook/ → the browsable Storybook UI (storybook-static)
+#
+# Order matters: the Astro site generates every component and screen route from
+# the manifests Storybook writes into storybook-static/, so Storybook has to be
+# built first. `prebuild:site` in package.json enforces that, which is why the
+# command below no longer names `build-storybook` itself.
 #
 # `npm run build` builds the @meetcard/deck library bundle for consumers
 # (vite.lib.config.ts, outputs dist/deck.js — no HTML entry point), so it is
@@ -9,7 +14,7 @@
 # Astro requires Node >=22.12; without NODE_VERSION Netlify's default may be
 # older and `astro build` refuses to run.
 [build]
-  command = "npm run build:site && npm run build-storybook && mkdir -p dist/site/storybook && cp -R storybook-static/. dist/site/storybook/"
+  command = "npm run build:site && mkdir -p dist/site/storybook && cp -R storybook-static/. dist/site/storybook/"
   publish = "dist/site"
 
 [build.environment]

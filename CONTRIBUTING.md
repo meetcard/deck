@@ -89,6 +89,20 @@ component does not need its own `autodocs` tag.
   component throws.
 - Write a doc comment above a story when it explains *when* to use that state.
 
+Stories are also the source of the docs site at `deck.meetcard.io`, which
+builds a page per component from what Storybook emits. So a story's name, its
+doc comment, the component's doc comment and its `@example` tag are all
+published — write them for a reader, not just for the sidebar. A new component
+gets its page as soon as it has a story; there is no list to add it to.
+
+Two things only reach the site if you put them where it looks:
+
+- **The component's doc comment** is the page's opening paragraph. Backticks,
+  `**bold**` and `*italic*` render; nothing else does.
+- **Export it from `src/index.ts`** or the page says it is not part of the
+  public API — the same rule as "a component is not shipped until it is
+  exported there", stated on the page itself.
+
 ## Tests
 
 Test behaviour, not implementation. Do not write tests to move coverage.

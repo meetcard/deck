@@ -1,0 +1,124 @@
+---
+/**
+ * A section's landing page: every page in it, grouped, with its one-line
+ * summary. Used by /components/ and /experience/.
+ */
+import { inline } from '../lib/prose'
+import type { ShowcasePage } from '../lib/catalog'
+
+interface Props {
+  heading: string
+  lede: string
+  pages: ShowcasePage[]
+}
+
+const { heading, lede, pages } = Astro.props
+
+// Group by the middle title segment, keeping the order the catalog sorted into.
+const groups = new Map<string, ShowcasePage[]>()
+for (const page of pages) {
+  groups.set(page.group, [...(groups.get(page.group) ?? []), page])
+}
+
+/** The first sentence of a description, for the card. */
+function summarise(page: ShowcasePage): string {
+  const first = page.description?.split('\n\n')[0]?.trim()
+  if (!first) return ''
+  const sentence = first.split(/(?<=\.)\s/)[0]
+  return inline(sentence)
+}
+---
+
+<header class="head">
+  <h1>{heading}</h1>
+  <p class="head__lede">{lede}</p>
+</header>
+
+{
+  [...groups].map(([group, items]) => (
+    <section class="group">
+      <h2 class="group__label">
+        {group} <span class="group__count">{items.length}</span>
+      </h2>
+      <ul class="cards">
+        {items.map((page) => (
+          <li>
+            <a class="card" href={page.href}>
+              <span class="card__name">{page.name}</span>
+              <span class="card__summary" set:html={summarise(page)} />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))
+}
+
+<style>
+  .head h1 {
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--deck-space-8);
+  }
+
+  .head__lede {
+    max-width: 68ch;
+    margin: 0 0 var(--deck-space-32);
+    color: var(--deck-color-text-muted);
+    font-size: var(--deck-font-size-body-lg);
+  }
+
+  .group + .group {
+    margin-top: var(--deck-space-40, 40px);
+  }
+
+  .group__label {
+    font-size: var(--deck-font-size-body-lg);
+    margin: 0 0 var(--deck-space-16);
+    padding-bottom: var(--deck-space-8);
+    border-bottom: 1px solid var(--deck-color-border-default);
+  }
+
+  .group__count {
+    color: var(--deck-color-text-muted);
+    font-weight: 400;
+    font-size: var(--deck-font-size-body-sm);
+  }
+
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--deck-space-12);
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--deck-space-4);
+    height: 100%;
+    padding: var(--deck-space-16);
+    border: 1px solid var(--deck-color-border-default);
+    border-radius: var(--deck-radius-md, 8px);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .card:hover {
+    border-color: var(--deck-color-border-brand);
+    background: var(--deck-color-background-subtle);
+  }
+
+  .card__name {
+    font-weight: 600;
+  }
+
+  .card__summary {
+    font-size: var(--deck-font-size-body-sm);
+    color: var(--deck-color-text-muted);
+    line-height: 1.5;
+  }
+</style>

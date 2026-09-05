@@ -39,6 +39,8 @@ environment.
 | `npm run storybook` | Storybook dev server on port 6006 |
 | `npm run build` | Build the library to `dist/` (ESM + CSS + types) |
 | `npm run build-storybook` | Production Storybook build to `storybook-static/` |
+| `npm run dev:site` | Docs site dev server on port 4321 |
+| `npm run build:site` | Production docs site build to `dist/site/` |
 | `npm test` | Run all tests (unit + story) once |
 | `npm run test:watch` | Tests in watch mode |
 | `npm run test:unit` | Testing Library specs only (jsdom) |
@@ -83,11 +85,42 @@ src/
 ├── styles/
 │   └── deck.css         Stylesheet entry (imports the token layers)
 ├── lib/                 Internal helpers — not part of the public API
-├── docs/                Storybook MDX pages
+├── docs/                MDX pages, shown in both Storybook and the docs site
+├── site/                The docs site (Astro) — see below
 └── index.ts             The public API
 ```
 
 Only `src/index.ts` is public. Internal modules stay free to change.
+
+## The docs site
+
+`deck.meetcard.io` is an Astro site with a real page per component and per
+screen — `/components/atoms/button/`, `/experience/networking/public-card/`,
+`/docs/foundations/`. Storybook is still there, at `/storybook/`, and every
+page links to its own page in it.
+
+The split is deliberate. Storybook is the workshop: controls, the a11y panel,
+the interaction runner, Chromatic, the Vitest story runner. The site is the
+front door — linkable, indexable URLs, and pages you can send someone.
+Storybook cannot serve those itself; its router has been `?path=/story/<id>`
+since [2020](https://github.com/storybookjs/storybook/issues/10603).
+
+**Nothing is written twice.** Every route, prop table, description and code
+snippet is generated from what `storybook build` already emits —
+`storybook-static/index.json` for the taxonomy, and the
+`storybook-static/manifests/` files that `@storybook/addon-mcp` writes. The
+previews are the stories themselves, composed through Storybook's
+portable-stories API and rendered as React islands, using the decorators from
+`.storybook/annotations.tsx`. Add a component with a story and it gets a page.
+
+That does mean **Storybook has to be built before the site**. Both `dev:site`
+and `build:site` handle it (`predev:site` builds only if the manifests are
+missing; `prebuild:site` always rebuilds), so ordering only matters if you run
+`astro build` directly.
+
+One thing the site cannot do: its preview width control resizes a container,
+not a viewport, so `@media` queries still answer to the browser window. For
+breakpoint behaviour, use Storybook's viewport toolbar.
 
 ## Tokens
 

@@ -1,0 +1,17 @@
+---
+import CatalogLayout from '../../layouts/CatalogLayout.astro'
+import CatalogIndex from '../../components/CatalogIndex.astro'
+import { componentPages } from '../../lib/catalog'
+---
+
+<CatalogLayout
+  title="Components"
+  description="Every component in Deck — atoms, molecules and organisms — with live previews and props."
+  current="/components/"
+>
+  <CatalogIndex
+    heading="Components"
+    lede="The pieces the system is made of, in the order they compose: atoms, then molecules built from them, then organisms built from those."
+    pages={componentPages}
+  />
+</CatalogLayout>
