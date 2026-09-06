@@ -17,6 +17,19 @@
     "src/test",
     "src/docs",
     "src/main.tsx",
-    "src/App.tsx"
+    "src/App.tsx",
+
+    /*
+     * The docs site is not part of the published package — `files` ships
+     * `dist` only, and the public API is `src/index.ts`. It also cannot be
+     * in this build: `StoryCanvas.tsx` and `PreviewFrame.astro` import
+     * `.storybook/annotations`, which is outside `rootDir` and fails the
+     * whole emit with TS6059, leaving `dist/types` empty and the package
+     * shipping without the types `package.json` promises.
+     *
+     * `src/site` is still typechecked — `npm run typecheck` builds every
+     * project, and `tsconfig.app.json` covers it with no `rootDir`.
+     */
+    "src/site"
   ]
 }
