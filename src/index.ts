@@ -126,6 +126,9 @@ export type {
 export { SideNav } from './components/SideNav'
 export type { SideNavProps, SideNavItemProps } from './components/SideNav'
 
+export { SettingRow } from './components/SettingRow'
+export type { SettingRowProps } from './components/SettingRow'
+
 export { SettingsNav } from './components/SettingsNav'
 export type {
   SettingsNavProps,
@@ -173,6 +176,18 @@ export type { StatTileProps, TrendDirection } from './components/StatTile'
 export { UsageMeter } from './components/UsageMeter'
 export type { UsageMeterProps } from './components/UsageMeter'
 
+export { BreakdownList } from './components/BreakdownList'
+export type {
+  BreakdownListProps,
+  BreakdownItem,
+} from './components/BreakdownList'
+
+export { Funnel } from './components/Funnel'
+export type { FunnelProps, FunnelStage } from './components/Funnel'
+
+export { TrendChart } from './components/TrendChart'
+export type { TrendChartProps, TrendPoint } from './components/TrendChart'
+
 export { Tag } from './components/Tag'
 export type { TagProps } from './components/Tag'
 
@@ -181,6 +196,9 @@ export type { QRCodeProps, QRCodeSize } from './components/QRCode'
 
 export { CopyField } from './components/CopyField'
 export type { CopyFieldProps } from './components/CopyField'
+
+export { CodeSnippet } from './components/CodeSnippet'
+export type { CodeSnippetProps } from './components/CodeSnippet'
 
 export { Badge } from './components/Badge'
 export type {
@@ -223,6 +241,22 @@ export type { RadioProps, RadioGroupProps } from './components/Radio'
 export { Switch } from './components/Switch'
 export type { SwitchProps } from './components/Switch'
 
+export { ImageUpload } from './components/ImageUpload'
+export type {
+  ImageUploadProps,
+  ImageUploadShape,
+} from './components/ImageUpload'
+
+/* ---- Team & connected services ---------------------------------------- */
+export { IntegrationRow } from './components/IntegrationRow'
+export type {
+  IntegrationRowProps,
+  IntegrationStatus,
+} from './components/IntegrationRow'
+
+export { MemberRow } from './components/MemberRow'
+export type { MemberRowProps, MemberStatus } from './components/MemberRow'
+
 /* ---- MeetCard patterns ------------------------------------------------ */
 export { CardPile } from './components/CardPile'
 export type { CardPileProps, CardPileOrientation } from './components/CardPile'
@@ -252,6 +286,9 @@ export type { RsvpControlProps, RsvpStatus, RsvpCounts } from './components/Rsvp
 
 export { EventMetaList } from './components/EventMetaList'
 export type { EventMetaListProps, EventMetaItem } from './components/EventMetaList'
+
+export { EventRow } from './components/EventRow'
+export type { EventRowProps, EventAttendance } from './components/EventRow'
 
 export { EventTimeline } from './components/EventTimeline'
 export type {

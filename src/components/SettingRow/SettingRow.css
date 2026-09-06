@@ -1,0 +1,77 @@
+.deck-setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-12);
+  padding: var(--deck-space-16) 0;
+  font-family: var(--deck-font-sans);
+}
+
+/* A group of settings is just consecutive rows, so the divider belongs to
+   the row that follows one rather than to a wrapper nobody remembers to add.
+   The first and last row keep the padding but not the rule, so a group sits
+   flush inside a Card. */
+.deck-setting-row + .deck-setting-row {
+  border-top: 1px solid var(--deck-color-border-default);
+}
+
+.deck-setting-row__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--deck-space-16);
+}
+
+.deck-setting-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-2);
+  min-width: 0;
+}
+
+.deck-setting-row__title {
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+}
+
+.deck-setting-row__description {
+  margin: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.deck-setting-row__control {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--deck-space-8);
+}
+
+/* The toggle row hands its whole layout to `Switch`, then turns it around:
+   Switch draws control-then-label, and a settings list reads label-then-
+   control. Reversing the flow rather than re-marking it up keeps the
+   `<label for>` and `aria-describedby` wiring Switch already does. */
+.deck-setting-row--toggle .deck-switch-row {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  gap: var(--deck-space-16);
+  width: 100%;
+}
+
+.deck-setting-row--toggle .deck-switch-row__text {
+  flex: 1;
+}
+
+.deck-setting-row--disabled .deck-setting-row__title,
+.deck-setting-row--disabled .deck-setting-row__description {
+  color: var(--deck-color-text-disabled);
+}
+
+/* Indented, because what is under a row belongs to it — a cadence picker
+   under the reminder it paces reads as part of that setting, not the next
+   one. */
+.deck-setting-row__detail {
+  padding-left: var(--deck-space-2);
+}

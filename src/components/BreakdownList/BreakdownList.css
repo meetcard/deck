@@ -1,0 +1,106 @@
+.deck-breakdown-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-12);
+  margin: 0;
+  font-family: var(--deck-font-sans);
+}
+
+/* Label and figures share a line; the bar spans the full width beneath both,
+   so a long label never shortens the track it is measured against. */
+.deck-breakdown-list__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--deck-space-4) var(--deck-space-12);
+  align-items: baseline;
+}
+
+.deck-breakdown-list__label {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-6);
+  min-width: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-default);
+}
+
+.deck-breakdown-list__label-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deck-breakdown-list__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--deck-color-text-muted);
+}
+
+.deck-breakdown-list__icon > * {
+  width: 14px;
+  height: 14px;
+}
+
+.deck-breakdown-list__figures {
+  display: flex;
+  align-items: baseline;
+  gap: var(--deck-space-8);
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Tabular figures so the numbers line up down the column and a row's rank is
+   readable without reading every digit. */
+.deck-breakdown-list__value {
+  font-size: var(--deck-font-size-label-sm);
+  line-height: var(--deck-line-height-label-sm);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+  font-variant-numeric: tabular-nums;
+}
+
+.deck-breakdown-list__meta {
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.deck-breakdown-list__track {
+  grid-column: 1 / -1;
+  height: 6px;
+  overflow: hidden;
+  background-color: var(--deck-color-background-subtle);
+  border-radius: var(--deck-radius-full);
+}
+
+/* Square at the baseline, rounded at the data end — so a short bar still
+   starts where every other bar starts and the eye can compare lengths. */
+.deck-breakdown-list__bar {
+  height: 100%;
+  width: calc(var(--deck-breakdown-ratio, 0) * 100%);
+  background-color: var(--deck-color-action-primary);
+  border-radius: 0 var(--deck-radius-sm) var(--deck-radius-sm) 0;
+  transition: width var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-breakdown-list__bar {
+    transition: none;
+  }
+}
+
+/* Forced colors drops background-color, which would leave every bar
+   invisible and the track a solid block. A border keeps the length readable. */
+@media (forced-colors: active) {
+  .deck-breakdown-list__bar {
+    background-color: Highlight;
+  }
+
+  .deck-breakdown-list__track {
+    border: 1px solid CanvasText;
+  }
+}

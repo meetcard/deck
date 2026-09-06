@@ -1,0 +1,107 @@
+.dashboard {
+  min-height: 100%;
+  padding: var(--deck-space-32) var(--deck-space-24);
+  box-sizing: border-box;
+  font-family: var(--deck-font-sans);
+}
+
+/* Narrower than Analytics. This page is a stack of short lists, and a list of
+   three names does not want to be 900px wide. */
+.dashboard__container {
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+/* The card is the page's subject, so it gets the width the rest of the
+   column has rather than sitting in a panel of its own. */
+.dashboard__card {
+  align-self: stretch;
+}
+
+.dashboard__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--deck-space-12);
+  margin-bottom: var(--deck-space-4);
+}
+
+.dashboard__section-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-8);
+}
+
+.dashboard__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard__row {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-12);
+  padding: var(--deck-space-12) 0;
+}
+
+.dashboard__row + .dashboard__row {
+  border-top: 1px solid var(--deck-color-border-default);
+}
+
+.dashboard__row-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--deck-space-2);
+  min-width: 0;
+}
+
+.dashboard__row-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+}
+
+.dashboard__row-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.dashboard__row-when {
+  flex-shrink: 0;
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: var(--deck-space-12);
+}
+
+/* Pulled up under the tiles it belongs to — it is the way out of this page's
+   three numbers, not a section of its own. */
+.dashboard__analytics-link {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: var(--deck-space-4);
+  margin-top: calc(var(--deck-space-16) * -1);
+}
+
+.dashboard__link-icon {
+  width: 14px;
+  height: 14px;
+}

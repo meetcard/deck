@@ -1,0 +1,89 @@
+.deck-trend-chart {
+  display: flex;
+  align-items: stretch;
+  gap: var(--deck-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-trend-chart__column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--deck-space-6);
+  min-width: 0;
+}
+
+/* The plot is a fixed-height box the column grows inside, so every column
+   shares one baseline and the tick labels line up under them. */
+.deck-trend-chart__plot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 120px;
+}
+
+/* Capped rather than filling the slot: past ~24px a column stops reading as
+   a measurement and starts reading as a block of color. The leftover is air. */
+.deck-trend-chart__bar {
+  width: 100%;
+  max-width: 24px;
+  height: calc(var(--deck-trend-ratio, 0) * 100%);
+  /* A hairline of a bar at the baseline still says "almost nothing", where
+     zero height says "no data". */
+  min-height: 2px;
+  margin-inline: auto;
+  background-color: var(--deck-color-action-primary);
+  border-radius: var(--deck-radius-sm) var(--deck-radius-sm) 0 0;
+  transition: height var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+.deck-trend-chart__tick {
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+  text-align: center;
+}
+
+/* The value sits above the cap. Hidden by default, shown for the peak and
+   the most recent column, and revealed for any column on hover — so no
+   figure is only obtainable by eyeballing a bar against no gridlines. */
+.deck-trend-chart__readout {
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(var(--deck-trend-ratio, 0) * 100%);
+  padding-bottom: var(--deck-space-4);
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transition: opacity var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-trend-chart__column--labelled .deck-trend-chart__readout,
+.deck-trend-chart__column:hover .deck-trend-chart__readout {
+  opacity: 1;
+}
+
+.deck-trend-chart__column:hover .deck-trend-chart__bar {
+  background-color: var(--deck-color-action-primary-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-trend-chart__bar,
+  .deck-trend-chart__readout {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .deck-trend-chart__bar {
+    background-color: Highlight;
+  }
+}

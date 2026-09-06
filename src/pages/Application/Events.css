@@ -1,0 +1,80 @@
+.events {
+  min-height: 100%;
+  padding: var(--deck-space-32) var(--deck-space-24);
+  box-sizing: border-box;
+  font-family: var(--deck-font-sans);
+}
+
+.events__container {
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.events__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--deck-space-12);
+}
+
+.events__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+}
+
+/* The next one up does not look like the rows below it — that is the point
+   of lifting it out. A brand-tinted ground is enough; it does not also need
+   to be a different shape. */
+.events__featured {
+  background-color: var(--deck-color-background-brand-subtle);
+  border-color: var(--deck-color-border-brand);
+}
+
+.events__featured-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-8);
+}
+
+.events__venue {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-6);
+}
+
+.events__icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  margin-right: var(--deck-space-4);
+  vertical-align: -2px;
+}
+
+.events__going {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-8);
+  padding-top: var(--deck-space-8);
+  border-top: 1px solid var(--deck-color-border-default);
+}
+
+/* Overlapped, because a row of faces is a crowd rather than a list — and the
+   names are spelled out beside them, so nothing is lost to the overlap. */
+.events__avatars {
+  display: inline-flex;
+}
+
+.events__avatars > * + * {
+  margin-left: -8px;
+}
+
+.events__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-12);
+}
