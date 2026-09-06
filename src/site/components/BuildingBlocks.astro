@@ -138,6 +138,13 @@ const blocks: ReadonlyArray<{ label: string; href: string; kind: AtomicKind }> =
       display: none;
     }
 
+    /* With the rules gone the body is the only flex child, and a child that
+       does not grow sits at flex-start — the whole group hung off the left
+       edge. The rules centred it by accident at wider widths; say it. */
+    .blocks {
+      justify-content: center;
+    }
+
     .blocks__list {
       gap: var(--deck-space-8);
     }
@@ -145,11 +152,6 @@ const blocks: ReadonlyArray<{ label: string; href: string; kind: AtomicKind }> =
     .pill {
       padding: var(--deck-space-8) var(--deck-space-12);
       font-size: var(--deck-font-size-label-sm);
-    }
-
-    /* The mobile mockup drops the pill icons — text only at this width. */
-    .pill__icon {
-      display: none;
     }
   }
 </style>
