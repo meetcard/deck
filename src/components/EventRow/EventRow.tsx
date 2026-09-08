@@ -1,10 +1,15 @@
 import { forwardRef } from 'react'
 import type { HTMLAttributes, ReactNode } from 'react'
 import { cx } from '../../lib/cx'
+import { Avatar } from '../Avatar/Avatar'
+import { AvatarGroup, type AvatarGroupPerson } from '../AvatarGroup/AvatarGroup'
 import { Badge } from '../Badge/Badge'
 import './EventRow.css'
 
 export type EventAttendance = 'attending' | 'hosting' | 'speaking' | 'invited'
+
+/** What the faces on a row are to the event. */
+export type EventPeopleRelation = 'exchanged' | 'going'
 
 export interface EventRowProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
@@ -26,6 +31,32 @@ export interface EventRowProps
   href?: string
   /** Show the weekday under the date. Off in tight lists. */
   showWeekday?: boolean
+  /**
+   * The event's cover, as a thumbnail. Decorative: it is how you recognise
+   * an event you have seen before, and the name beside it is what says
+   * which one this is. Dropped below `sm`, where the name needs the width
+   * more than the picture does.
+   */
+  coverSrc?: string
+  /** Who is putting it on, named in the meta line. */
+  host?: { name: string; avatarSrc?: string }
+  /** The people attached to this event, shown as faces. */
+  people?: AvatarGroupPerson[]
+  /**
+   * How many people in total, when that is more than the faces shown — a
+   * conference where you met forty shows five of them and says forty.
+   * Defaults to however many `people` were given.
+   */
+  peopleCount?: number
+  /**
+   * What those people are to the event. `exchanged` is whose cards you came
+   * away with; `going` is who you already know that will be there.
+   *
+   * They are the same faces in the same place and they are not the same
+   * fact: an event three weeks out cannot have produced a card yet, and a
+   * row that says it did is the list lying about the past.
+   */
+  peopleRelation?: EventPeopleRelation
   actions?: ReactNode
 }
 
@@ -52,6 +83,13 @@ const ATTENDANCE: Record<
  * the list it is in and the date on the left; whether you are speaking at it
  * is not, and it is the thing that changes what you do next.
  *
+ * A row can also carry the people attached to it — whose cards you left
+ * with, or who you already know that is going. That is the answer to the
+ * only question anyone asks of an event either side of the date, and it is
+ * why a list of events is worth scrolling at all. Which of the two it is
+ * has to be said (`peopleRelation`), because the faces look identical and
+ * the facts are not interchangeable.
+ *
  * @example
  * <EventRow name="RevOps Summit" date="2027-05-18" time="9:00 AM"
  *   venue="Austin Convention Center" attendance="attending" soon />
@@ -67,6 +105,11 @@ export const EventRow = forwardRef<HTMLDivElement, EventRowProps>(
       soon,
       href,
       showWeekday = false,
+      coverSrc,
+      host,
+      people,
+      peopleCount,
+      peopleRelation = 'exchanged',
       actions,
       className,
       ...props
@@ -85,7 +128,13 @@ export const EventRow = forwardRef<HTMLDivElement, EventRowProps>(
       day: 'numeric',
     })
 
-    const meta = [time, venue].filter(Boolean).join(' · ')
+    const meta = [showWeekday ? weekday : null, time, venue]
+      .filter(Boolean)
+      .join(' · ')
+
+    /* The faces are a sample; the count is the fact. A conference where you
+       met forty people shows five of them and says forty. */
+    const headcount = peopleCount ?? people?.length ?? 0
 
     return (
       <div ref={ref} className={cx('deck-event-row', className)} {...props}>
@@ -99,6 +148,13 @@ export const EventRow = forwardRef<HTMLDivElement, EventRowProps>(
             {day}
           </span>
         </span>
+
+        {/* Decorative, and dropped below `sm` by CSS rather than by a media
+            query in JS — it is the same row either way, with one fewer
+            thing in it. */}
+        {coverSrc ? (
+          <img className="deck-event-row__cover" src={coverSrc} alt="" />
+        ) : null}
 
         <div className="deck-event-row__body">
           <div className="deck-event-row__heading">
@@ -123,10 +179,46 @@ export const EventRow = forwardRef<HTMLDivElement, EventRowProps>(
             ) : null}
           </div>
 
-          {showWeekday || meta ? (
+          {meta || host ? (
             <p className="deck-event-row__meta">
-              {[showWeekday ? weekday : null, meta].filter(Boolean).join(' · ')}
+              {/* The written half stays one string: it is one sentence of
+                  facts, and splitting it into spans would put a separator
+                  in CSS where a screen reader cannot hear it. */}
+              {meta ? <span>{meta}</span> : null}
+              {host ? (
+                <span className="deck-event-row__host">
+                  <Avatar
+                    name={host.name}
+                    src={host.avatarSrc}
+                    size="xs"
+                    decorative
+                  />
+                  By {host.name}
+                </span>
+              ) : null}
             </p>
+          ) : null}
+
+          {headcount > 0 ? (
+            <div className="deck-event-row__people">
+              {people && people.length > 0 ? (
+                <AvatarGroup
+                  people={people}
+                  max={4}
+                  size="sm"
+                  label={
+                    peopleRelation === 'going'
+                      ? `Going to ${name}`
+                      : `Cards exchanged at ${name}`
+                  }
+                />
+              ) : null}
+              <span className="deck-event-row__people-count">
+                {peopleRelation === 'going'
+                  ? `${headcount} going`
+                  : `${headcount} ${headcount === 1 ? 'card' : 'cards'} exchanged`}
+              </span>
+            </div>
           ) : null}
         </div>
 

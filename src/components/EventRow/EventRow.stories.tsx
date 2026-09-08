@@ -96,3 +96,52 @@ export const Linked: Story = {
 export const Compact: Story = {
   args: { attendance: undefined },
 }
+
+/**
+ * A row from the events list, carrying everything the list is scrolled for:
+ * who put it on, what it looked like, and who you came away with.
+ */
+export const WithHostAndCards: Story = {
+  args: {
+    showWeekday: true,
+    href: '/events/revops-summit',
+    host: { name: 'Hannah Davis' },
+    people: [
+      { name: 'Hannah Davis' },
+      { name: 'Marcus Lee' },
+      { name: 'Priya Shah' },
+      { name: 'Diego Romero' },
+      { name: 'Lena Fox' },
+    ],
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText(/By Hannah Davis/)).toBeVisible()
+    await expect(canvas.getByText('5 cards exchanged')).toBeVisible()
+  },
+}
+
+/**
+ * A conference where you met more people than a row can show. The faces are
+ * a sample; the count is the fact.
+ */
+export const MoreCardsThanFaces: Story = {
+  args: {
+    name: 'SaaStr Annual',
+    date: '2027-09-09',
+    venue: 'Moscone West',
+    attendance: 'speaking',
+    peopleCount: 41,
+    people: [
+      { name: 'Ada Chen' },
+      { name: 'Owen Hale' },
+      { name: 'Nora Quinn' },
+      { name: 'Arlo Bennett' },
+      { name: 'Dev Patel' },
+    ],
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText('41 cards exchanged')).toBeVisible()
+    // Four faces and a spoken remainder, not five faces and a lie.
+    await expect(canvas.getByText('and 1 more')).toBeInTheDocument()
+  },
+}

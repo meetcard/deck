@@ -1,0 +1,35 @@
+.deck-event-schedule {
+  margin: 0;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-event-schedule__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--deck-space-16);
+  padding-block: var(--deck-space-12);
+}
+
+.deck-event-schedule__row + .deck-event-schedule__row {
+  border-top: 1px solid var(--deck-color-border-default);
+}
+
+/* A column of its own, fixed, so the times line up under one another and the
+   day can be read down its left edge. Wide enough for "12:30 PM" without
+   wrapping, which is the longest a phrased time gets. */
+.deck-event-schedule__time {
+  flex-shrink: 0;
+  inline-size: 5.5rem;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.deck-event-schedule__title {
+  margin: 0;
+  min-inline-size: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-default);
+}

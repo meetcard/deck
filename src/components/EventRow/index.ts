@@ -1,2 +1,6 @@
 export { EventRow } from './EventRow'
-export type { EventRowProps, EventAttendance } from './EventRow'
+export type {
+  EventRowProps,
+  EventAttendance,
+  EventPeopleRelation,
+} from './EventRow'
