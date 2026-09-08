@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
-import { CalendarDays, Handshake, Mail, Share2 } from 'lucide-react'
+import { CalendarDays, Handshake, Mail, MapPin, Share2 } from 'lucide-react'
 import { Button } from '../../components/Button/Button'
+import { CardIndex } from '../../components/CardIndex/CardIndex'
 import { CardPile } from '../../components/CardPile/CardPile'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
 import { EventTimeline } from '../../components/EventTimeline/EventTimeline'
@@ -149,12 +150,30 @@ function mostRecentPast(events: TimelineEvent[], today: string): string {
   return (past.length > 0 ? past[past.length - 1] : events[0])?.id ?? ''
 }
 
+/** Parsed as local noon so a UTC offset can't roll the date over a boundary. */
+function formatDate(date: string): string {
+  const parsed = new Date(`${date}T12:00:00`)
+  return Number.isNaN(parsed.getTime())
+    ? date
+    : parsed.toLocaleDateString(undefined, {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      })
+}
+
+/** "Head of Operations at Sextant" — one line, whichever halves exist. */
+function describe(card: Connection): string | undefined {
+  if (card.title && card.company) return `${card.title} at ${card.company}`
+  return card.title ?? card.company
+}
+
 /* ---- Page -------------------------------------------------------------- */
 
 export interface ConnectionsProps {
   /** Seeds the page. Notes stay local — Deck has no data layer. */
   connections?: Connection[]
-  /** The events on the line above the pile, oldest first. */
+  /** The events on the line beside the pile, oldest first. */
   events?: TimelineEvent[]
   /** Which event the page opens on. Defaults to the most recent past one. */
   defaultEventId?: string
@@ -163,7 +182,7 @@ export interface ConnectionsProps {
 }
 
 /**
- * Recent connections — the cards other people have handed you.
+ * Connections — the cards other people have handed you.
  *
  * One pile, not a grid of tiles. These arrived as objects, a few at a time,
  * and a pile is the only presentation that keeps that true: it says how many
@@ -173,12 +192,21 @@ export interface ConnectionsProps {
  * The pile decides its own orientation — portrait on a phone, landscape from
  * `sm` up — so this page only says what is in it.
  *
- * Above it, the events those cards came from. Cards arrive in bursts — a
+ * Beside it, the events those cards came from. Cards arrive in bursts — a
  * conference, a dinner — and "where did I meet this person" is the question
  * people actually use to find one again, so the timeline is the index and
  * the pile is what it opens. Selecting an event puts that event's cards on
  * the desk; an event nobody has been to yet has an empty desk, which is the
  * honest answer rather than a hidden one.
+ *
+ * Under the pile, everyone else in it. A pile hands you one card at a time,
+ * and without a contents page the third person you met is three swipes away
+ * with nothing to say they are there at all.
+ *
+ * The page has one shape at every width and two arrangements of it: on a
+ * phone the timeline is a row of dots above the desk, and from `lg` it is a
+ * rail beside it, where a screen wide enough for a pile has width to spare
+ * on either side.
  *
  * Nothing persists. Notes written here live for as long as the page does.
  */
@@ -209,6 +237,9 @@ export function Connections({
     () => cards.filter((card) => card.eventId === eventId),
     [cards, eventId],
   )
+  /* The pile wraps its own index, so a page reading back into the array has
+     to wrap too or it reads off the end after the last card. */
+  const active = pile.length > 0 ? pile[index % pile.length] : undefined
 
   /* Moving along the line puts a different pile on the desk, so the pile
      starts at its top card and nothing is left turned over from the last
@@ -223,143 +254,203 @@ export function Connections({
   return (
     <div className="connections">
       <Stack gap={24} className="connections__container">
-        <Stack gap={4}>
-          <Heading level={1} size="xl" family="serif">
-            Recent connections
-          </Heading>
-          {/*
-            The event's name is in a span of its own because a phone drops
-            it: down there the timeline collapses to dots and names the
-            selected event in a card immediately below this line, so saying
-            it here too is the same words twice, and it costs a second line
-            of a sentence that already wraps. On a wider screen there is no
-            such card — the name under the dot is small and off to one side
-            — so the sentence carries it.
-          */}
-          <Text tone="muted">
-            {pile.length > 0 ? (
-              <>
-                You have dropped {pile.length}{' '}
-                {pile.length === 1 ? 'card' : 'cards'} onto your workspace deck
-                {event ? (
-                  <span className="connections__from"> from {event.name}</span>
-                ) : null}
-                .
-              </>
-            ) : (
-              <>
-                Nothing on the desk
-                <span className="connections__from">
-                  {' '}
-                  from {event?.name ?? 'this event'}
-                </span>{' '}
-                yet.
-              </>
-            )}
-          </Text>
-        </Stack>
-
-        <EventTimeline
-          events={events}
-          value={eventId}
-          onValueChange={selectEvent}
-          today={today}
-          className="connections__timeline"
-        />
-
-        {/* The pile's own section heading. Hidden, because the page has
-            already said what this is and the mockup has nothing there — but
-            a real `h2` all the same, since without it the page jumps from
-            its `h1` to `PersonCard`'s `h3` and skips a level. */}
-        <Heading level={2} size="xs" className="deck-visually-hidden">
-          The pile
+        <Heading level={1} size="xl" family="serif">
+          Connections
         </Heading>
 
-        {pile.length === 0 ? (
-          <EmptyState
-            className="connections__empty"
-            title="No cards from this event"
-            description={
-              event
-                ? `Cards you collect at ${event.name} will land here.`
-                : 'Cards you collect will land here.'
-            }
-          />
-        ) : (
-          <CardPile
-            /* Named for the event, so a screen reader hears which pile moved
-               when the line does. The `key` remounts it: a new pile is a new
-               set of cards, not the same one re-sorted, and it should arrive
-               squared up rather than mid-swipe from the last event. */
-            key={eventId}
-            label={event ? `Cards from ${event.name}` : 'Recent connections'}
-            activeIndex={index}
-            onActiveIndexChange={setIndex}
-            className="connections__pile"
-          >
-            {pile.map((card) => (
-              <PersonCard
-                key={card.slug}
-                name={card.name}
-                avatarSrc={card.avatarSrc}
-                tagline={card.tagline}
-                title={card.title}
-                company={card.company}
-                location={card.location}
-                privateNote={{ hasContent: Boolean(card.note || card.feeling) }}
-                flipped={flipped === card.slug}
-                onFlippedChange={(next) =>
-                  setFlipped(next ? card.slug : null)
-                }
-                back={
-                  <PrivateNote
-                    value={card.note ?? ''}
-                    onValueChange={(note) => update(card.slug, { note })}
-                    feeling={card.feeling}
-                    onFeelingChange={(feeling) => update(card.slug, { feeling })}
-                    onHide={() => setFlipped(null)}
-                  />
-                }
-                contactActions={
-                  <>
-                    <IconButton
-                      label={`Email ${card.name}`}
-                      icon={<Mail />}
-                      size="sm"
-                      round
+        <div className="connections__layout">
+          {/* The line stays with the top of the page — it is the index for
+              what's beside it, and an index that floats in the middle of the
+              page is no longer indexing anything. */}
+          <div className="connections__rail">
+            <EventTimeline
+              events={events}
+              value={eventId}
+              onValueChange={selectEvent}
+              today={today}
+              label="Where we met"
+              orientation="responsive"
+            />
+          </div>
+
+          <div className="connections__desk">
+            {/*
+              Which event this desk belongs to, said again at the width where
+              the rail is a column of small type off to the left and your eye
+              is on the pile. Below `lg` the timeline sits directly above the
+              pile and names the event itself, so this would be the same
+              words twice — `display: none` rather than a clip, since a
+              screen reader would hear the duplication a sighted reader sees.
+            */}
+            {event ? (
+              <div className="connections__event" aria-hidden="true">
+                <Text size="xs" tone="brand" className="connections__eyebrow">
+                  {event.name}
+                </Text>
+                <Text size="sm" tone="muted" className="connections__event-meta">
+                  <span className="connections__fact">
+                    <CalendarDays aria-hidden="true" focusable="false" />
+                    {formatDate(event.date)}
+                  </span>
+                  {event.location ? (
+                    <span className="connections__fact">
+                      <MapPin aria-hidden="true" focusable="false" />
+                      {event.location}
+                    </span>
+                  ) : null}
+                  <span className="connections__fact">
+                    {pile.length} {pile.length === 1 ? 'card' : 'cards'}
+                  </span>
+                </Text>
+              </div>
+            ) : null}
+
+            <Stack gap={12}>
+              <div className="connections__section-heading">
+                {/* A real `h2`: it heads the section, and without it the page
+                    jumps from its `h1` to `PersonCard`'s `h3` and skips a
+                    level. Sized down to read as an eyebrow. */}
+                <Heading
+                  level={2}
+                  size="xs"
+                  tone="muted"
+                  className="connections__eyebrow"
+                >
+                  Who we met
+                </Heading>
+                {pile.length > 1 ? (
+                  <Text size="sm" tone="muted">
+                    {(index % pile.length) + 1} / {pile.length}
+                  </Text>
+                ) : null}
+              </div>
+
+              {pile.length === 0 ? (
+                <EmptyState
+                  className="connections__empty"
+                  title="No cards from this event"
+                  description={
+                    event
+                      ? `Cards you collect at ${event.name} will land here.`
+                      : 'Cards you collect will land here.'
+                  }
+                />
+              ) : (
+                <CardPile
+                  /* Named for the event, so a screen reader hears which pile
+                     moved when the line does. The `key` remounts it: a new
+                     pile is a new set of cards, not the same one re-sorted,
+                     and it should arrive squared up rather than mid-swipe
+                     from the last event. */
+                  key={eventId}
+                  label={event ? `Cards from ${event.name}` : 'Recent connections'}
+                  activeIndex={index}
+                  onActiveIndexChange={setIndex}
+                  className="connections__pile"
+                >
+                  {pile.map((card) => (
+                    <PersonCard
+                      key={card.slug}
+                      name={card.name}
+                      avatarSrc={card.avatarSrc}
+                      tagline={card.tagline}
+                      title={card.title}
+                      company={card.company}
+                      location={card.location}
+                      privateNote={{
+                        hasContent: Boolean(card.note || card.feeling),
+                      }}
+                      flipped={flipped === card.slug}
+                      onFlippedChange={(next) =>
+                        setFlipped(next ? card.slug : null)
+                      }
+                      back={
+                        <PrivateNote
+                          value={card.note ?? ''}
+                          onValueChange={(note) => update(card.slug, { note })}
+                          feeling={card.feeling}
+                          onFeelingChange={(feeling) =>
+                            update(card.slug, { feeling })
+                          }
+                          onHide={() => setFlipped(null)}
+                        />
+                      }
+                      contactActions={
+                        <>
+                          <IconButton
+                            label={`Email ${card.name}`}
+                            icon={<Mail />}
+                            size="sm"
+                            round
+                          />
+                          <IconButton
+                            label={`${card.name} on LinkedIn`}
+                            icon={<LinkedInIcon />}
+                            size="sm"
+                            round
+                          />
+                          <IconButton
+                            label={`Share ${card.name}'s card`}
+                            icon={<Share2 />}
+                            size="sm"
+                            round
+                          />
+                        </>
+                      }
+                      footer={
+                        <>
+                          <Button size="sm" iconStart={<CalendarDays />}>
+                            Book with me
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            iconStart={<Handshake />}
+                          >
+                            Exchange cards
+                          </Button>
+                        </>
+                      }
                     />
-                    <IconButton
-                      label={`${card.name} on LinkedIn`}
-                      icon={<LinkedInIcon />}
-                      size="sm"
-                      round
-                    />
-                    <IconButton
-                      label={`Share ${card.name}'s card`}
-                      icon={<Share2 />}
-                      size="sm"
-                      round
-                    />
-                  </>
-                }
-                footer={
-                  <>
-                    <Button size="sm" iconStart={<CalendarDays />}>
-                      Book with me
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      iconStart={<Handshake />}
-                    >
-                      Exchange cards
-                    </Button>
-                  </>
-                }
-              />
-            ))}
-          </CardPile>
-        )}
+                  ))}
+                </CardPile>
+              )}
+            </Stack>
+
+            {/* The contents page for the pile. Only worth drawing once there
+                is more than one card in it — a one-row index of the card you
+                are already looking at is furniture. */}
+            {pile.length > 1 ? (
+              <Stack gap={12}>
+                <Heading
+                  level={2}
+                  size="xs"
+                  tone="muted"
+                  className="connections__eyebrow"
+                >
+                  Everyone from this event
+                </Heading>
+                <CardIndex
+                  label={
+                    event
+                      ? `Everyone from ${event.name}`
+                      : 'Everyone from this event'
+                  }
+                  value={active?.slug}
+                  onValueChange={(slug) =>
+                    setIndex(pile.findIndex((card) => card.slug === slug))
+                  }
+                  items={pile.map((card) => ({
+                    id: card.slug,
+                    name: card.name,
+                    detail: describe(card),
+                    avatarSrc: card.avatarSrc,
+                  }))}
+                />
+              </Stack>
+            ) : null}
+          </div>
+        </div>
       </Stack>
     </div>
   )

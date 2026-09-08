@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CalendarDays } from 'lucide-react'
+import { CalendarDays, Lock } from 'lucide-react'
 import { Banner } from '../../../components/Banner/Banner'
 import { Button } from '../../../components/Button/Button'
 import { Checkbox } from '../../../components/Checkbox/Checkbox'
@@ -9,14 +9,35 @@ import { ImageUpload } from '../../../components/ImageUpload/ImageUpload'
 import { Input } from '../../../components/Input/Input'
 import { IntegrationRow } from '../../../components/IntegrationRow/IntegrationRow'
 import { Link } from '../../../components/Link/Link'
+import { ReorderList } from '../../../components/ReorderList/ReorderList'
 import { Select } from '../../../components/Select/Select'
 import { SettingRow } from '../../../components/SettingRow/SettingRow'
 import { Stack } from '../../../components/Stack/Stack'
+import { Text } from '../../../components/Text/Text'
 import { Textarea } from '../../../components/Textarea/Textarea'
 import { TimeSlotPicker } from '../../../components/TimeSlotPicker/TimeSlotPicker'
 import { SettingsGroup, SettingsPanel } from './SettingsPanel'
 
 const BIO_LIMIT = 160
+
+/**
+ * The buttons on the card, top to bottom.
+ *
+ * `Book a time` is managed: what it says and where it points are decided by
+ * the Book with group above, and two places to edit one button is how they
+ * come to disagree. Its *position* is still yours — where a button sits on
+ * your card is your decision even when its wording is not — so it keeps its
+ * handle and only its fields are read-only.
+ */
+const CTAS = [
+  {
+    id: 'book',
+    label: 'Book a time',
+    href: 'meetcard.io/ben@meetcard/book',
+    managed: true,
+  },
+  { id: 'website', label: 'Website', href: 'meetcard.io', managed: false },
+]
 
 const DAYS = [
   { value: 'sun', label: 'Sun' },
@@ -80,6 +101,7 @@ export function Profile() {
   const [card, setCard] = useState('business')
   const [booking, setBooking] = useState(true)
   const [days, setDays] = useState<string[]>(['mon', 'tue', 'wed', 'thu', 'fri'])
+  const [ctas, setCtas] = useState(CTAS)
   const [privacy, setPrivacy] = useState('public')
   const [reciprocal, setReciprocal] = useState(false)
   const [authenticated, setAuthenticated] = useState(false)
@@ -206,6 +228,11 @@ export function Profile() {
               type="tel"
               defaultValue="+1 303 555 0142"
             />
+          </div>
+        </SettingsGroup>
+
+        <SettingsGroup title="Social">
+          <div className="settings__form">
             <Input
               label="LinkedIn"
               id="profile-linkedin"
@@ -422,6 +449,63 @@ export function Profile() {
           ) : null}
         </SettingsGroup>
 
+        {/*
+          The order of the two buttons on the card, and the labels on the one
+          you own. Ordering is the whole content of this group, which is why
+          it is a list you rearrange rather than two number fields.
+        */}
+        <SettingsGroup
+          title="Calls to action"
+          description="The two buttons on your card, top to bottom. Drag a row, or focus its handle and use the arrow keys."
+        >
+          <div className="settings__form">
+            <ReorderList
+              label="Calls to action"
+              items={ctas.map((cta) => ({
+                id: cta.id,
+                label: cta.label,
+                content: (
+                  <>
+                    <Input
+                      label={`${cta.label} button label`}
+                      hideLabel
+                      size="sm"
+                      readOnly={cta.managed}
+                      defaultValue={cta.label}
+                      fieldClassName="settings__cta-label"
+                    />
+                    <Input
+                      label={`${cta.label} link`}
+                      hideLabel
+                      size="sm"
+                      readOnly={cta.managed}
+                      defaultValue={cta.href}
+                      fieldClassName="settings__cta-link"
+                    />
+                    {/* The fields are read-only and the lock says so at a
+                        glance; the note under the list says who has them.
+                        `aria-hidden`, because a screen reader is already
+                        told the inputs are read-only. */}
+                    {cta.managed ? (
+                      <Lock
+                        aria-hidden="true"
+                        focusable="false"
+                        className="settings__cta-lock"
+                      />
+                    ) : null}
+                  </>
+                ),
+              }))}
+              onReorder={(ids) =>
+                setCtas((all) => ids.map((id) => all.find((cta) => cta.id === id)!))
+              }
+            />
+            <Text size="xs" tone="muted">
+              Your booking button is managed above in Book with.
+            </Text>
+          </div>
+        </SettingsGroup>
+
         <SettingsGroup
           title="Card privacy"
           description="Choose how much of your card people see before they connect."
@@ -449,6 +533,11 @@ export function Profile() {
             />
           </div>
 
+        </SettingsGroup>
+
+        {/* Kept apart from the visibility choice above: that one says what a
+            stranger sees, these say what they have to do first. */}
+        <SettingsGroup title="Additional controls">
           <SettingRow
             title="Require reciprocal exchange"
             description="Only reveal your contact details to people who share their card back."

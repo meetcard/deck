@@ -51,6 +51,11 @@ export interface SettingsPanelProps {
   eyebrow: string
   title: string
   description: ReactNode
+  /**
+   * A line above the eyebrow — the way back, on a panel that is one level
+   * down from a nav destination rather than a destination itself.
+   */
+  before?: ReactNode
   children: ReactNode
   /**
    * Renders the save bar. Sections that apply immediately — Integrations,
@@ -74,14 +79,19 @@ export function SettingsPanel({
   eyebrow,
   title,
   description,
+  before,
   children,
   onSave,
   saveNote,
 }: SettingsPanelProps) {
   return (
-    <div className="settings__panel">
+    /* `deck-field-caps`: every field label in here reads as an eyebrow.
+       Forty labels down one column are markers you scan past, not sentences
+       you read — and it is what the product's own settings screens do. */
+    <div className="settings__panel deck-field-caps">
       <Stack gap={24}>
         <Stack gap={4}>
+          {before}
           <Text size="xs" tone="muted" className="settings__eyebrow">
             {eyebrow}
           </Text>

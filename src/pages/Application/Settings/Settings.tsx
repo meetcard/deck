@@ -17,6 +17,7 @@ import { Billing } from './Billing'
 import { Company } from './Company'
 import { Integrations } from './Integrations'
 import { Notifications } from './Notifications'
+import { Plans } from './Plans'
 import { Profile } from './Profile'
 import { Team } from './Team'
 import './Settings.css'
@@ -40,10 +41,17 @@ const icon = (Glyph: typeof UserRound) => (
  * four reach other people — a seat someone else pays for, a logo on everyone's
  * card, a token that grants access. Someone looking for "why can't Priya book
  * a time" is looking in the second group, and the heading is what tells them.
+ *
+ * "User" and "Admin" are the product's own words for those two groups, so
+ * they are the words here. Natural case, not the caps the rail shows:
+ * `SettingsNav` upper-cases the heading in CSS, which keeps "ADMIN" out of
+ * the text itself — a screen reader may spell a shouted word rather than say
+ * it, and an `<optgroup>` label on the phone's select cannot be transformed
+ * back down anyway.
  */
 const GROUPS = [
   {
-    label: 'You',
+    label: 'User',
     items: [
       { id: 'profile', label: 'Profile', icon: icon(UserRound) },
       { id: 'account', label: 'Account', icon: icon(ShieldCheck) },
@@ -51,7 +59,7 @@ const GROUPS = [
     ],
   },
   {
-    label: 'Workspace',
+    label: 'Admin',
     items: [
       { id: 'billing', label: 'Billing', icon: icon(CreditCard) },
       { id: 'company', label: 'Company', icon: icon(Building2) },
@@ -92,10 +100,18 @@ export interface SettingsProps {
 export function Settings({ section, onSectionChange }: SettingsProps) {
   const [internal, setInternal] = useState<SettingsSectionId>('profile')
   const current = section ?? internal
+  /*
+   * Billing has one screen underneath it — the plan comparison, which the
+   * product routes to at /settings/billing/plans. It is not a nav
+   * destination there and it is not one here: you arrive from Billing and
+   * the way back is on the panel, which is what a sub-route is.
+   */
+  const [comparingPlans, setComparingPlans] = useState(false)
 
   const select = (next: string) => {
     const id = next as SettingsSectionId
     if (section === undefined) setInternal(id)
+    setComparingPlans(false)
     onSectionChange?.(id)
   }
 
@@ -121,7 +137,15 @@ export function Settings({ section, onSectionChange }: SettingsProps) {
               holds its own draft state, and carrying a half-edited bio into
               Billing would be a bug rather than a feature. */}
           <div className="settings__content">
-            <Section key={current} />
+            {current === 'billing' ? (
+              comparingPlans ? (
+                <Plans onBack={() => setComparingPlans(false)} />
+              ) : (
+                <Billing onComparePlans={() => setComparingPlans(true)} />
+              )
+            ) : (
+              <Section key={current} />
+            )}
           </div>
         </div>
       </Stack>

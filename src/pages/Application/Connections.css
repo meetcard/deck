@@ -1,9 +1,7 @@
-/* Heading in the top-left, pile floating in the middle of whatever is left.
-   The page is deliberately not a centred reading column: there is one thing
-   on it, and the point of the pile is that it sits on the desk in front of
-   you rather than at the top of a document. */
+/* The desk, and the events beside it. Deliberately not a centred reading
+   column: the point of a pile is that it sits in front of you rather than at
+   the top of a document. */
 .connections {
-  display: flex;
   min-height: 100%;
   padding: var(--deck-space-32) var(--deck-space-24);
   box-sizing: border-box;
@@ -12,37 +10,119 @@
 
 .connections__container {
   width: 100%;
+  max-width: 1040px;
+  margin-inline: auto;
 }
 
-/* The line stays with the heading at the top of the page — it is the index
-   for what's below, and an index that floats in the middle of the page is
-   no longer indexing anything. */
-.connections__timeline {
-  flex-shrink: 0;
+/* One column until there is room to stand the timeline beside the desk
+   rather than above it — `lg`, the width `EventTimeline`'s own `responsive`
+   turns into a rail at. The two have to agree: a rail is what fits a narrow
+   column, and a line is what fills a wide one. */
+.connections__layout {
+  display: grid;
+  gap: var(--deck-space-24);
 }
 
-/* "…from Founders Dinner", said once. Below `sm` the timeline collapses to
-   its dots and names the selected event in a card directly under this
-   sentence, so the sentence stops naming it — `display: none` rather than a
-   clip, since a screen reader would hear the same duplication a sighted
-   reader would see. The breakpoint is the one the timeline changes shape at.
-
-   Kept as a page-level concern rather than something `EventTimeline` knows:
-   the timeline has no idea what the prose above it says. */
-.connections__from {
-  display: none;
+.connections__desk {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-32);
+  min-width: 0;
 }
 
-@media (min-width: 640px) {
-  .connections__from {
-    display: inline;
+@media (min-width: 1024px) {
+  .connections__layout {
+    grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--deck-space-32);
+  }
+
+  /* The rail becomes a surface of its own once it is beside the desk rather
+     than above it — a column of events floating on the page reads as part of
+     the pile's column, which is the one thing it is not. */
+  .connections__rail {
+    padding: var(--deck-space-20);
+    background-color: var(--deck-color-background-elevated);
+    border: 1px solid var(--deck-color-border-default);
+    border-radius: var(--deck-radius-2xl);
+    /* Follows the page down: the index is the reason to scroll back up, and
+       a rail you have to scroll back up to reach is not one. */
+    position: sticky;
+    top: var(--deck-space-24);
   }
 }
 
-/* `margin-block: auto` rather than `justify-content: center`, so the heading
-   stays pinned to the top while the pile takes the slack above and below. */
+/* ---- Which event this desk belongs to ---------------------------------- */
+
+/* Only from `lg`, where the rail is small type off to the left and the pile
+   has your attention. Below that the timeline is directly above the pile and
+   names the event itself. */
+.connections__event {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .connections__event {
+    display: flex;
+    flex-direction: column;
+    gap: var(--deck-space-6);
+  }
+}
+
+.connections__event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-4) var(--deck-space-8);
+}
+
+/* Between the facts, not before the first one — and dropped along with the
+   fact ahead of it when the line wraps, which is what a separator drawn as
+   its own element could not do. */
+.connections__fact + .connections__fact::before {
+  content: '·';
+  margin-inline-end: var(--deck-space-8);
+}
+
+/* Each fact stays in one piece — a line breaking between the pin and the
+   city reads as a mistake. */
+.connections__fact {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--deck-space-6);
+  white-space: nowrap;
+}
+
+.connections__fact > svg {
+  inline-size: 14px;
+  block-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ---- Sections ---------------------------------------------------------- */
+
+.connections__section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--deck-space-8);
+}
+
+/* Section labels are real headings sized down to read as eyebrows — the same
+   treatment `MyCards` gives its own, since the two pages are the same desk
+   seen from either side of a handshake. Colour is left to the element, so
+   the event's name can be brand and the section labels muted. */
+.connections__eyebrow {
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+  font-weight: var(--deck-font-weight-semibold);
+}
+
+/* The pile sizes itself to the card it holds; centring is all the column
+   has to say about it. */
 .connections__pile,
 .connections__empty {
   align-self: center;
-  margin-block: auto;
 }

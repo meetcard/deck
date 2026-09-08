@@ -28,6 +28,60 @@ export const Profile: Story = {
   },
 }
 
+/**
+ * The two buttons on the card, in the order the card shows them.
+ *
+ * Reordered with the keyboard here, which is the path that has to work: the
+ * product's own screen offers dragging and nothing else, and a grip you can
+ * only drag is a control that does not exist for anyone using a keyboard.
+ */
+export const ReorderingCallsToAction: Story = {
+  args: { section: 'profile' },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const list = canvasElement.querySelector('.deck-reorder-list')!
+    const order = () =>
+      [...list.querySelectorAll<HTMLInputElement>(
+        '.settings__cta-label input',
+      )].map((input) => input.value)
+
+    await expect(order()).toEqual(['Book a time', 'Website'])
+
+    const handle = canvas.getByRole('button', { name: 'Reorder Website' })
+    handle.focus()
+    await userEvent.keyboard('{ArrowUp}')
+
+    await expect(order()).toEqual(['Website', 'Book a time'])
+    // Focus rode along with the row, so a second press moves the same one.
+    await expect(handle).toHaveFocus()
+  },
+}
+
+/**
+ * The booking button's position is yours; what it says and where it points
+ * are not — those are set in Book with, and two places to edit one button is
+ * how they come to disagree. So its fields are read-only and its handle is
+ * not: where a button sits on your card is your decision even when its
+ * wording is not.
+ */
+export const TheBookingButtonIsManagedElsewhere: Story = {
+  args: { section: 'profile' },
+  play: async ({ canvas, userEvent }) => {
+    await expect(
+      canvas.getByText('Your booking button is managed above in Book with.'),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('textbox', { name: 'Book a time button label' }),
+    ).toHaveAttribute('readonly')
+
+    // Read-only wording, movable row: where it sits on the card is still
+    // yours to decide.
+    const handle = canvas.getByRole('button', { name: 'Reorder Book a time' })
+    handle.focus()
+    await userEvent.keyboard('{ArrowDown}')
+    await expect(handle).toHaveFocus()
+  },
+}
+
 /** Sign-in, providers, sessions, and the two doors out — export and delete. */
 export const Account: Story = {
   args: { section: 'account' },
@@ -53,6 +107,56 @@ export const Notifications: Story = {
     await expect(
       canvas.queryByRole('radio', { name: 'Weekly' }),
     ).not.toBeInTheDocument()
+  },
+}
+
+/**
+ * Every plan side by side — the screen Billing's "Compare plans" opens, and
+ * a route of its own in the product (`/settings/billing/plans`).
+ */
+export const ComparingPlans: Story = {
+  args: { section: 'billing' },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'View plans' }))
+
+    await expect(
+      await canvas.findByRole('heading', { level: 2, name: 'Available plans' }),
+    ).toBeVisible()
+
+    // The plan you are on keeps its place in the row, marked — a comparison
+    // that hid it would be missing the column you compare the others against.
+    await expect(canvas.getByText('Current')).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Manage plan' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Choose Pro' }),
+    ).toBeVisible()
+
+    // And the way back, because this is one level down rather than a
+    // destination on the nav.
+    await expect(canvas.getByRole('link', { name: /Billing/ })).toBeVisible()
+  },
+}
+
+/**
+ * Prices move with the billing period rather than being listed twice — the
+ * question here is which plan, and two price columns is two questions.
+ */
+export const PlansByTheYear: Story = {
+  args: { section: 'billing' },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'View plans' }))
+    await expect(await canvas.findByText('$8')).toBeVisible()
+
+    await userEvent.click(canvas.getByRole('radio', { name: /Yearly/ }))
+
+    // 17% off $8 is $6.64, and the free plan is still free.
+    await expect(canvas.getByText('$6.64')).toBeVisible()
+    await expect(canvas.getByText('$0')).toBeVisible()
+    await expect(
+      canvas.getByText('Prices shown per month, billed annually.'),
+    ).toBeVisible()
   },
 }
 

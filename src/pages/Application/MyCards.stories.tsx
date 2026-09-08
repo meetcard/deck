@@ -57,6 +57,32 @@ export const SelectingFromTheList: Story = {
     await waitFor(async () => {
       await expect(canvas.getByText('2 / 2')).toBeVisible()
     })
+    // The list says which one it is showing, in a word and not only in a
+    // tint — and the word has moved with the pile.
+    await expect(
+      canvas.getByRole('button', { name: /Personal profile/ }),
+    ).toHaveAttribute('aria-current', 'true')
+  },
+}
+
+/**
+ * Editing from the list rather than from the card. The pencil belongs to its
+ * own row, so it brings that card to the top on the way to the editor —
+ * otherwise it would open the editor on whichever card happened to be
+ * showing, which is not the one you pointed at.
+ */
+export const EditingFromTheList: Story = {
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Edit personal card' }),
+    )
+
+    await waitFor(async () => {
+      await expect(canvas.getByText('2 / 2')).toBeVisible()
+    })
+    // The editor is open on the card the pencil belonged to.
+    await expect(canvas.getByText('Edit card details')).toBeVisible()
+    await expect(canvas.getByLabelText('Title')).toHaveValue('Personal profile')
   },
 }
 

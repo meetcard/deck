@@ -163,23 +163,6 @@
   margin-top: var(--deck-space-8);
 }
 
-/* A real `<input type="color">`, sized to the control grid so it lines up
-   with the text inputs above it rather than sitting at the browser default. */
-.settings__color {
-  width: 100%;
-  height: 40px;
-  padding: var(--deck-space-2);
-  background-color: var(--deck-color-background-default);
-  border: 1px solid var(--deck-color-border-default);
-  border-radius: var(--deck-radius-md);
-  cursor: pointer;
-}
-
-.settings__color:focus-visible {
-  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
-  outline-offset: var(--deck-focus-ring-offset);
-}
-
 /* The one card on these screens that cannot be undone by doing the opposite,
    so it is the one card that does not look like the others. */
 .settings__danger {
@@ -200,4 +183,112 @@
   display: flex;
   gap: var(--deck-space-8);
   margin-left: auto;
+}
+
+/* ---- Calls to action ---------------------------------------------------- */
+
+/* What the button says, and where it goes.
+
+   Stacked first: on a phone there is no width for both, and half a line each
+   makes a URL unreadable where a two-word label survives. From `sm` they
+   share a row, and the link takes the larger share for the same reason. */
+.settings__cta-label,
+.settings__cta-link {
+  flex: 1 1 100%;
+  min-inline-size: 0;
+}
+
+@media (min-width: 640px) {
+  .settings__cta-label {
+    flex: 1 1 8rem;
+  }
+
+  .settings__cta-link {
+    flex: 2 1 12rem;
+  }
+}
+
+/* Says the row is not yours to word, at the end of the row it applies to. */
+.settings__cta-lock {
+  flex-shrink: 0;
+  inline-size: 14px;
+  block-size: 14px;
+  color: var(--deck-color-text-muted);
+}
+
+/* ---- Brand preview ------------------------------------------------------ */
+
+.settings__brand-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+}
+
+.settings__brand-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--deck-space-8);
+}
+
+/* Shaped like the buttons on a card rather than like Deck's own, because
+   what is being previewed is the card — and borrowing `Button` here would
+   mean overriding every colour it sets from tokens. */
+.settings__brand-button {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--deck-space-8) var(--deck-space-16);
+  border-radius: var(--deck-radius-full);
+  border: 1px solid transparent;
+  font-size: var(--deck-font-size-label-sm);
+  line-height: var(--deck-line-height-label-sm);
+  font-weight: var(--deck-font-weight-medium);
+}
+
+/* Filled: the main action, in the company's primary. The label's colour is
+   chosen from the fill's luminance in JS and handed down as a variable —
+   `--deck-color-solid-on` would flip with the page's scheme, and a brand
+   colour does not flip with anything. */
+.settings__brand-button--primary {
+  background-color: var(--settings-brand-primary);
+  color: var(--settings-brand-on);
+}
+
+/* Outlined: the accent is a boundary here rather than a background. A brand
+   colour is whatever the company says it is, and a mid-tone one behind white
+   text is a legibility problem this preview would be inventing — as an edge
+   it only has to clear 3:1, and the label keeps the page's own ink. */
+.settings__brand-button--accent {
+  border-color: var(--settings-brand-accent);
+  color: var(--deck-color-text-default);
+}
+
+/* ---- Plans -------------------------------------------------------------- */
+
+.settings__back-icon {
+  inline-size: 14px;
+  block-size: 14px;
+  margin-inline-end: var(--deck-space-6);
+  vertical-align: -2px;
+}
+
+.settings__period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-12);
+}
+
+/* Three plans across where there is room, and stacked before any of them
+   gets too narrow to compare — which is the only thing this row is for. */
+.settings__plans {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--deck-space-16);
+  align-items: stretch;
+}
+
+@media (min-width: 60rem) {
+  .settings__plans {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }

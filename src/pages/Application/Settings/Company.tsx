@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import type { CSSProperties } from 'react'
 import { Building2, Plus } from 'lucide-react'
 import { Badge } from '../../../components/Badge/Badge'
 import { Button } from '../../../components/Button/Button'
 import { Card } from '../../../components/Card/Card'
 import { ChoiceGroup } from '../../../components/ChoiceGroup/ChoiceGroup'
 import { CodeSnippet } from '../../../components/CodeSnippet/CodeSnippet'
-import { Field } from '../../../components/Field/Field'
+import { ColorField } from '../../../components/ColorField/ColorField'
 import { ImageUpload } from '../../../components/ImageUpload/ImageUpload'
 import { Input } from '../../../components/Input/Input'
 import { IntegrationRow } from '../../../components/IntegrationRow/IntegrationRow'
@@ -14,6 +15,59 @@ import { Stack } from '../../../components/Stack/Stack'
 import { Text } from '../../../components/Text/Text'
 import { Textarea } from '../../../components/Textarea/Textarea'
 import { SettingsGroup, SettingsPanel } from './SettingsPanel'
+
+/* MeetCard's own brand, which a company's colours start as and reset to. */
+const DEFAULT_PRIMARY = '#2E6E5B'
+const DEFAULT_ACCENT = '#C66A4A'
+
+/** One channel of a hex, linearised the way WCAG's luminance formula wants. */
+function channel(value: number): number {
+  const srgb = value / 255
+  return srgb <= 0.03928 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4
+}
+
+/** Relative luminance of `#rrggbb`, or `null` if that is not what it is. */
+function luminance(hex: string): number | null {
+  const match = /^#([0-9a-f]{6})$/i.exec(hex)
+  if (!match) return null
+  const int = parseInt(match[1], 16)
+  return (
+    0.2126 * channel((int >> 16) & 255) +
+    0.7152 * channel((int >> 8) & 255) +
+    0.0722 * channel(int & 255)
+  )
+}
+
+/**
+ * Which of two fixed on-colours to put on a company's brand fill.
+ *
+ * `--deck-color-solid-on` cannot answer this. It flips with the page's
+ * scheme — light fills take dark text in dark mode — and a company's brand
+ * colour does not flip with anything: it is the same green at midnight. So
+ * the choice is made from the fill's own luminance, against the two
+ * scheme-independent on-colours the cover tokens already define.
+ *
+ * A brand colour is whatever the company says it is, so this can still land
+ * on a pair that reads poorly. It picks the better of the two rather than
+ * pretending there is always a good one.
+ */
+function onBrandColor(hex: string): string {
+  const fill = luminance(hex)
+  if (fill === null) return 'var(--deck-color-cover-on)'
+
+  const contrast = (a: number, b: number) =>
+    (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+
+  /* The two candidates are the scrim tokens' own values: ink and paper,
+     which are fixed in both schemes precisely because the thing under them
+     is not the page. */
+  const ink = luminance('#1a1a1a') as number
+  const paper = luminance('#faf8f4') as number
+
+  return contrast(fill, ink) >= contrast(fill, paper)
+    ? 'var(--deck-color-cover-scrim)'
+    : 'var(--deck-color-cover-on)'
+}
 
 const AFFILIATIONS = [
   {
@@ -52,6 +106,8 @@ const TEAM_EMBED = `<script src="https://cdn.meetcard.io/embed.js" async></scrip
  */
 export function Company() {
   const [primary, setPrimary] = useState('meetcard')
+  const [primaryColor, setPrimaryColor] = useState(DEFAULT_PRIMARY)
+  const [accentColor, setAccentColor] = useState(DEFAULT_ACCENT)
   const [show, setShow] = useState({
     company: true,
     logo: true,
@@ -167,27 +223,63 @@ export function Company() {
           description="Used for buttons, highlights, and accents on your company MeetCards. Defaults to MeetCard's brand colors."
         >
           <div className="settings__form">
-            <Field htmlFor="company-primary-color" label="Primary color">
-              {/* A real `<input type="color">`: it opens the platform's own
-                  picker, which is the one control nobody has to be taught,
-                  and it stays a text-enterable hex for anyone who has one. */}
-              <input
-                id="company-primary-color"
-                type="color"
-                defaultValue="#2e6e5b"
-                className="settings__color"
-              />
-            </Field>
-            <Field htmlFor="company-accent-color" label="Accent color">
-              <input
-                id="company-accent-color"
-                type="color"
-                defaultValue="#c2603c"
-                className="settings__color"
-              />
-            </Field>
+            <ColorField
+              id="company-primary-color"
+              label="Primary color"
+              colorName="Signal Green"
+              value={primaryColor}
+              onValueChange={setPrimaryColor}
+            />
+            <ColorField
+              id="company-accent-color"
+              label="Accent color"
+              colorName="Warm Clay"
+              value={accentColor}
+              onValueChange={setAccentColor}
+            />
+
+            {/*
+              What the two colours are *for*, shown where they land: the main
+              action filled in the primary, the second outlined in the
+              accent. A pair of swatches would say which colours you chose;
+              this says what you chose them for.
+
+              Inline custom properties because these are the company's
+              values, not the system's — the one case where a colour in a
+              style attribute is the honest thing.
+            */}
+            <div className="settings__brand-preview">
+              <Text size="xs" tone="muted" className="settings__eyebrow">
+                Preview
+              </Text>
+              <div
+                className="settings__brand-buttons"
+                style={
+                  {
+                    '--settings-brand-primary': primaryColor,
+                    '--settings-brand-accent': accentColor,
+                    '--settings-brand-on': onBrandColor(primaryColor),
+                  } as CSSProperties
+                }
+              >
+                <span className="settings__brand-button settings__brand-button--primary">
+                  Book a time
+                </span>
+                <span className="settings__brand-button settings__brand-button--accent">
+                  Save contact
+                </span>
+              </div>
+            </div>
+
             <div>
-              <Button variant="ghost" size="sm">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setPrimaryColor(DEFAULT_PRIMARY)
+                  setAccentColor(DEFAULT_ACCENT)
+                }}
+              >
                 Reset to MeetCard defaults
               </Button>
             </div>

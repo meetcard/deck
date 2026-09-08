@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
-import { IdCard, Pencil, Plus, QrCode } from 'lucide-react'
-import { Avatar } from '../../components/Avatar/Avatar'
+import { Pencil, Plus, QrCode } from 'lucide-react'
 import { Badge } from '../../components/Badge/Badge'
 import { Button } from '../../components/Button/Button'
+import { CardIndex } from '../../components/CardIndex/CardIndex'
 import { CardPile } from '../../components/CardPile/CardPile'
 import { Heading } from '../../components/Heading/Heading'
+import { IconButton } from '../../components/IconButton/IconButton'
 import { Input } from '../../components/Input/Input'
 import { PersonCard } from '../../components/PersonCard/PersonCard'
 import { Select } from '../../components/Select/Select'
@@ -12,7 +13,6 @@ import { ShareSheet } from '../../components/ShareSheet/ShareSheet'
 import { Sheet } from '../../components/Sheet/Sheet'
 import { Stack } from '../../components/Stack/Stack'
 import { Text } from '../../components/Text/Text'
-import { cx } from '../../lib/cx'
 import './MyCards.css'
 
 /* ---- Model ------------------------------------------------------------- */
@@ -87,11 +87,19 @@ export interface MyCardsProps {
  * Nothing persists. Deck has no data layer, and a page that pretended
  * otherwise would be documenting a promise the system cannot keep.
  *
- * Two deviations from the product's own screen, both deliberate:
+ * The list under the pile is `CardIndex`, the same component the Connections
+ * pile is indexed with. Both pages ask one question — which of these is on
+ * top, and how do I get to another — and answering it twice is how two lists
+ * end up disagreeing about what "current" looks like.
+ *
+ * Three deviations from the product's own screen, all deliberate:
  *
  * - The "All cards" rows select the card in the pile rather than linking to
  *   `/cards/<slug>`. That route does not exist here, and a dead link is worse
  *   than a working selection.
+ * - Every row's edit control is visible, where the product reveals it on
+ *   hover. Hover does not exist on a phone, and a control that appears only
+ *   for a mouse is a control half the people using this cannot find.
  * - No portrait/landscape toggle. Orientation is not a property of a card
  *   here; the pile picks it from the space it has — portrait on a phone,
  *   landscape from `sm` up — and both are the same 3.5x2in object turned.
@@ -159,7 +167,12 @@ export function MyCards({ cards: seed = INITIAL, shareOpen = false }: MyCardsPro
 
         <Stack gap={12}>
           <div className="my-cards__section-heading">
-            <Heading level={2} size="xs" className="my-cards__eyebrow">
+            <Heading
+              level={2}
+              size="xs"
+              tone="brand"
+              className="my-cards__eyebrow"
+            >
               Your cards
             </Heading>
             <Text size="sm" tone="muted">
@@ -225,44 +238,55 @@ export function MyCards({ cards: seed = INITIAL, shareOpen = false }: MyCardsPro
         ) : null}
 
         <Stack gap={12}>
-          <Heading level={2} size="xs" className="my-cards__eyebrow">
+          <Heading
+            level={2}
+            size="xs"
+            tone="muted"
+            className="my-cards__eyebrow"
+          >
             All cards
           </Heading>
-          <ul className="my-cards__list">
-            {cards.map((card, i) => (
-              <li key={card.slug}>
-                {/*
-                  A button, not a link. The product routes to /cards/<slug>;
-                  there is no such route here, and moving the pile is both
-                  honest and more useful than a href that goes nowhere.
-                */}
-                <button
-                  type="button"
-                  className={cx(
-                    'my-cards__row',
-                    i === index && 'my-cards__row--active',
-                  )}
-                  aria-current={i === index ? 'true' : undefined}
-                  onClick={() => setIndex(i)}
-                >
-                  <Avatar name={card.name} size="sm" decorative />
-                  <span className="my-cards__row-text">
-                    <span className="my-cards__row-name">
-                      <Text as="span" weight="medium">
-                        {card.name}
-                      </Text>
-                      <Badge tone="neutral">{card.kind}</Badge>
-                    </span>
-                    <Text as="span" size="sm" tone="muted">
-                      {[card.title, card.company].filter(Boolean).join(' at ') ||
-                        linkFor(card)}
-                    </Text>
-                  </span>
-                  <IdCard className="my-cards__row-icon" aria-hidden="true" />
-                </button>
-              </li>
-            ))}
-          </ul>
+
+          {/*
+            The same component the Connections pile is indexed with. Both
+            pages ask the same question — which of these is on top, and how
+            do I get to another one — and answering it twice is how two lists
+            end up disagreeing about what "current" looks like.
+
+            Selecting a row moves the pile rather than following a link: the
+            product routes to /cards/<slug>, there is no such route here, and
+            a dead href is worse than a working selection.
+          */}
+          <CardIndex
+            layout="rows"
+            label="All cards"
+            value={active?.slug}
+            onValueChange={(slug) =>
+              setIndex(cards.findIndex((card) => card.slug === slug))
+            }
+            items={cards.map((card) => ({
+              id: card.slug,
+              name: card.name,
+              badge: <Badge tone="neutral" size="sm">{card.kind}</Badge>,
+              detail:
+                [card.title, card.company].filter(Boolean).join(' at ') ||
+                linkFor(card),
+              /* Edit *this* card, not whichever is showing — so the row
+                 brings its card to the top on the way to the editor. */
+              action: (
+                <IconButton
+                  label={`Edit ${card.kind.toLowerCase()} card`}
+                  icon={<Pencil />}
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setIndex(cards.findIndex((one) => one.slug === card.slug))
+                    setEditing(true)
+                  }}
+                />
+              ),
+            }))}
+          />
         </Stack>
       </Stack>
 

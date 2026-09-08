@@ -1,0 +1,80 @@
+.event-detail {
+  min-height: 100%;
+  padding: var(--deck-space-32) var(--deck-space-24);
+  box-sizing: border-box;
+  font-family: var(--deck-font-sans);
+}
+
+.event-detail__container {
+  width: 100%;
+  max-width: 880px;
+  margin-inline: auto;
+}
+
+/* Back on the left, the one thing you can do to the event on the right —
+   the shape every detail page in the product uses. */
+.event-detail__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--deck-space-16);
+}
+
+.event-detail__icon {
+  inline-size: 14px;
+  block-size: 14px;
+  margin-inline-end: var(--deck-space-6);
+  vertical-align: -2px;
+}
+
+.event-detail__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+}
+
+/* ---- On the hero -------------------------------------------------------- */
+
+.event-detail__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-12);
+}
+
+/* The faces are on the scrim here, not on the page behind it. */
+.event-detail__actions,
+.event-detail__rsvp {
+  --deck-avatar-group-ring: color-mix(
+    in srgb,
+    var(--deck-color-cover-on) 40%,
+    transparent
+  );
+}
+
+.event-detail__rsvp {
+  inline-size: 100%;
+  max-inline-size: 26rem;
+}
+
+/* ---- Sections ----------------------------------------------------------- */
+
+.event-detail__expected {
+  display: flex;
+  align-items: center;
+}
+
+.event-detail__people {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-12);
+}
+
+.event-detail__names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--deck-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

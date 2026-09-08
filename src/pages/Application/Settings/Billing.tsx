@@ -27,6 +27,14 @@ const INVOICES = [
   { id: 'INV-0039', date: 'May 1, 2026', amount: '$59.00' },
 ]
 
+export interface BillingProps {
+  /**
+   * Opens the plan comparison. A route of its own in the product; here it
+   * is a view Billing swaps to, because this composition has no router.
+   */
+  onComparePlans?: () => void
+}
+
 /**
  * Plan, usage, seats, payment, invoices.
  *
@@ -34,7 +42,7 @@ const INVOICES = [
  * of seats is not the thing anyone is deciding — the monthly figure is, and
  * making someone multiply by nine to find it is how a plan page gets abandoned.
  */
-export function Billing() {
+export function Billing({ onComparePlans }: BillingProps = {}) {
   const [seats, setSeats] = useState(6)
 
   const step = (delta: number) =>
@@ -70,7 +78,9 @@ export function Billing() {
                 /seat
               </Text>
             </Stack>
-            <Button variant="secondary">Change plan</Button>
+            <Button variant="secondary" onClick={onComparePlans}>
+              Change plan
+            </Button>
           </div>
         </SettingsGroup>
 
@@ -194,9 +204,9 @@ export function Billing() {
           />
           <SettingRow
             title="Compare plans"
-            description="See features and pricing for Individual, Team, and Enterprise."
+            description="See features and pricing for Solo, Pro, and Team."
             control={
-              <Button variant="secondary" size="sm">
+              <Button variant="secondary" size="sm" onClick={onComparePlans}>
                 View plans
               </Button>
             }
