@@ -1,0 +1,128 @@
+.events {
+  min-height: 100%;
+  padding: var(--deck-space-32) var(--deck-space-24);
+  box-sizing: border-box;
+  font-family: var(--deck-font-sans);
+}
+
+.events__container {
+  width: 100%;
+  max-width: 880px;
+  margin-inline: auto;
+}
+
+.events__eyebrow {
+  display: block;
+  margin-block-end: var(--deck-space-12);
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+  font-weight: var(--deck-font-weight-semibold);
+}
+
+/* ---- The one that matters this week ------------------------------------ */
+
+/* No ground of its own: the hero brings its own picture and its own scrim,
+   and a tinted panel around that would be a second frame on one thing. */
+.events__featured {
+  min-width: 0;
+}
+
+/* Riding along under the featured event. Glass, like the fact tiles beside
+   it — it is on the same photograph and belongs to the same surface. */
+.events__next {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-12);
+  inline-size: 100%;
+  box-sizing: border-box;
+  padding: var(--deck-space-12) var(--deck-space-16);
+  border-radius: var(--deck-radius-xl);
+  background-color: var(--deck-color-background-subtle);
+  border: 1px solid var(--deck-color-border-default);
+  backdrop-filter: blur(8px);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.events__next:hover {
+  background-color: var(--deck-color-background-overlay);
+}
+
+.events__next:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.events__next-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-2);
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.events__next-eyebrow {
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  font-weight: var(--deck-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+}
+
+.events__next-name,
+.events__next-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.events__next-name {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  font-weight: var(--deck-font-weight-medium);
+}
+
+.events__next-meta {
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+}
+
+/* ---- Toolbar ------------------------------------------------------------ */
+
+.events__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-12);
+}
+
+/* Takes the slack while there is any, and gives it back before the controls
+   either side of it start wrapping. */
+.events__search {
+  flex: 1 1 12rem;
+  max-inline-size: 18rem;
+}
+
+/* Pushed to the far end of the row, so the one control that creates
+   something is not sitting among the three that only filter. */
+.events__add {
+  margin-inline-start: auto;
+}
+
+/* The glyph reads as part of the word beside it rather than as a second
+   control jammed against it. */
+.events__view-icon {
+  inline-size: 16px;
+  block-size: 16px;
+  margin-inline-end: var(--deck-space-6);
+  vertical-align: -3px;
+}
+
+/* ---- The list ----------------------------------------------------------- */
+
+.events__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--deck-space-12);
+}

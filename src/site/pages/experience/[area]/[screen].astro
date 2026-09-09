@@ -1,0 +1,26 @@
+---
+/**
+ * One page per screen: /experience/networking/public-card/
+ *
+ * Same article as a component page, with a taller stage — these are whole
+ * screens, and 420px would show the top of a header and nothing else.
+ */
+import CatalogLayout from '../../../layouts/CatalogLayout.astro'
+import ShowcaseArticle from '../../../components/ShowcaseArticle.astro'
+import { screenPages } from '../../../lib/catalog'
+
+export function getStaticPaths() {
+  return screenPages.map((page) => ({ params: page.params, props: { page } }))
+}
+
+const { page } = Astro.props
+---
+
+<CatalogLayout
+  title={page.name}
+  description={page.description?.split('\n')[0]}
+  current={page.href}
+  storybookHref={page.storybookHref}
+>
+  <ShowcaseArticle page={page} previewMaxHeight="760px" />
+</CatalogLayout>

@@ -1,0 +1,86 @@
+.deck-funnel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-20);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-funnel__stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-6);
+  min-width: 0;
+}
+
+.deck-funnel__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--deck-space-12);
+}
+
+.deck-funnel__label {
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+}
+
+.deck-funnel__value {
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
+  font-weight: var(--deck-font-weight-semibold);
+  color: var(--deck-color-text-default);
+  font-variant-numeric: tabular-nums;
+}
+
+.deck-funnel__track {
+  height: 10px;
+  overflow: hidden;
+  background-color: var(--deck-color-background-subtle);
+  border-radius: var(--deck-radius-full);
+}
+
+/* Square at the baseline, rounded at the data end. Every stage starts at the
+   same left edge, so the narrowing is the whole picture. */
+.deck-funnel__bar {
+  height: 100%;
+  width: calc(var(--deck-funnel-ratio, 0) * 100%);
+  background-color: var(--deck-color-action-primary);
+  border-radius: 0 var(--deck-radius-sm) var(--deck-radius-sm) 0;
+  transition: width var(--deck-duration-base) var(--deck-ease-standard);
+}
+
+.deck-funnel__figures {
+  margin: 0;
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.deck-funnel__description {
+  margin: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-funnel__bar {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .deck-funnel__bar {
+    background-color: Highlight;
+  }
+
+  .deck-funnel__track {
+    border: 1px solid CanvasText;
+  }
+}

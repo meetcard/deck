@@ -1,0 +1,154 @@
+---
+/**
+ * The box a story renders in.
+ *
+ * Two rules do the real work here, and both exist because these are whole
+ * components and whole screens rather than snippets:
+ *
+ *  - **A capped height with `overflow: auto`.** Deck uses no
+ *    `position: fixed` anywhere — AppBar, BottomNav and SettingsNav are
+ *    `sticky`, and Sheet pins with `margin-inline-start: auto` (see the note in
+ *    Sheet.css). A scrolling box is therefore a correct containing block for
+ *    all of them: sticky headers stick to the frame, as they would to a
+ *    viewport. It also contains the only two viewport-unit rules in the
+ *    codebase — `min-height: 100dvh` in AuthShell.css and `block-size: 100dvh`
+ *    in Sheet.css — which would otherwise size themselves against the browser
+ *    window and blow the page open.
+ *
+ *    The cap is a `max-height`, not a `height`: a Button in a 760px box is
+ *    mostly empty box. `overflow` is what establishes the scroll container, so
+ *    capping rather than fixing keeps every containment property above while
+ *    letting a small story take only the room it needs.
+ *
+ *  - **A settable container width.** The story renders at the chosen width
+ *    rather than the page's, which shows how it wraps, reflows and sizes
+ *    itself in a narrow column.
+ *
+ * What this deliberately does NOT do is stand in for a viewport. Deck's
+ * responsive rules are `@media` queries, and those answer to the browser
+ * window, not to an element — so narrowing this box will not flip AppShell
+ * from its side rail to its bottom bar. Storybook's viewport addon resizes its
+ * whole preview iframe, which is why it can. That is what the "Open in
+ * Storybook" link at the foot of each page is for.
+ *
+ * The device widths come from `.storybook/annotations.tsx`. The breakpoint edge
+ * pairs documented there are left out on purpose: their entire job is to
+ * straddle a media query, and a media query is the one thing this control
+ * cannot move.
+ */
+import annotations from '../../../.storybook/annotations'
+
+interface Props {
+  /** Story display name, shown on the frame's bar. */
+  name: string
+  /** Tallest the stage may grow before it scrolls. Screens need more than a Button. */
+  maxHeight?: string
+  id?: string
+}
+
+const { name, maxHeight = '420px', id } = Astro.props
+
+const viewports = annotations.parameters?.viewport?.options ?? {}
+const widths = Object.entries(viewports).map(([key, viewport]) => ({
+  key,
+  label: (viewport as { name: string }).name,
+  width: (viewport as { styles: { width: string } }).styles.width,
+}))
+
+const devices = widths.filter((w) => !w.label.startsWith('Edge'))
+---
+
+<figure class="preview" id={id}>
+  <figcaption class="preview__bar">
+    <span class="preview__name">{name}</span>
+    <label class="preview__control">
+      <span class="deck-visually-hidden">Container width for {name}</span>
+      <select class="preview__width">
+        <option value="">Full width</option>
+        {devices.map((w) => <option value={w.width}>{w.label}</option>)}
+      </select>
+    </label>
+  </figcaption>
+
+  <div class="preview__stage" style={`--preview-max-height: ${maxHeight}`}>
+    <div class="preview__viewport">
+      <slot />
+    </div>
+  </div>
+</figure>
+
+<script>
+  // One listener for every frame on the page. Setting a custom property is
+  // enough — the stage's own CSS does the rest.
+  document.addEventListener('change', (event) => {
+    const select = event.target
+    if (!(select instanceof HTMLSelectElement)) return
+    if (!select.classList.contains('preview__width')) return
+
+    const stage = select.closest('.preview')?.querySelector('.preview__stage')
+    if (!(stage instanceof HTMLElement)) return
+
+    stage.style.setProperty('--preview-width', select.value || '100%')
+    stage.dataset.constrained = select.value ? 'true' : 'false'
+  })
+</script>
+
+<style>
+  .preview {
+    margin: 0;
+    border: 1px solid var(--deck-color-border-default);
+    border-radius: var(--deck-radius-lg, 12px);
+    overflow: hidden;
+    background: var(--deck-color-background-default);
+  }
+
+  .preview__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--deck-space-12);
+    padding: var(--deck-space-8) var(--deck-space-12);
+    border-bottom: 1px solid var(--deck-color-border-default);
+    background: var(--deck-color-background-subtle);
+  }
+
+  .preview__name {
+    font-size: var(--deck-font-size-body-sm);
+    font-weight: 500;
+    color: var(--deck-color-text-default);
+  }
+
+  .preview__width {
+    font: inherit;
+    font-size: var(--deck-font-size-body-sm);
+    color: var(--deck-color-text-muted);
+    background: var(--deck-color-background-default);
+    border: 1px solid var(--deck-color-border-default);
+    border-radius: var(--deck-radius-sm, 6px);
+    padding: 2px var(--deck-space-8);
+  }
+
+  /*
+   * The containing block. Height is fixed and overflow scrolls, so sticky
+   * elements stick here and `100dvh` sections scroll here instead of against
+   * the browser window.
+   */
+  .preview__stage {
+    min-height: 120px;
+    max-height: var(--preview-max-height);
+    overflow: auto;
+    /* A stage that scrolls its own content should not also drag the page. */
+    overscroll-behavior: contain;
+  }
+
+  .preview__viewport {
+    width: var(--preview-width, 100%);
+    min-height: 100%;
+    margin-inline: auto;
+  }
+
+  /* Show where the chosen viewport ends once it is narrower than the stage. */
+  .preview__stage[data-constrained='true'] .preview__viewport {
+    border-inline: 1px dashed var(--deck-color-border-default);
+  }
+</style>

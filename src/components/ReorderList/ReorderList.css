@@ -1,0 +1,68 @@
+.deck-reorder-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-reorder-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-8);
+  padding: var(--deck-space-8);
+  background-color: var(--deck-color-background-subtle);
+  border: 1px solid var(--deck-color-border-default);
+  border-radius: var(--deck-radius-xl);
+}
+
+/* Lifted: the row you are holding, still in place so the list does not jump
+   under the cursor before anything has been decided. */
+.deck-reorder-list__item--dragging {
+  opacity: 0.6;
+  border-color: var(--deck-color-border-brand);
+}
+
+.deck-reorder-list__handle {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  inline-size: var(--deck-space-24);
+  block-size: var(--deck-space-24);
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+  border-radius: var(--deck-radius-sm);
+  color: var(--deck-color-text-muted);
+  /* Says "pick me up" on the way in, and "you have it" while you do. */
+  cursor: grab;
+}
+
+.deck-reorder-list__handle:active {
+  cursor: grabbing;
+}
+
+.deck-reorder-list__handle:hover {
+  color: var(--deck-color-text-default);
+}
+
+.deck-reorder-list__handle:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-reorder-list__handle > svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.deck-reorder-list__content {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-8);
+  min-inline-size: 0;
+}

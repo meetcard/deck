@@ -1,0 +1,123 @@
+.deck-image-upload {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--deck-space-16);
+  font-family: var(--deck-font-sans);
+}
+
+.deck-image-upload__preview {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: var(--deck-color-background-subtle);
+  border: 1px solid var(--deck-color-border-default);
+}
+
+/* The preview wears the crop the image will actually ship with. A square
+   thumbnail of something that renders as a wide banner tells you nothing
+   about what you just uploaded. */
+.deck-image-upload--circle .deck-image-upload__preview {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--deck-radius-full);
+}
+
+.deck-image-upload--square .deck-image-upload__preview {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--deck-radius-md);
+}
+
+.deck-image-upload--cover .deck-image-upload__preview {
+  width: 128px;
+  /* 4:3, the ratio the company cover is cropped to. */
+  height: 96px;
+  border-radius: var(--deck-radius-md);
+}
+
+.deck-image-upload__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.deck-image-upload__placeholder {
+  display: inline-flex;
+  color: var(--deck-color-text-muted);
+}
+
+.deck-image-upload__placeholder > svg {
+  width: 22px;
+  height: 22px;
+}
+
+.deck-image-upload__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--deck-space-4);
+  min-width: 0;
+}
+
+.deck-image-upload__label {
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+}
+
+.deck-image-upload__description {
+  margin: 0;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.deck-image-upload__filename {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--deck-font-mono);
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-default);
+}
+
+.deck-image-upload__actions {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-8);
+  margin-top: var(--deck-space-4);
+}
+
+/* The input stays in the layout and keeps its size, so it can still take
+   focus and show a focus ring — it is only made invisible. `display: none`
+   would take it out of the tab order and break keyboard operation. */
+.deck-image-upload__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Focus lands on the hidden input, so the ring has to be drawn on the label
+   that stands in for it. */
+.deck-image-upload__input:focus-visible + .deck-image-upload__trigger {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: var(--deck-focus-ring-offset);
+}
+
+.deck-image-upload__trigger {
+  cursor: pointer;
+}
+
+.deck-image-upload--disabled .deck-image-upload__trigger {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.5;
+}

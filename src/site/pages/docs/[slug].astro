@@ -1,0 +1,119 @@
+---
+/**
+ * The three written pages: /docs/introduction/, /foundations/, /design-principles/
+ *
+ * These render `src/docs/*.mdx` directly — the same files Storybook shows — so
+ * the text has one home. They open with `<Meta title="…" />`, which Storybook
+ * uses to place them in its sidebar; here that import is aliased to a no-op
+ * (see astro.config.mjs), so the tag renders nothing and the prose renders as
+ * written.
+ */
+import CatalogLayout from '../../layouts/CatalogLayout.astro'
+import { docPages } from '../../lib/catalog'
+
+// Eager on purpose: three small files, and every one of them is a route.
+const pages = import.meta.glob<{ default: astroHTML.JSX.Element }>('/src/docs/*.mdx', {
+  eager: true,
+})
+
+export function getStaticPaths() {
+  return docPages.map((page) => ({ params: page.params, props: { page } }))
+}
+
+const { page } = Astro.props
+const entry = pages[page.path]
+
+if (!entry) {
+  throw new Error(
+    `${page.title} is indexed at ${page.path}, but no MDX file matched that ` +
+      `path. The docs manifest and src/docs/ have gone out of step.`,
+  )
+}
+
+const Content = entry.default
+---
+
+<CatalogLayout
+  title={page.name}
+  current={page.href}
+  storybookHref={page.storybookHref}
+>
+  <article class="prose">
+    <Content />
+  </article>
+</CatalogLayout>
+
+<style>
+  .prose {
+    max-width: 72ch;
+  }
+
+  .prose :global(h1) {
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--deck-space-16);
+  }
+
+  .prose :global(h2) {
+    font-size: var(--deck-font-size-body-lg);
+    margin: var(--deck-space-48) 0 var(--deck-space-12);
+    padding-bottom: var(--deck-space-8);
+    border-bottom: 1px solid var(--deck-color-border-default);
+  }
+
+  .prose :global(h3) {
+    font-size: var(--deck-font-size-body-md);
+    margin: var(--deck-space-32) 0 var(--deck-space-8);
+  }
+
+  .prose :global(p),
+  .prose :global(li) {
+    line-height: 1.65;
+    color: var(--deck-color-text-muted);
+  }
+
+  .prose :global(a) {
+    color: var(--deck-color-text-brand);
+  }
+
+  .prose :global(code) {
+    font-family: var(--deck-font-mono);
+    font-size: 0.9em;
+    padding: 1px 4px;
+    border-radius: 4px;
+    background: var(--deck-color-background-subtle);
+  }
+
+  .prose :global(pre) {
+    padding: var(--deck-space-12) var(--deck-space-16);
+    border-radius: var(--deck-radius-md, 8px);
+    background: var(--deck-color-background-subtle);
+    overflow-x: auto;
+  }
+
+  .prose :global(pre code) {
+    padding: 0;
+    background: none;
+  }
+
+  .prose :global(blockquote) {
+    margin-inline: 0;
+    padding-inline-start: var(--deck-space-16);
+    border-inline-start: 3px solid var(--deck-color-border-brand);
+    color: var(--deck-color-text-muted);
+  }
+
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--deck-font-size-body-sm);
+  }
+
+  .prose :global(th),
+  .prose :global(td) {
+    text-align: start;
+    padding: var(--deck-space-8);
+    border-bottom: 1px solid var(--deck-color-border-default);
+  }
+</style>

@@ -73,6 +73,31 @@
   color: var(--deck-color-solid-on);
 }
 
+/**
+ * Small-caps field labels, opt-in.
+ *
+ * Apply to a container and every `Field` label inside it — `Input`,
+ * `Textarea`, `Select` and anything else built on it — renders as an
+ * eyebrow rather than a sentence. It is for dense settings forms, where a
+ * column of forty labels reads better as a quiet grid of markers than as
+ * forty short sentences competing with the values beside them.
+ *
+ * A class rather than a prop because it is a decision about a *page*, not
+ * about any one field, and threading it through every control on that page
+ * would be forty copies of one choice.
+ *
+ * Case lives here rather than in the label text: a fully capitalised string
+ * in the DOM is one a screen reader may spell out letter by letter, and it
+ * cannot be undone by whatever renders it next.
+ */
+.deck-field-caps .deck-field__label {
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+  color: var(--deck-color-text-muted);
+}
+
 /* Shared focus treatment for every interactive Deck component. */
 .deck-focus-ring:focus-visible {
   outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);

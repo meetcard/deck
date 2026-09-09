@@ -98,6 +98,23 @@
   --deck-color-solid-error: var(--deck-primitive-brick-deep);
   --deck-color-solid-on: var(--deck-primitive-paper);
 
+  /**
+   * Cover art.
+   *
+   * A photograph is not a palette. A cover behind a scrim is dark in both
+   * schemes — the scrim is what makes the text readable, not the page — so
+   * unlike every other pair here these two are deliberately NOT re-declared
+   * in the dark blocks below. Flipping the on-color with the scheme would
+   * put near-black type on a near-black image.
+   *
+   * The scrim is the ink a gradient is mixed from; a component composes its
+   * own stops out of it. Text over it uses `cover-on`, which is the same
+   * `paper` the light-mode solid fills use and clears 4.5:1 against the
+   * scrim at every stop a component is allowed to put text on.
+   */
+  --deck-color-cover-scrim: var(--deck-primitive-ink);
+  --deck-color-cover-on: var(--deck-primitive-paper);
+
   /* Elevation tint — shadows are ink-based in light mode. */
   --deck-shadow-color: 26 26 26;
 }

@@ -1,0 +1,273 @@
+---
+/**
+ * The body of a component or screen page.
+ *
+ * Both route shapes render the same article — the only differences are how much
+ * room a preview gets and whether there is a props table to show — so they share
+ * this rather than diverging by copy-paste.
+ */
+import PreviewFrame from './PreviewFrame.astro'
+import StoryCanvas from './StoryCanvas.tsx'
+import { paragraphs, inline } from '../lib/prose'
+import type { ShowcasePage } from '../lib/catalog'
+
+interface Props {
+  page: ShowcasePage
+  /** Screens need a taller stage than a Badge does. */
+  previewMaxHeight?: string
+}
+
+const { page, previewMaxHeight = '420px' } = Astro.props
+---
+
+<article>
+  <header class="head">
+    <p class="head__crumbs">{page.title.split('/').slice(0, -1).join(' / ')}</p>
+    <h1 class="head__name">{page.name}</h1>
+    {
+      page.tags.length > 0 && (
+        <ul class="head__tags">
+          {page.tags.map((tag) => <li class="tag">{tag}</li>)}
+        </ul>
+      )
+    }
+    <div class="head__prose" set:html={paragraphs(page.description)} />
+  </header>
+
+  {
+    page.importLine ? (
+      <pre class="code code--import"><code>{page.importLine}</code></pre>
+    ) : (
+      <p class="note">
+        Not exported from <code>@meetcard/deck</code> — this is a composed screen,
+        built from the components below rather than shipped as one.
+      </p>
+    )
+  }
+
+  {
+    page.examples.length > 0 && (
+      <section class="section">
+        <h2>Example</h2>
+        {page.examples.map((example) => (
+          <pre class="code"><code>{example}</code></pre>
+        ))}
+      </section>
+    )
+  }
+
+  <section class="section">
+    <h2>Stories</h2>
+    <p class="note note--stories">
+      Every preview below is the real component, rendered in this page from the
+      same story Storybook runs. The width control resizes each preview's
+      container; CSS media queries still follow the browser window, so
+      breakpoint behaviour is worth checking in Storybook.
+    </p>
+    {
+      page.stories.map((story) => (
+        <div class="story" id={story.anchor}>
+          {story.description && (
+            <div class="story__prose" set:html={paragraphs(story.description)} />
+          )}
+          <PreviewFrame name={story.name} maxHeight={previewMaxHeight}>
+            <StoryCanvas
+              client:only="react"
+              storiesPath={page.storiesPath}
+              storyId={story.id}
+            />
+          </PreviewFrame>
+          {story.snippet && (
+            <details class="story__source">
+              <summary>Source</summary>
+              <pre class="code"><code>{story.snippet}</code></pre>
+            </details>
+          )}
+        </div>
+      ))
+    }
+  </section>
+
+  {
+    page.props.length > 0 && (
+      <section class="section">
+        <h2>Props</h2>
+        <div class="table-scroll">
+          <table class="props">
+            <thead>
+              <tr>
+                <th>Prop</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {page.props.map((prop) => (
+                <tr>
+                  <td>
+                    <code>{prop.name}</code>
+                    {prop.required && <span class="props__required">required</span>}
+                  </td>
+                  <td><code class="props__type">{prop.type}</code></td>
+                  <td>{prop.defaultValue ? <code>{prop.defaultValue}</code> : '—'}</td>
+                  <td set:html={prop.description ? inline(prop.description) : '—'} />
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {page.composes.length > 0 && (
+          <p class="note">
+            Also accepts everything from{' '}
+            {page.composes.map((name, at) => (
+              <>
+                {at > 0 && ', '}
+                <code>{name}</code>
+              </>
+            ))}, so <code>id</code>, <code>data-*</code> and event handlers pass
+            straight through.
+          </p>
+        )}
+      </section>
+    )
+  }
+</article>
+
+<style>
+  .head__crumbs {
+    margin: 0;
+    font-size: var(--deck-font-size-body-sm);
+    color: var(--deck-color-text-muted);
+  }
+
+  .head__name {
+    margin: var(--deck-space-4) 0 var(--deck-space-12);
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .head__tags {
+    display: flex;
+    gap: var(--deck-space-8);
+    list-style: none;
+    margin: 0 0 var(--deck-space-16);
+    padding: 0;
+  }
+
+  .tag {
+    font-size: 12px;
+    padding: 2px var(--deck-space-8);
+    border-radius: 999px;
+    background: var(--deck-color-background-subtle);
+    color: var(--deck-color-text-muted);
+  }
+
+  .head__prose :global(p) {
+    margin: 0 0 var(--deck-space-12);
+    max-width: 68ch;
+    color: var(--deck-color-text-muted);
+    font-size: var(--deck-font-size-body-lg);
+    line-height: 1.6;
+  }
+
+  .section {
+    margin-top: var(--deck-space-48);
+  }
+
+  .section h2 {
+    font-size: var(--deck-font-size-body-lg);
+    margin: 0 0 var(--deck-space-16);
+    padding-bottom: var(--deck-space-8);
+    border-bottom: 1px solid var(--deck-color-border-default);
+  }
+
+  .code {
+    margin: 0 0 var(--deck-space-16);
+    padding: var(--deck-space-12) var(--deck-space-16);
+    border-radius: var(--deck-radius-md, 8px);
+    background: var(--deck-color-background-subtle);
+    font-family: var(--deck-font-mono);
+    font-size: var(--deck-font-size-body-sm);
+    /* Long snippets scroll inside the block; the page never scrolls sideways. */
+    overflow-x: auto;
+  }
+
+  .code--import {
+    border: 1px solid var(--deck-color-border-default);
+  }
+
+  .story + .story {
+    margin-top: var(--deck-space-32);
+  }
+
+  .story__prose :global(p) {
+    margin: 0 0 var(--deck-space-8);
+    max-width: 68ch;
+    color: var(--deck-color-text-muted);
+    font-size: var(--deck-font-size-body-sm);
+  }
+
+  .story__source {
+    margin-top: var(--deck-space-8);
+  }
+
+  .story__source summary {
+    cursor: pointer;
+    font-size: var(--deck-font-size-body-sm);
+    color: var(--deck-color-text-muted);
+    margin-bottom: var(--deck-space-8);
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .props {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--deck-font-size-body-sm);
+    text-align: start;
+  }
+
+  .props th,
+  .props td {
+    text-align: start;
+    vertical-align: top;
+    padding: var(--deck-space-8) var(--deck-space-12);
+    border-bottom: 1px solid var(--deck-color-border-default);
+  }
+
+  .props th {
+    color: var(--deck-color-text-muted);
+    font-weight: 500;
+  }
+
+  .props__type {
+    color: var(--deck-color-text-brand);
+    word-break: break-word;
+  }
+
+  .props__required {
+    display: inline-block;
+    margin-inline-start: var(--deck-space-8);
+    font-size: 11px;
+    color: var(--deck-color-text-muted);
+  }
+
+  .note--stories {
+    margin-top: calc(var(--deck-space-16) * -1);
+    margin-bottom: var(--deck-space-24);
+  }
+
+  .note {
+    max-width: 68ch;
+    font-size: var(--deck-font-size-body-sm);
+    color: var(--deck-color-text-muted);
+  }
+
+  code {
+    font-family: var(--deck-font-mono);
+  }
+</style>

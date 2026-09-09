@@ -1,7 +1,24 @@
 import { useId, useState } from 'react'
 import type { CSSProperties, HTMLAttributes } from 'react'
+import { mediaQuery } from '../../foundations/tokens'
 import { cx } from '../../lib/cx'
+import { useMediaQuery } from '../../lib/useMediaQuery'
 import './EventTimeline.css'
+
+/**
+ * Which way the line runs.
+ *
+ * `horizontal` is time left to right, the labels under their own dot — the
+ * shape a line wants when it has a page's width to run across.
+ *
+ * `vertical` is the same line stood on end, each event a row: name, date,
+ * place. It is what fits a rail beside the thing the line is indexing, where
+ * there is height to spare and no width at all.
+ *
+ * `responsive` is horizontal until `lg` (1024px) and vertical above it —
+ * the width at which a page has room to put a rail beside its content.
+ */
+export type EventTimelineOrientation = 'horizontal' | 'vertical' | 'responsive'
 
 export interface TimelineEvent {
   /** Stable key, typically the event slug. Also the value passed to `onValueChange`. */
@@ -35,6 +52,11 @@ export interface EventTimelineProps
    */
   today?: string
   locale?: string
+  /**
+   * Which way the line runs. Default `horizontal`. Pass `responsive` on a
+   * page that puts the line in a rail once it has the width for one.
+   */
+  orientation?: EventTimelineOrientation
 }
 
 const DATE_FORMAT: Intl.DateTimeFormatOptions = {
@@ -106,8 +128,15 @@ const GlobeIcon = () => (
  * labels stay in the accessibility tree either way, since they are what give
  * each dot its name.
  *
+ * `orientation` stands the line on end. A rail is the same events in the
+ * same order, in the shape a narrow column beside the content can hold — one
+ * row per event, with room for the date and the place on lines of their own.
+ * It is a decision about the space, so the caller makes it; `responsive`
+ * takes the line to a rail at `lg`, where a page has the width for one.
+ *
  * @example
  * <EventTimeline
+ *   orientation="responsive"
  *   value={eventId}
  *   onValueChange={setEventId}
  *   events={[
@@ -124,6 +153,7 @@ export function EventTimeline({
   label = 'Event timeline',
   today = todayISO(),
   locale,
+  orientation = 'horizontal',
   className,
   style,
   ...props
@@ -132,6 +162,27 @@ export function EventTimeline({
   const [uncontrolledValue, setUncontrolledValue] = useState(
     defaultValue ?? events[0]?.id,
   )
+
+  /*
+   * `responsive` is resolved here rather than left to a media query because
+   * horizontal and vertical share almost no rules — a line and a rail are
+   * two drawings, not one drawing with a different `flex-direction` — and
+   * writing each of them twice, once for the mode and once for the
+   * breakpoint, is how the two quietly drift apart. `CardPile` resolves its
+   * own `responsive` in JS for a related reason.
+   *
+   * Anything that cannot answer — jsdom, a server render, a browser without
+   * `matchMedia` — answers "no" and gets the horizontal line, which is the
+   * mode that works at any width. A rail dropped into a full-width page is
+   * the more surprising thing to get wrong.
+   */
+  const isWide = useMediaQuery(mediaQuery('lg'))
+  const resolvedOrientation =
+    orientation === 'responsive'
+      ? isWide
+        ? 'vertical'
+        : 'horizontal'
+      : orientation
 
   const isControlled = controlledValue !== undefined
   const selectedId = isControlled ? controlledValue : uncontrolledValue
@@ -144,7 +195,14 @@ export function EventTimeline({
 
   return (
     <fieldset
-      className={cx('deck-event-timeline', className)}
+      className={cx(
+        'deck-event-timeline',
+        `deck-event-timeline--${resolvedOrientation}`,
+        className,
+      )}
+      /* Resolved — never `responsive` — so anything reading it downstream,
+         a test included, only has one question to ask. */
+      data-orientation={resolvedOrientation}
       /* The count drives the track's columns: one per event, so the dots
          land at even intervals and the labels sit under their own dot.
          Merged with the caller's `style` rather than spread over it, so
@@ -205,7 +263,12 @@ export function EventTimeline({
                   </time>
                   {event.location ? (
                     <>
-                      {' · '}
+                      {/* A separator, not punctuation: the rail puts the
+                          place on a line of its own, where a leading middle
+                          dot is a mark with nothing on either side of it. */}
+                      <span className="deck-event-timeline__separator">
+                        {' · '}
+                      </span>
                       <span className="deck-event-timeline__place">
                         <GlobeIcon />
                         {event.location}

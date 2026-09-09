@@ -1,0 +1,230 @@
+.deck-card-index {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--deck-font-sans);
+
+  /* One face's worth of column in the strip: wide enough for a 56px avatar
+     with air either side, and for both halves of an ordinary name on two
+     lines under it. Named because the name's two-line height is measured
+     against it — a literal 4.5rem in one place and a line clamp in the other
+     is a pair of numbers that has to be kept in step by hand. */
+  --deck-card-index-cell: 4.5rem;
+}
+
+/*
+ * The row is the `li`, not the button inside it.
+ *
+ * A row can carry a second control — an edit button beside the one that
+ * selects — and a button inside a button is not a thing a browser will
+ * render. So the surface, the border and the radius live out here, and the
+ * button is a transparent target filling what is left.
+ */
+.deck-card-index__item {
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+  background-color: transparent;
+  border: 1px solid transparent;
+  transition:
+    background-color var(--deck-duration-fast) var(--deck-ease-standard),
+    border-color var(--deck-duration-fast) var(--deck-ease-standard);
+}
+
+.deck-card-index__button {
+  display: flex;
+  box-sizing: border-box;
+  min-inline-size: 0;
+  cursor: pointer;
+  font-family: inherit;
+  background-color: transparent;
+  border: 0;
+  color: inherit;
+}
+
+/* Inset, because the ring is drawn inside a row that already has an edge of
+   its own — an outset ring on the button would sit on top of the border. */
+.deck-card-index__button:focus-visible {
+  outline: var(--deck-focus-ring-width) solid var(--deck-color-border-focus);
+  outline-offset: calc(var(--deck-focus-ring-offset) * -1);
+}
+
+.deck-card-index__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--deck-space-2);
+  min-inline-size: 0;
+}
+
+.deck-card-index__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-8);
+  min-inline-size: 0;
+}
+
+.deck-card-index__name {
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  font-weight: var(--deck-font-weight-semibold);
+  color: var(--deck-color-text-default);
+  /* One line, cut where it runs out of room. A name that wraps turns a row
+     of even cells into a ragged one, and the full name is the button's
+     accessible name either way. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deck-card-index__detail {
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  color: var(--deck-color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The card on top of the pile, marked in the list that leads back to it.
+   Tinted with the same tint the `EventTimeline` rail uses for the event you
+   are standing on — one page, one way of saying "here". */
+.deck-card-index__item--current {
+  background-color: var(--deck-color-background-brand-subtle);
+}
+
+.deck-card-index__item--current .deck-card-index__name {
+  color: var(--deck-color-text-brand);
+}
+
+/* Said in a word as well as in a tint, so "which one" is never carried by
+   colour alone. */
+.deck-card-index__current {
+  flex-shrink: 0;
+  font-size: var(--deck-font-size-label-xs);
+  line-height: var(--deck-line-height-label-xs);
+  font-weight: var(--deck-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--deck-tracking-caps);
+  color: var(--deck-color-text-brand);
+}
+
+/* ---- Rows -------------------------------------------------------------- */
+
+.deck-card-index--rows {
+  flex-direction: column;
+  gap: var(--deck-space-8);
+}
+
+.deck-card-index--rows .deck-card-index__item {
+  inline-size: 100%;
+  padding-inline-end: var(--deck-space-6);
+  background-color: var(--deck-color-background-elevated);
+  border-color: var(--deck-color-border-default);
+  border-radius: var(--deck-radius-xl);
+}
+
+/* Hovering the target lifts the whole row, since the row is what the target
+   covers. */
+.deck-card-index--rows
+  .deck-card-index__item:has(.deck-card-index__button:hover) {
+  background-color: var(--deck-color-background-subtle);
+}
+
+.deck-card-index--rows .deck-card-index__item--current,
+.deck-card-index--rows
+  .deck-card-index__item--current:has(.deck-card-index__button:hover) {
+  background-color: var(--deck-color-background-brand-subtle);
+  border-color: var(--deck-color-border-brand);
+}
+
+.deck-card-index--rows .deck-card-index__button {
+  flex: 1;
+  align-items: center;
+  gap: var(--deck-space-12);
+  padding: var(--deck-space-12);
+  text-align: start;
+  border-radius: var(--deck-radius-xl);
+}
+
+.deck-card-index--rows .deck-card-index__text {
+  flex: 1;
+}
+
+.deck-card-index__action {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+/* ---- Strip ------------------------------------------------------------- */
+
+/* Faces in a row, scrolled sideways. The strip runs past the edge of the
+   screen on purpose — a phone has room for four faces and there is nothing
+   to be gained by wrapping the fifth onto a line of its own. */
+.deck-card-index--strip {
+  flex-direction: row;
+  gap: var(--deck-space-8);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  /* Room for the focus ring, which would otherwise be clipped by the
+     scroll container it is drawn inside. */
+  padding: var(--deck-space-4);
+  margin: calc(var(--deck-space-4) * -1);
+}
+
+.deck-card-index--strip .deck-card-index__item {
+  flex: 0 0 auto;
+  inline-size: var(--deck-card-index-cell);
+  border-radius: var(--deck-radius-lg);
+  scroll-snap-align: start;
+}
+
+.deck-card-index--strip
+  .deck-card-index__item:has(.deck-card-index__button:hover) {
+  background-color: var(--deck-color-background-subtle);
+}
+
+.deck-card-index--strip .deck-card-index__item--current,
+.deck-card-index--strip
+  .deck-card-index__item--current:has(.deck-card-index__button:hover) {
+  background-color: var(--deck-color-background-brand-subtle);
+}
+
+.deck-card-index--strip .deck-card-index__button {
+  inline-size: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--deck-space-6);
+  padding: var(--deck-space-6) var(--deck-space-4);
+  text-align: center;
+  border-radius: var(--deck-radius-lg);
+}
+
+.deck-card-index--strip .deck-card-index__text {
+  inline-size: 100%;
+}
+
+.deck-card-index--strip .deck-card-index__heading {
+  justify-content: center;
+}
+
+/* Two lines rather than one, and wrapped rather than cut. A 4.5rem cell
+   truncates "Grace Okafor" to "Grace O…" on one line, which is neither the
+   name nor a shortening of it anyone writes; over two lines the same cell
+   holds both halves whole. The height is fixed at two lines so a one-word
+   name leaves its cell the same size as a two-word one.
+
+   Shortening it to "Grace O." instead would read better and cost more than
+   it looks: the button is named for the whole person, and a visible label
+   that isn't a substring of that name is what WCAG 2.5.3 is about. */
+.deck-card-index--strip .deck-card-index__name {
+  font-size: var(--deck-font-size-body-xs);
+  line-height: var(--deck-line-height-body-xs);
+  min-block-size: calc(2 * var(--deck-line-height-body-xs));
+  white-space: normal;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}

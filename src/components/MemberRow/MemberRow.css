@@ -1,0 +1,69 @@
+.deck-member-row {
+  display: flex;
+  align-items: center;
+  gap: var(--deck-space-12);
+  padding: var(--deck-space-12) 0;
+  font-family: var(--deck-font-sans);
+}
+
+.deck-member-row + .deck-member-row {
+  border-top: 1px solid var(--deck-color-border-default);
+}
+
+.deck-member-row__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--deck-space-2);
+  min-width: 0;
+}
+
+.deck-member-row__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--deck-space-6);
+}
+
+.deck-member-row__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--deck-font-size-label-md);
+  line-height: var(--deck-line-height-label-md);
+  font-weight: var(--deck-font-weight-medium);
+  color: var(--deck-color-text-default);
+}
+
+.deck-member-row__email {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--deck-font-size-body-sm);
+  line-height: var(--deck-line-height-body-sm);
+  color: var(--deck-color-text-muted);
+}
+
+.deck-member-row__role {
+  flex-shrink: 0;
+  min-width: 140px;
+}
+
+.deck-member-row__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--deck-space-4);
+}
+
+/* On a phone the role control drops to its own line at full width rather
+   than squeezing the name into a couple of characters. */
+@media (max-width: 40rem) {
+  .deck-member-row {
+    flex-wrap: wrap;
+  }
+
+  .deck-member-row__role {
+    width: 100%;
+    min-width: 0;
+    padding-left: calc(40px + var(--deck-space-12));
+  }
+}

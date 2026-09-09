@@ -148,3 +148,55 @@ export const Mobile: Story = {
     await expect(current).toHaveTextContent('RevOps Summit')
   },
 }
+
+/**
+ * The line stood on end, for a rail beside the thing it indexes. Each event
+ * gets a row with room for its date and place on lines of their own, and the
+ * selected one is a surface rather than a slightly bigger dot — in a column
+ * of near-identical marks, the block of colour is what you find from across
+ * the page.
+ */
+export const Vertical: Story = {
+  args: { orientation: 'vertical', label: 'Where we met' },
+  render: (args) => (
+    <div style={{ maxWidth: 272 }}>
+      <EventTimeline {...args} />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const timeline = canvasElement.querySelector('.deck-event-timeline')!
+    await expect(timeline).toHaveAttribute('data-orientation', 'vertical')
+
+    // The rail has the room the line didn't: every label is on screen, at
+    // any width — this mode is the caller's choice, not the viewport's.
+    await expect(canvas.getByText('Where we met')).toBeVisible()
+    await expect(canvas.getByText('SaaStr Annual')).toBeVisible()
+    await expect(canvas.getByText('San Francisco, CA')).toBeVisible()
+
+    // Stacked, not spread: each event is a row under the last.
+    const track = canvasElement.querySelector<HTMLElement>(
+      '.deck-event-timeline__track',
+    )!
+    await expect(getComputedStyle(track).flexDirection).toBe('column')
+  },
+}
+
+/**
+ * `responsive` — the line until `lg`, the rail above it. The page decides it
+ * has the width for a rail; the timeline decides what a rail looks like.
+ *
+ * Pinned to a narrow viewport here, so what renders is the line: the rail is
+ * the same component past 1024px.
+ */
+export const Responsive: Story = {
+  args: { orientation: 'responsive', label: 'Where we met' },
+  globals: { viewport: { value: 'mobileS' } },
+  parameters: { chromatic: { viewports: [375] } },
+  render: (args) => <EventTimeline {...args} />,
+  play: async ({ canvasElement }) => {
+    const timeline = canvasElement.querySelector('.deck-event-timeline')!
+    // Resolved before it reaches the DOM — never `responsive`, so anything
+    // reading it downstream has one question to ask rather than two.
+    await expect(timeline).toHaveAttribute('data-orientation', 'horizontal')
+  },
+}

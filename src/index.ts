@@ -126,6 +126,15 @@ export type {
 export { SideNav } from './components/SideNav'
 export type { SideNavProps, SideNavItemProps } from './components/SideNav'
 
+export { SettingRow } from './components/SettingRow'
+export type { SettingRowProps } from './components/SettingRow'
+
+export { ReorderList } from './components/ReorderList'
+export type {
+  ReorderListProps,
+  ReorderListItem,
+} from './components/ReorderList'
+
 export { SettingsNav } from './components/SettingsNav'
 export type {
   SettingsNavProps,
@@ -170,8 +179,23 @@ export type { BookingCelebrationProps } from './components/BookingCelebration'
 export { StatTile } from './components/StatTile'
 export type { StatTileProps, TrendDirection } from './components/StatTile'
 
+export { PlanCard } from './components/PlanCard'
+export type { PlanCardProps } from './components/PlanCard'
+
 export { UsageMeter } from './components/UsageMeter'
 export type { UsageMeterProps } from './components/UsageMeter'
+
+export { BreakdownList } from './components/BreakdownList'
+export type {
+  BreakdownListProps,
+  BreakdownItem,
+} from './components/BreakdownList'
+
+export { Funnel } from './components/Funnel'
+export type { FunnelProps, FunnelStage } from './components/Funnel'
+
+export { TrendChart } from './components/TrendChart'
+export type { TrendChartProps, TrendPoint } from './components/TrendChart'
 
 export { Tag } from './components/Tag'
 export type { TagProps } from './components/Tag'
@@ -179,8 +203,14 @@ export type { TagProps } from './components/Tag'
 export { QRCode } from './components/QRCode'
 export type { QRCodeProps, QRCodeSize } from './components/QRCode'
 
+export { ColorField } from './components/ColorField'
+export type { ColorFieldProps } from './components/ColorField'
+
 export { CopyField } from './components/CopyField'
 export type { CopyFieldProps } from './components/CopyField'
+
+export { CodeSnippet } from './components/CodeSnippet'
+export type { CodeSnippetProps } from './components/CodeSnippet'
 
 export { Badge } from './components/Badge'
 export type {
@@ -196,6 +226,12 @@ export type {
   AvatarSize,
   AvatarShape,
 } from './components/Avatar'
+
+export { AvatarGroup } from './components/AvatarGroup'
+export type {
+  AvatarGroupProps,
+  AvatarGroupPerson,
+} from './components/AvatarGroup'
 
 /* ---- Forms ----------------------------------------------------------- */
 export { Field } from './components/Field'
@@ -223,9 +259,32 @@ export type { RadioProps, RadioGroupProps } from './components/Radio'
 export { Switch } from './components/Switch'
 export type { SwitchProps } from './components/Switch'
 
+export { ImageUpload } from './components/ImageUpload'
+export type {
+  ImageUploadProps,
+  ImageUploadShape,
+} from './components/ImageUpload'
+
+/* ---- Team & connected services ---------------------------------------- */
+export { IntegrationRow } from './components/IntegrationRow'
+export type {
+  IntegrationRowProps,
+  IntegrationStatus,
+} from './components/IntegrationRow'
+
+export { MemberRow } from './components/MemberRow'
+export type { MemberRowProps, MemberStatus } from './components/MemberRow'
+
 /* ---- MeetCard patterns ------------------------------------------------ */
 export { CardPile } from './components/CardPile'
 export type { CardPileProps, CardPileOrientation } from './components/CardPile'
+
+export { CardIndex } from './components/CardIndex'
+export type {
+  CardIndexProps,
+  CardIndexItem,
+  CardIndexLayout,
+} from './components/CardIndex'
 
 export { PersonCard } from './components/PersonCard'
 export type { PersonCardProps } from './components/PersonCard'
@@ -240,6 +299,19 @@ export { EventCard } from './components/EventCard'
 export type { EventCardProps } from './components/EventCard'
 
 /* ---- Events ------------------------------------------------------------ */
+export { EventHero } from './components/EventHero'
+export type {
+  EventHeroProps,
+  EventHeroFact,
+  EventHeroHost,
+} from './components/EventHero'
+
+export { EventSchedule } from './components/EventSchedule'
+export type {
+  EventScheduleProps,
+  EventScheduleEntry,
+} from './components/EventSchedule'
+
 export { EventCalendar } from './components/EventCalendar'
 export type {
   EventCalendarProps,
@@ -253,9 +325,17 @@ export type { RsvpControlProps, RsvpStatus, RsvpCounts } from './components/Rsvp
 export { EventMetaList } from './components/EventMetaList'
 export type { EventMetaListProps, EventMetaItem } from './components/EventMetaList'
 
+export { EventRow } from './components/EventRow'
+export type {
+  EventRowProps,
+  EventAttendance,
+  EventPeopleRelation,
+} from './components/EventRow'
+
 export { EventTimeline } from './components/EventTimeline'
 export type {
   EventTimelineProps,
+  EventTimelineOrientation,
   TimelineEvent,
 } from './components/EventTimeline'
 
