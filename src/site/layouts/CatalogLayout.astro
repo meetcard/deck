@@ -49,7 +49,35 @@ const storybookLink = (href: string) =>
     </header>
 
     <div class="shell__body">
-      <nav class="sidebar" aria-label="Catalog">
+      {/*
+        A disclosure below `lg`, a plain sidebar above it.
+
+        `open` is in the markup rather than added by the script, so the
+        no-JavaScript rendering is the one this page has always had — the
+        catalog above the content — instead of a nav nobody can reach. The
+        script below closes it where the screen is small, which is the
+        enhancement; losing it costs the improvement, not the page.
+      */}
+      <details class="catalog" open>
+        <summary class="catalog__summary">
+          <span>Browse the catalog</span>
+          <svg
+            class="catalog__chevron"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M4 6l4 4 4-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </summary>
+        <nav class="sidebar" aria-label="Catalog">
         {
           sections.map((section) => (
             <div class="sidebar__section">
@@ -76,7 +104,27 @@ const storybookLink = (href: string) =>
             </div>
           ))
         }
-      </nav>
+        </nav>
+      </details>
+
+      {/*
+        Inline and immediately after the element, so it runs during parse
+        rather than after first paint — a phone must not be shown the open
+        catalog and then have it taken away.
+      */}
+      <script is:inline>
+        ;(function () {
+          var catalog = document.querySelector('.catalog')
+          if (!catalog) return
+          // The width the layout puts the sidebar beside the content at.
+          var wide = window.matchMedia('(min-width: 1025px)')
+          var sync = function () {
+            catalog.open = wide.matches
+          }
+          sync()
+          wide.addEventListener('change', sync)
+        })()
+      </script>
 
       <main class="content" id="content">
         <slot />
@@ -246,16 +294,88 @@ const storybookLink = (href: string) =>
     margin-inline-start: var(--deck-space-4);
   }
 
+  /* ---- The catalog disclosure ------------------------------------------ */
+
+  /*
+   * From `lg` the wrapper is not there at all: `display: contents` drops its
+   * box so `.sidebar` is the grid item again, which is what `position:
+   * sticky` needs — a sticky element travels inside its parent's box, and a
+   * wrapper would have pinned it to a box the height of itself.
+   */
+  @media (min-width: 1025px) {
+    .catalog {
+      display: contents;
+    }
+
+    .catalog__summary {
+      display: none;
+    }
+  }
+
   @media (max-width: 1024px) {
     .shell__body {
       grid-template-columns: minmax(0, 1fr);
     }
 
+    .catalog {
+      border: 1px solid var(--deck-color-border-default);
+      border-radius: var(--deck-radius-lg, 12px);
+      background: var(--deck-color-background-elevated);
+    }
+
+    .catalog__summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--deck-space-8);
+      padding: var(--deck-space-12) var(--deck-space-16);
+      /* The marker is the chevron beside the label, not the UA's triangle. */
+      list-style: none;
+      cursor: pointer;
+      font-size: var(--deck-font-size-body-sm);
+      font-weight: 600;
+      color: var(--deck-color-text-default);
+    }
+
+    /* Safari draws the triangle through a pseudo-element instead. */
+    .catalog__summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .catalog__summary:focus-visible {
+      outline: var(--deck-focus-ring-width, 2px) solid
+        var(--deck-color-border-focus);
+      outline-offset: 2px;
+    }
+
+    .catalog__chevron {
+      inline-size: 16px;
+      block-size: 16px;
+      flex-shrink: 0;
+      color: var(--deck-color-text-muted);
+      transition: transform 150ms ease;
+    }
+
+    .catalog[open] .catalog__chevron {
+      transform: rotate(180deg);
+    }
+
     .sidebar {
       position: static;
-      max-height: none;
-      border-bottom: 1px solid var(--deck-color-border-default);
-      padding-bottom: var(--deck-space-16);
+      /*
+       * Open on a phone, the catalog is still seventy links. Bounded and
+       * scrolled inside itself, it cannot push the page's content off the
+       * bottom of the screen the way it did when it was the whole layout.
+       */
+      max-height: min(60dvh, 32rem);
+      overflow-y: auto;
+      padding: 0 var(--deck-space-16) var(--deck-space-16);
+    }
+  }
+
+  @media (max-width: 1024px) and (prefers-reduced-motion: reduce) {
+    .catalog__chevron {
+      transition: none;
     }
   }
 </style>
