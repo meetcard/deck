@@ -4,6 +4,7 @@ import { expect } from 'storybook/test'
 import { Card } from '../Card/Card'
 import { Stack } from '../Stack/Stack'
 import { ImageUpload } from './ImageUpload'
+import { Text } from '../Text/Text'
 
 const PHOTO =
   'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=256&h=256&fit=crop'
@@ -78,7 +79,7 @@ export const ReportsTheChosenFile: Story = {
     return (
       <Card style={{ maxWidth: 480 }}>
         <ImageUpload {...args} onFileSelect={(file) => setName(file?.name ?? null)} />
-        <p style={{ marginTop: 12, fontSize: 12 }}>Caller received: {name ?? '—'}</p>
+        <Text size="xs" style={{ marginTop: 12 }}>Caller received: {name ?? '—'}</Text>
       </Card>
     )
   },

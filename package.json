@@ -1,6 +1,6 @@
 {
   "name": "@meetcard/deck",
-  "description": "Deck is MeetCard's flagship React design system — a composable foundation of accessible, production-ready components for building card-centric experiences.",
+  "description": "Deck is MeetCard's flagship React design system \u2014 a composable foundation of accessible, production-ready components for building card-centric experiences.",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -23,7 +23,6 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite",
     "build": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json",
     "build:app": "tsc -b && vite build",
     "preview": "vite preview",

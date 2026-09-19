@@ -31,12 +31,6 @@ import type {
 const EXPECTED_INDEX_V = 5
 const EXPECTED_MANIFEST_V = 0
 
-/**
- * Stories that exist to prove the local Vite playground still boots. They are
- * not part of Deck and do not get a public page.
- */
-const EXCLUDED_TITLES = new Set(['Experience/Misc/Vite Smoke Test'])
-
 /** Root title segment → first URL segment. */
 const SECTIONS = {
   Build: 'components',
@@ -277,7 +271,7 @@ function storyEntries(stories: StoryManifest[]): StoryEntry[] {
 
 function toShowcase(component: ComponentManifest): ShowcasePage | null {
   const title = titleById.get(component.id)
-  if (!title || EXCLUDED_TITLES.has(title)) return null
+  if (!title) return null
 
   const [root, group, ...rest] = title.split('/')
   const leaf = rest.at(-1) ?? group

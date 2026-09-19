@@ -35,7 +35,6 @@ environment.
 
 | Command | What it does |
 | --- | --- |
-| `npm run dev` | Vite playground app (`src/App.tsx`) |
 | `npm run storybook` | Storybook dev server on port 6006 |
 | `npm run build` | Build the library to `dist/` (ESM + CSS + types) |
 | `npm run build-storybook` | Production Storybook build to `storybook-static/` |

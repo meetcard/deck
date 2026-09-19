@@ -2,12 +2,16 @@
  * Storybook's preview entry.
  *
  * The decorators and parameters live in `annotations.tsx`, which the docs site
- * also loads (see the header comment there). This file adds the two things the
- * site must not have: the local Vite playground's stylesheet, which
- * `Experience/Misc/Vite Smoke Test` needs, and the `autodocs` tag.
+ * also loads (see the header comment there). This file adds the two things
+ * that cannot live there: the stylesheet, and the `autodocs` tag.
+ *
+ * The stylesheet is Deck's own and nothing else — what a consuming app
+ * imports. Stories used to render against the Vite template's `index.css`,
+ * which set an 18px root font and global `h1`/`h2`/`p` rules on top, so rem
+ * lengths and bare elements looked different here than anywhere Deck ships.
  */
 import type { Preview } from '@storybook/react-vite'
-import '../src/index.css'
+import '../src/styles/deck.css'
 import annotations from './annotations'
 
 const preview: Preview = {
