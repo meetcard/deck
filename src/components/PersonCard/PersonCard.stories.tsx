@@ -235,3 +235,38 @@ export const NoteOnTheBack: Story = {
     })
   },
 }
+
+/**
+ * On a phone, on its own. A card stands up on a phone whether or not a
+ * `CardPile` is around it — before, only a pile could turn one, and a lone
+ * card stayed lying down on a screen it was too wide to read on.
+ */
+export const OnItsOwnOnAPhone: Story = {
+  args: { contactActions, footer },
+  globals: { viewport: { value: 'mobileS' } },
+  parameters: { chromatic: { viewports: [375] } },
+  play: async ({ canvasElement }) => {
+    const card = canvasElement.querySelector<HTMLElement>('.deck-person-card')!
+    await expect(card).toHaveAttribute('data-card-orientation', 'portrait')
+    const ratio = card.offsetWidth / card.offsetHeight
+    await expect(ratio).toBeGreaterThan(0.56)
+    await expect(ratio).toBeLessThan(0.58)
+  },
+}
+
+/**
+ * Pinned. `orientation` is for a space that has already committed to a
+ * shape — a landscape slot on a phone, say — and it wins over the viewport.
+ */
+export const PinnedLandscape: Story = {
+  args: { contactActions, footer, orientation: 'landscape' },
+  globals: { viewport: { value: 'mobileS' } },
+  parameters: { chromatic: { viewports: [375] } },
+  play: async ({ canvasElement }) => {
+    const card = canvasElement.querySelector<HTMLElement>('.deck-person-card')!
+    await expect(card).toHaveAttribute('data-card-orientation', 'landscape')
+    const ratio = card.offsetWidth / card.offsetHeight
+    await expect(ratio).toBeGreaterThan(1.72)
+    await expect(ratio).toBeLessThan(1.78)
+  },
+}

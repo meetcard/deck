@@ -12,8 +12,12 @@ import type {
   PointerEvent as ReactPointerEvent,
   ReactNode,
 } from 'react'
-import { mediaQuery } from '../../foundations/tokens'
 import { cx } from '../../lib/cx'
+import {
+  CardOrientationContext,
+  useCardOrientation,
+  type CardOrientation,
+} from '../../lib/cardOrientation'
 import { useMediaQuery } from '../../lib/useMediaQuery'
 import { Badge } from '../Badge/Badge'
 import { IconButton } from '../IconButton/IconButton'
@@ -27,7 +31,7 @@ import './CardPile.css'
  * screen mostly empty, and shrinking it to fit makes the type too small; on a
  * desktop the reverse is true. Same object either way, turned 90 degrees.
  */
-export type CardPileOrientation = 'landscape' | 'portrait' | 'responsive'
+export type CardPileOrientation = CardOrientation
 
 export interface CardPileProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
@@ -205,24 +209,16 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
     const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
 
     /*
-     * `responsive` is resolved here rather than in CSS because the layer
-     * offsets are inline transforms, and a media query cannot reach an
-     * inline style. One resolved value then drives both: those transforms
-     * and the `data-card-orientation` the cards lay themselves out against.
+     * Resolved in JS rather than CSS because the layer offsets are inline
+     * transforms, and a media query cannot reach an inline style. The rule
+     * itself — explicit, else container, else viewport — lives in
+     * `useCardOrientation`, which every card uses, so a pile and a lone card
+     * cannot disagree about which way up a phone holds them.
      *
-     * Asked as the negation of `sm` rather than as `sm` itself, so that
-     * every environment that cannot answer — jsdom, a server render, a
-     * browser without `matchMedia` — answers "no" and lands on landscape.
-     * Nothing that cannot report its width is a phone, and a phone-shaped
-     * pile is the more surprising thing to get wrong.
+     * The answer is then handed down as context, so the cards in the pile
+     * take the pile's shape rather than each measuring the viewport again.
      */
-    const isNarrow = useMediaQuery(`not all and ${mediaQuery('sm')}`)
-    const resolvedOrientation =
-      orientation === 'responsive'
-        ? isNarrow
-          ? 'portrait'
-          : 'landscape'
-        : orientation
+    const resolvedOrientation = useCardOrientation(orientation)
 
     const startXRef = useRef(0)
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -289,89 +285,91 @@ export const CardPile = forwardRef<HTMLDivElement, CardPileProps>(
     const hiddenCount = Math.max(count - maxVisible, 0)
 
     return (
-      <div
-        ref={ref}
-        role="group"
-        aria-roledescription="card pile"
-        aria-label={label ?? 'Card pile'}
-        /*
-         * The contract the cards lay out against: any ancestor may declare
-         * an orientation, and `PersonCard` re-lays itself beneath it. Set
-         * here as a resolved value — never `responsive` — so a card only
-         * ever has to answer one question.
-         */
-        data-card-orientation={resolvedOrientation}
-        className={cx('deck-card-pile', className)}
-        onKeyDown={handleKeyDown}
-        {...props}
-      >
-        <div className="deck-card-pile__stage">
-          {Array.from({ length: visibleCount }, (_, depth) => {
-            const itemIndex = mod(activeIndex + depth, count)
-            const isFront = depth === 0
+      <CardOrientationContext.Provider value={resolvedOrientation}>
+        <div
+          ref={ref}
+          role="group"
+          aria-roledescription="card pile"
+          aria-label={label ?? 'Card pile'}
+          /*
+           * The contract the cards lay out against: any ancestor may declare
+           * an orientation, and `PersonCard` re-lays itself beneath it. Set
+           * here as a resolved value — never `responsive` — so a card only
+           * ever has to answer one question.
+           */
+          data-card-orientation={resolvedOrientation}
+          className={cx('deck-card-pile', className)}
+          onKeyDown={handleKeyDown}
+          {...props}
+        >
+          <div className="deck-card-pile__stage">
+            {Array.from({ length: visibleCount }, (_, depth) => {
+              const itemIndex = mod(activeIndex + depth, count)
+              const isFront = depth === 0
 
-            return (
-              <div
-                key={itemIndex}
-                className={cx(
-                  'deck-card-pile__layer',
-                  isFront && 'deck-card-pile__layer--front',
-                )}
-                style={{
-                  transform: isFront
-                    ? `translateX(${dragX}px) rotate(${dragX / 24}deg)`
-                    : getLayerTransform(depth, resolvedOrientation),
-                  transition: isFront && isDragging ? 'none' : undefined,
-                  zIndex: visibleCount - depth,
-                }}
-                aria-hidden={isFront ? undefined : true}
-                inert={isFront ? undefined : true}
-                onPointerDown={isFront ? handlePointerDown : undefined}
-                onPointerMove={isFront ? handlePointerMove : undefined}
-                onPointerUp={isFront ? endDrag : undefined}
-                onPointerCancel={isFront ? endDrag : undefined}
+              return (
+                <div
+                  key={itemIndex}
+                  className={cx(
+                    'deck-card-pile__layer',
+                    isFront && 'deck-card-pile__layer--front',
+                  )}
+                  style={{
+                    transform: isFront
+                      ? `translateX(${dragX}px) rotate(${dragX / 24}deg)`
+                      : getLayerTransform(depth, resolvedOrientation),
+                    transition: isFront && isDragging ? 'none' : undefined,
+                    zIndex: visibleCount - depth,
+                  }}
+                  aria-hidden={isFront ? undefined : true}
+                  inert={isFront ? undefined : true}
+                  onPointerDown={isFront ? handlePointerDown : undefined}
+                  onPointerMove={isFront ? handlePointerMove : undefined}
+                  onPointerUp={isFront ? endDrag : undefined}
+                  onPointerCancel={isFront ? endDrag : undefined}
+                >
+                  {items[itemIndex]}
+                </div>
+              )
+            })}
+
+            {hiddenCount > 0 ? (
+              <Badge
+                tone="neutral"
+                size="sm"
+                className="deck-card-pile__badge"
               >
-                {items[itemIndex]}
-              </div>
-            )
-          })}
-
-          {hiddenCount > 0 ? (
-            <Badge
-              tone="neutral"
-              size="sm"
-              className="deck-card-pile__badge"
-            >
-              +{hiddenCount}
-            </Badge>
-          ) : null}
-        </div>
-
-        {count > 1 ? (
-          <div className="deck-card-pile__controls">
-            <IconButton
-              label="Previous card"
-              icon={<ChevronLeftIcon />}
-              size="sm"
-              variant="secondary"
-              disabled={isAnimating}
-              onClick={() => advance(-1, EXIT_DISTANCE)}
-            />
-            <IconButton
-              label="Next card"
-              icon={<ChevronRightIcon />}
-              size="sm"
-              variant="secondary"
-              disabled={isAnimating}
-              onClick={() => advance(1, -EXIT_DISTANCE)}
-            />
+                +{hiddenCount}
+              </Badge>
+            ) : null}
           </div>
-        ) : null}
 
-        <p className="deck-visually-hidden" aria-live="polite">
-          {count > 0 ? `Card ${activeIndex + 1} of ${count}` : ''}
-        </p>
-      </div>
+          {count > 1 ? (
+            <div className="deck-card-pile__controls">
+              <IconButton
+                label="Previous card"
+                icon={<ChevronLeftIcon />}
+                size="sm"
+                variant="secondary"
+                disabled={isAnimating}
+                onClick={() => advance(-1, EXIT_DISTANCE)}
+              />
+              <IconButton
+                label="Next card"
+                icon={<ChevronRightIcon />}
+                size="sm"
+                variant="secondary"
+                disabled={isAnimating}
+                onClick={() => advance(1, -EXIT_DISTANCE)}
+              />
+            </div>
+          ) : null}
+
+          <p className="deck-visually-hidden" aria-live="polite">
+            {count > 0 ? `Card ${activeIndex + 1} of ${count}` : ''}
+          </p>
+        </div>
+      </CardOrientationContext.Provider>
     )
   },
 )

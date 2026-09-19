@@ -1,33 +1,22 @@
-/* The clipping frame. Rounded corners and `overflow: hidden` live out here,
-   away from the box that sets the ratio — otherwise the ratio becomes a
-   fixed height and content taller than the picture gets cut off instead of
-   pushing the hero down. */
+/* A card: the frame is the fixed box. `overflow: hidden` is what makes the
+   ratio a height rather than a floor — an aspect-ratio box with visible
+   overflow lets its content set a taller automatic minimum, and the card
+   would grow. The single grid row is pinned to the box for the same reason:
+   an `auto` track would size itself to the content. */
 .deck-event-hero {
   position: relative;
   display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  inline-size: 100%;
+  aspect-ratio: var(--deck-card-ratio-landscape);
   overflow: hidden;
   border-radius: var(--deck-radius-2xl);
   font-family: var(--deck-font-sans);
   isolation: isolate;
 }
 
-/* The ratio, as a floor rather than a height. The spacer and the content
-   share one grid cell, so the row is as tall as whichever is taller: a
-   landscape picture when there is little to say, and the content when there
-   is more. Landscape at *every* width — a portrait crop on a phone spends
-   the screen on blurred picture above the words. */
-.deck-event-hero::before {
-  content: '';
-  grid-area: 1 / 1;
-  /*
-   * A padding ratio rather than `aspect-ratio`, which is not the same thing
-   * here. A stretched grid item that carries an aspect ratio resolves it
-   * from whichever axis the grid has already decided — so it fills the row
-   * and derives its *width* from the height, contributing no minimum at
-   * all. Percentage block padding always resolves against the inline size,
-   * so this is a floor the row is sized from: 4/7 of the width, every time.
-   */
-  padding-block-start: calc(100% * 4 / 7);
+.deck-event-hero[data-card-orientation='portrait'] {
+  aspect-ratio: var(--deck-card-ratio-portrait);
 }
 
 .deck-event-hero__backdrop {
@@ -67,10 +56,18 @@
 }
 
 /* Bottom-aligned: a picture reads from the top, and a header reads from the
-   bottom up — name last-written, closest to what it labels. */
+   bottom up — name last-written, closest to what it labels.
+
+   Never taller than the card. What does not fit scrolls inside it rather
+   than being clipped: this layer can hold an RSVP, and a button cut off at
+   the edge of a card is a button nobody can press. */
 .deck-event-hero__content {
   grid-area: 1 / 1;
   align-self: end;
+  max-block-size: 100%;
+  min-block-size: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -102,7 +99,18 @@
   );
 }
 
-@media (min-width: 640px) {
+/* Nothing in here shrinks. The layer scrolls when it is full, and a flex
+   child that shrinks instead hands that overflow to itself — the name, which
+   clamps with `overflow: hidden`, measured 0px tall at 640px before this: a
+   header whose event had no name. */
+.deck-event-hero__content > * {
+  flex-shrink: 0;
+}
+
+/* The roomier padding waits for `md`. Between `sm` and `md` the card is
+   landscape but at its shortest — 338px tall at 640px wide — and those 16px
+   are content's. */
+@media (min-width: 768px) {
   .deck-event-hero__content {
     padding: var(--deck-space-28);
   }
@@ -119,6 +127,11 @@
   /* The gaps above and below the name are the hero's, not the heading's. */
   margin: 0;
   text-wrap: balance;
+  /* The first thing to give when the card is full. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
 .deck-event-hero__link {

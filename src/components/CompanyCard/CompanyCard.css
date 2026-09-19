@@ -1,32 +1,76 @@
-.deck-company-card__row {
+/* The same physical object as `PersonCard`: one box, fixed, turned between
+   orientations rather than resized. Widths match PersonCard's too, so a
+   company card and a person's card in the same pile are the same size. */
+.deck-company-card {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: var(--deck-space-12);
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: var(--deck-card-ratio-landscape);
+  /* The backstop. Everything below is laid out to fit; this is what keeps a
+     card a card if something still does not. */
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.deck-company-card__header {
+  display: flex;
+  align-items: center;
   gap: var(--deck-space-12);
   min-width: 0;
 }
 
-.deck-company-card__body {
+.deck-company-card__identity {
   display: flex;
   flex-direction: column;
-  gap: var(--deck-space-4);
+  gap: var(--deck-space-2);
   min-width: 0;
   flex: 1;
 }
 
-.deck-company-card__heading {
+/* Clamped, so a long positioning statement ends in an ellipsis instead of
+   pushing the footer off the bottom of the card. */
+.deck-company-card__description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.deck-company-card__footer {
   display: flex;
   align-items: center;
   gap: var(--deck-space-8);
   min-width: 0;
+  /* Takes the slack, so every card ends on the same line. */
+  margin-block-start: auto;
 }
 
+/* One row. Tags that do not fit are clipped rather than wrapping onto a
+   second line the box has no room for. */
 .deck-company-card__tags {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--deck-space-6);
-  margin: var(--deck-space-4) 0 0;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  margin: 0;
   padding: 0;
   list-style: none;
+  /* A tag cut at the edge fades out instead of stopping mid-word. The row
+     runs to the actions, so when the tags are short the fade falls on empty
+     space and costs nothing. */
+  mask-image: linear-gradient(
+    to right,
+    black calc(100% - var(--deck-space-24)),
+    transparent
+  );
+}
+
+.deck-company-card__tags > li {
+  flex-shrink: 0;
 }
 
 .deck-company-card__actions {
@@ -34,4 +78,58 @@
   align-items: center;
   gap: var(--deck-space-4);
   flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+/* ---- Stood up ----------------------------------------------------------- */
+
+/* Read down the card, centred: who, what they do, then what you can do. The
+   portrait box is taller than it is wide, so the description gets more lines
+   and the footer stacks into rows. */
+.deck-company-card[data-card-orientation='portrait'] {
+  aspect-ratio: var(--deck-card-ratio-portrait);
+  max-width: 260px;
+  align-items: center;
+  text-align: center;
+  gap: var(--deck-space-16);
+}
+
+.deck-company-card[data-card-orientation='portrait']
+  .deck-company-card__header {
+  flex-direction: column;
+  margin-block-start: auto;
+}
+
+.deck-company-card[data-card-orientation='portrait']
+  .deck-company-card__identity {
+  align-items: center;
+  inline-size: 100%;
+}
+
+.deck-company-card[data-card-orientation='portrait']
+  .deck-company-card__description {
+  -webkit-line-clamp: 5;
+}
+
+.deck-company-card[data-card-orientation='portrait']
+  .deck-company-card__footer {
+  flex-direction: column;
+  inline-size: 100%;
+}
+
+/* Still one row. `safe` centres the tags while they fit and falls back to
+   start-aligned once they overflow, so the clip lands on the far end rather
+   than cutting both ends of the row at once. */
+.deck-company-card[data-card-orientation='portrait']
+  .deck-company-card__tags {
+  justify-content: safe center;
+  flex: none;
+  inline-size: 100%;
+  /* Centred tags that fit must not lose their last few pixels to the fade. */
+  mask-image: none;
+}
+
+.deck-company-card[data-card-orientation='portrait']
+  .deck-company-card__actions {
+  margin-inline-start: 0;
 }

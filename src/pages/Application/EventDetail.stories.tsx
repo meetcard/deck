@@ -120,10 +120,8 @@ export const NoSuchEvent: Story = {
 }
 
 /**
- * Phone. This much in a hero is taller than a phone is wide, and that is
- * fine: the height is all words. What must not happen is a band of blurred
- * picture above them — the landscape frame is a floor, so the picture never
- * takes room the content has not asked for.
+ * Phone. The event's header is a card, so it stands up here: a fixed 1:1.75
+ * box, with the content fitting inside it rather than pushing it taller.
  */
 export const Mobile: Story = {
   globals: { viewport: { value: 'mobileS' } },
@@ -134,16 +132,14 @@ export const Mobile: Story = {
       '.deck-event-hero__content',
     )!
 
-    // Every pixel of the hero's height is content: no wasted picture above
-    // the words, and nothing clipped below them.
-    await expect(hero.clientHeight).toBe(content.offsetHeight)
-    await expect(content.scrollHeight).toBeLessThanOrEqual(
-      content.clientHeight + 1,
-    )
-    // And the frame it started from is still landscape.
-    await expect(hero.clientHeight).toBeGreaterThan(
-      (hero.clientWidth * 4) / 7 - 1,
-    )
+    // The event's header is a card, and stands up on a phone like one.
+    await expect(hero).toHaveAttribute('data-card-orientation', 'portrait')
+    const ratio = hero.offsetWidth / hero.offsetHeight
+    await expect(ratio).toBeGreaterThan(0.56)
+    await expect(ratio).toBeLessThan(0.58)
+
+    // A fixed box: the content fits inside it rather than growing it.
+    await expect(content.offsetHeight).toBeLessThanOrEqual(hero.clientHeight)
   },
 }
 

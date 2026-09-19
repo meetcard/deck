@@ -16,7 +16,7 @@
 .deck-person-card {
   width: 100%;
   max-width: 400px;
-  aspect-ratio: 7 / 4;
+  aspect-ratio: var(--deck-card-ratio-landscape);
   overflow: hidden;
   border-radius: var(--deck-radius-xl);
 }
@@ -242,7 +242,7 @@
   position: relative;
   width: 100%;
   max-width: 400px;
-  aspect-ratio: 7 / 4;
+  aspect-ratio: var(--deck-card-ratio-landscape);
   perspective: 1400px;
 }
 
@@ -341,11 +341,16 @@
 /*
  * The same card stood on its short edge.
  *
- * Which way up is not the card's own decision — it is a fact about the space
- * the card is being shown in, so whoever is doing the showing declares it:
- * `data-card-orientation="portrait"` on any ancestor, which `CardPile` sets
- * for itself (portrait on a phone, landscape from `sm` up). A card outside
- * such an ancestor is landscape, exactly as before.
+ * Which way up is decided by `useCardOrientation` — the caller's choice, else
+ * the surrounding `CardPile`, else the viewport (portrait below `sm`) — and
+ * published as `data-card-orientation` on the card's own root. So a card on
+ * its own stands up on a phone just as a card in a pile does; before, only a
+ * pile could turn one.
+ *
+ * The rules below that style the root itself match it two ways: as the
+ * element carrying the attribute, and as a descendant of one (a pile, or the
+ * flip shell around a face). The rest style parts inside the root and match
+ * through it either way.
  *
  * Nothing is added or removed in portrait, only re-ordered and re-aligned:
  * both faces of the same object, so that a card recognised on a desktop is
@@ -356,17 +361,24 @@
    how much depends on the person — a card with no tagline and no note runs
    ~90px short. Anchored to the top, that slack all collects under the
    buttons and the card looks unfinished rather than roomy. */
-[data-card-orientation='portrait'] .deck-person-card {
+:is(
+    [data-card-orientation='portrait'] .deck-person-card,
+    .deck-person-card[data-card-orientation='portrait']
+  ) {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-[data-card-orientation='portrait'] .deck-person-card,
-[data-card-orientation='portrait'] .deck-person-card-flip {
-  /* 4/7 is the same 3.5x2in card as landscape's 7/4, turned. Anything else
-     would be a differently shaped object rather than the same one rotated. */
-  aspect-ratio: 4 / 7;
+:is(
+    [data-card-orientation='portrait'] .deck-person-card,
+    [data-card-orientation='portrait'] .deck-person-card-flip,
+    .deck-person-card[data-card-orientation='portrait'],
+    .deck-person-card-flip[data-card-orientation='portrait']
+  ) {
+  /* The same 3.5x2in card as landscape's, turned. Anything else would be a
+     differently shaped object rather than the same one rotated. */
+  aspect-ratio: var(--deck-card-ratio-portrait);
   max-width: 260px;
 }
 
@@ -374,7 +386,11 @@
    what they do. The gaps go up from 8px — the portrait box has ~120px more
    room than the landscape one for the same content, and the reason to stand
    the card up is to use it. */
-[data-card-orientation='portrait'] .deck-person-card > * + * {
+:is(
+    [data-card-orientation='portrait'] .deck-person-card,
+    .deck-person-card[data-card-orientation='portrait']
+  )
+  > * + * {
   margin-top: var(--deck-space-16);
 }
 
