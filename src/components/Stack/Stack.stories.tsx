@@ -19,6 +19,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/** A column — the default direction. */
 export const Column: Story = {
   render: (args) => (
     <Stack {...args}>
@@ -29,6 +30,7 @@ export const Column: Story = {
   ),
 }
 
+/** A row, for items laid side by side. */
 export const Row: Story = {
   args: { direction: 'row' },
   render: (args) => (

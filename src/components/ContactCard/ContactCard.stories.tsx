@@ -40,6 +40,7 @@ export const WithMetAt: Story = {
   args: { metAt: 'Met at SaaSConf · 12 June' },
 }
 
+/** A contact you owe something — the status is the reason to open the card. */
 export const NeedsFollowUp: Story = {
   args: {
     metAt: 'Met at SaaSConf · 12 June',
@@ -57,6 +58,7 @@ export const ActionableDetails: Story = {
   },
 }
 
+/** With actions, for acting on the follow-up without leaving the card. */
 export const WithActions: Story = {
   args: {
     status: { label: 'Follow up', tone: 'warning' },

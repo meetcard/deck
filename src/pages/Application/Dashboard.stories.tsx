@@ -35,6 +35,7 @@ export const Morning: Story = {
   },
 }
 
+/** The same dashboard in the evening — the greeting follows the clock. */
 export const Evening: Story = {
   args: { now: new Date('2027-05-04T20:40:00') },
 }

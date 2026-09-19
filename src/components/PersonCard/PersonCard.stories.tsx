@@ -128,6 +128,7 @@ export const Minimal: Story = {
   args: { title: undefined, company: undefined, location: undefined, tagline: undefined },
 }
 
+/** The company links to its profile — the tap-through on a card. */
 export const WithCompanyLink: Story = {
   args: {
     contactActions,
@@ -141,6 +142,10 @@ export const WithCompanyLink: Story = {
   },
 }
 
+/**
+ * With a private note written. The dot on the pill says there is something on
+ * the back.
+ */
 export const WithPrivateNote: Story = {
   args: {
     contactActions,

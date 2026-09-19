@@ -24,6 +24,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/** With a one-line positioning statement, clamped to the card. */
 export const WithDescription: Story = {
   args: {
     description:
@@ -47,14 +48,20 @@ export const SingleConnection: Story = {
   },
 }
 
+/**
+ * With tags. They stay on one row and fade out at the edge rather than growing
+ * the card.
+ */
 export const WithTags: Story = {
   args: { tags: ['Series B', 'Remote', 'Hiring'] },
 }
 
+/** Linked, so the name leads to the company's profile. */
 export const Linked: Story = {
   args: { href: 'https://example.com', connectionCount: 4 },
 }
 
+/** With an action. It sits inside the card's edge, pinned to the bottom. */
 export const WithActions: Story = {
   args: {
     actions: (
@@ -65,6 +72,7 @@ export const WithActions: Story = {
   },
 }
 
+/** Several companies stacked — every card the same size, whatever is on it. */
 export const InAList: Story = {
   render: (args) => (
     <Stack as="ul" gap={12} style={{ maxWidth: 440 }}>

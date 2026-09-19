@@ -29,10 +29,12 @@ export const Default: Story = {
   },
 }
 
+/** With a description — who can see what is written here, for instance. */
 export const WithDescription: Story = {
   args: { description: 'Only visible to you.' },
 }
 
+/** In error. `aria-invalid` is set and the message is announced. */
 export const WithError: Story = {
   args: { error: 'Notes cannot be longer than 500 characters' },
   play: async ({ canvas }) => {
@@ -48,6 +50,7 @@ export const NotResizable: Story = {
   args: { resize: 'none' },
 }
 
+/** Disabled, with its text still readable. */
 export const Disabled: Story = {
   args: { disabled: true, defaultValue: 'Met at SaaSConf.' },
 }

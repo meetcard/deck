@@ -37,6 +37,9 @@ export const Empty: Story = {
   },
 }
 
+/**
+ * With an image, previewed at the crop it ships at, with replace and remove.
+ */
 export const WithImage: Story = {
   args: { src: PHOTO, onRemove: () => {} },
   play: async ({ canvas }) => {
@@ -85,6 +88,7 @@ export const ReportsTheChosenFile: Story = {
   },
 }
 
+/** Disabled — the image is shown but cannot be changed here. */
 export const Disabled: Story = {
   args: { src: PHOTO, disabled: true },
 }

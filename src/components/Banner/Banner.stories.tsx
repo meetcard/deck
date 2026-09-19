@@ -21,6 +21,10 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/**
+ * Every tone. Pick by what the reader has to do next, not by how serious it
+ * sounds.
+ */
 export const Tones: Story = {
   render: (args) => (
     <Stack gap={12} style={{ maxWidth: 560 }}>
@@ -83,6 +87,7 @@ export const Offline: Story = {
   },
 }
 
+/** No title, for a single sentence that is its own headline. */
 export const WithoutTitle: Story = {
   args: { title: undefined, children: 'A single-line message with no title.' },
 }

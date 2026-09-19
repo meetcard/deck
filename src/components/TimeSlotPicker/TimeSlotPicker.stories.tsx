@@ -33,6 +33,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/** A slot chosen, ready to confirm. */
 export const Selected: Story = {
   args: { value: '09:30' },
 }

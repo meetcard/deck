@@ -42,6 +42,9 @@ export const ApproachingLimit: Story = {
   },
 }
 
+/**
+ * At the limit, with the way past it. Said in words, not only by a full bar.
+ */
 export const LimitReached: Story = {
   args: {
     value: 100,

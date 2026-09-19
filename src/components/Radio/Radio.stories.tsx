@@ -19,7 +19,9 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** Controlled usage — `RadioGroup` distributes `name` and `value` to options. */
+/**
+ * Controlled usage — `RadioGroup` distributes `name` and `value` to options.
+ */
 export const Default: Story = {
   args: { onChange: fn() },
   render: function Render(args) {
@@ -49,6 +51,10 @@ export const Default: Story = {
   },
 }
 
+/**
+ * With descriptions, when the options differ by consequence rather than by
+ * name.
+ */
 export const WithDescriptions: Story = {
   render: (args) => (
     <RadioGroup {...args}>
@@ -66,6 +72,7 @@ export const WithDescriptions: Story = {
   ),
 }
 
+/** In error, for a required choice left unanswered. */
 export const WithError: Story = {
   args: { error: 'Choose who can see your card' },
   render: (args) => (
@@ -76,6 +83,7 @@ export const WithError: Story = {
   ),
 }
 
+/** Disabled, with the current choice still shown. */
 export const Disabled: Story = {
   args: { disabled: true, value: 'link' },
   render: (args) => (

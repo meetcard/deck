@@ -18,6 +18,7 @@ export const Default: Story = {
   },
 }
 
+/** Every size. `sm` inside a button, `md` in a panel, `lg` for a whole view. */
 export const Sizes: Story = {
   render: (args) => (
     <Stack direction="row" gap={16} align="center">
@@ -28,6 +29,10 @@ export const Sizes: Story = {
   ),
 }
 
+/**
+ * Named for the wait, so a screen reader hears what is happening, not only
+ * that something is.
+ */
 export const WithContextLabel: Story = {
   args: { label: 'Syncing to CRM' },
 }

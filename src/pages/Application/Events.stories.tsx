@@ -75,7 +75,9 @@ export const SwitchingLists: Story = {
   },
 }
 
-/** A new account. The empty list points at the next action rather than a void. */
+/**
+ * A new account. The empty list points at the next action rather than a void.
+ */
 export const NoEvents: Story = {
   args: { events: [] },
   play: async ({ canvas }) => {

@@ -23,6 +23,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/** Rising. The direction is spelled out, not left to colour. */
 export const Rising: Story = {
   args: { trend: { direction: 'up', label: '12% vs. previous 30 days' } },
   play: async ({ canvas }) => {
@@ -31,6 +32,7 @@ export const Rising: Story = {
   },
 }
 
+/** Falling. The direction is spelled out, not left to colour. */
 export const Falling: Story = {
   args: { trend: { direction: 'down', label: '8% vs. previous 30 days' } },
 }
@@ -48,6 +50,7 @@ export const RisingIsBad: Story = {
   },
 }
 
+/** Unchanged. Flat is a result too, and it reads as one. */
 export const Flat: Story = {
   args: { trend: { direction: 'flat', label: 'No change' } },
 }

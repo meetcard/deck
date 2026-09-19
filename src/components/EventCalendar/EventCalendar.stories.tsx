@@ -34,17 +34,24 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/** A date chosen, which the list below the calendar filters to. */
 export const Selected: Story = {
   args: { value: '2026-07-21' },
 }
 
-/** Days without an event are disabled — the grid filters, it doesn't invite a dead click. */
+/**
+ * Days without an event are disabled — the grid filters, it doesn't invite a
+ * dead click.
+ */
 export const NoEventsThisMonth: Story = {
   args: {
     markedDates: [{ date: '2026-08-04', status: 'upcoming' }],
   },
 }
 
+/**
+ * A busy month. Past and upcoming stay distinct at a glance, and in the label.
+ */
 export const ManyMarkedDates: Story = {
   args: {
     markedDates: [

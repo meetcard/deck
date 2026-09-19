@@ -135,6 +135,7 @@ export const AsLinks: Story = {
   },
 }
 
+/** The same flow at every stage, for checking each state at once. */
 export const EveryStage: Story = {
   render: (args) => (
     <Stack gap={24} style={{ maxWidth: 480 }}>

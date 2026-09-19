@@ -33,10 +33,12 @@ export const Default: Story = {
   },
 }
 
+/** Spanning several days. The range collapses to one month where it can. */
 export const MultiDay: Story = {
   args: { endDate: '2027-05-20' },
 }
 
+/** Still to come. */
 export const Upcoming: Story = {
   args: { status: 'upcoming' },
 }
@@ -46,10 +48,12 @@ export const Live: Story = {
   args: { status: 'live', connectionCount: 12 },
 }
 
+/** Already happened, with how many people you met there. */
 export const Past: Story = {
   args: { status: 'past', connectionCount: 42 },
 }
 
+/** Linked, so the name leads to the event's own page. */
 export const Linked: Story = {
   args: {
     href: '/events/revops-summit-2027-05-18',
@@ -62,6 +66,7 @@ export const Linked: Story = {
   },
 }
 
+/** With an action, for joining without leaving the list. */
 export const WithActions: Story = {
   args: {
     status: 'upcoming',

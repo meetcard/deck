@@ -210,7 +210,9 @@ export const Team: Story = {
   },
 }
 
-/** Moving between sections. Each one remounts, so no draft leaks into the next. */
+/**
+ * Moving between sections. Each one remounts, so no draft leaks into the next.
+ */
 export const SwitchingSections: Story = {
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Team' }))

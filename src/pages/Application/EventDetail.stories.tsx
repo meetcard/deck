@@ -5,7 +5,7 @@ import { EventDetail } from './EventDetail'
 
 const meta = {
   component: EventDetail,
-  title: 'Experience/Application/EventDetail',
+  title: 'Experience/Application/Event Details',
   tags: ['page'],
   parameters: { layout: 'fullscreen' },
 } satisfies Meta<typeof EventDetail>

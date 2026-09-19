@@ -48,6 +48,9 @@ export const Small: Story = {
   },
 }
 
+/**
+ * With media and actions: say what would fill it, and offer the way to start.
+ */
 export const NoResults: Story = {
   args: {
     title: 'No events yet',

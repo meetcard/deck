@@ -24,6 +24,9 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/**
+ * Connected, with the account it is connected to and what you can do about it.
+ */
 export const Connected: Story = {
   args: {
     status: 'connected',
@@ -45,6 +48,7 @@ export const Connected: Story = {
   },
 }
 
+/** Not connected — the row is an offer, and the one action is to connect. */
 export const NotConnected: Story = {
   args: {
     name: 'Salesforce',

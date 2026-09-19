@@ -144,7 +144,9 @@ export const ClosesOnEscape: Story = {
   },
 }
 
-/** Centered placement, for confirmations rather than thumb-reachable actions. */
+/**
+ * Centered placement, for confirmations rather than thumb-reachable actions.
+ */
 export const Centered: Story = {
   render: function Render(args) {
     const [open, setOpen] = useState(false)

@@ -29,6 +29,7 @@ export const Subtle: Story = {
   ),
 }
 
+/** Solid, for the one status on a surface that has to be seen first. */
 export const Solid: Story = {
   render: (args) => (
     <Stack direction="row" gap={8} wrap>
@@ -41,6 +42,7 @@ export const Solid: Story = {
   ),
 }
 
+/** Outline, for descriptive labels that should recede — a tag, not a state. */
 export const Outline: Story = {
   render: (args) => (
     <Stack direction="row" gap={8} wrap>
@@ -58,6 +60,7 @@ export const WithDot: Story = {
   args: { dot: true, tone: 'success' },
 }
 
+/** `sm` sits inline with body text; `md` stands on its own. */
 export const Sizes: Story = {
   render: (args) => (
     <Stack direction="row" gap={8} align="center">

@@ -38,6 +38,10 @@ export const Default: Story = {
   },
 }
 
+/**
+ * Every size. `md` is for a share sheet; `lg` for a screen held up to be
+ * scanned.
+ */
 export const Sizes: Story = {
   render: (args) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>

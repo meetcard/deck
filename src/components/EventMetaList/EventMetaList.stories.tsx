@@ -32,6 +32,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/** A multi-day event: dates, place, attendance. */
 export const MultiDayEvent: Story = {
   args: {
     items: [
@@ -42,6 +43,7 @@ export const MultiDayEvent: Story = {
   },
 }
 
+/** A single evening — date and time get a line each. */
 export const SingleDayEvent: Story = {
   args: {
     items: [
@@ -52,6 +54,9 @@ export const SingleDayEvent: Story = {
   },
 }
 
+/**
+ * Without icons, where the list sits in dense copy and glyphs would be noise.
+ */
 export const WithoutIcons: Story = {
   args: {
     items: [

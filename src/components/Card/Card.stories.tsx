@@ -54,6 +54,10 @@ export const Composed: Story = {
   ),
 }
 
+/**
+ * Every surface. `brand` is the one solid fill, and it carries `deck-solid-
+ * surface` so content inside stays legible.
+ */
 export const Surfaces: Story = {
   render: () => (
     <Stack direction="row" gap={16} wrap>
@@ -66,6 +70,10 @@ export const Surfaces: Story = {
   ),
 }
 
+/**
+ * Every elevation. `sm` is for cards on the page; `md` and up are for things
+ * that float over it.
+ */
 export const Elevations: Story = {
   render: () => (
     <Stack direction="row" gap={24} wrap>

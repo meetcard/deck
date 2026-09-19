@@ -29,6 +29,10 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/**
+ * The one action a surface exists for. One per view, so it stays the obvious
+ * one.
+ */
 export const Primary: Story = {
   args: { variant: 'primary' },
   play: async ({ canvas, userEvent, args }) => {
@@ -53,6 +57,10 @@ export const Destructive: Story = {
   args: { variant: 'destructive', children: 'Delete card' },
 }
 
+/**
+ * Every size. `md` is the default; `sm` for dense rows and cards, `lg` for a
+ * screen's single call to action.
+ */
 export const Sizes: Story = {
   render: (args) => (
     <Stack direction="row" gap={12} align="center">
@@ -74,6 +82,10 @@ export const WithIcon: Story = {
   args: { iconStart: <ShareIcon /> },
 }
 
+/**
+ * Disabled. Prefer explaining why nearby — a disabled button on its own is a
+ * dead end.
+ */
 export const Disabled: Story = {
   args: { disabled: true },
   play: async ({ canvas }) => {

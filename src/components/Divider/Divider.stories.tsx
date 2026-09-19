@@ -13,6 +13,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/** Between stacked sections — the common case. */
 export const Horizontal: Story = {
   render: (args) => (
     <Stack gap={12}>
@@ -29,6 +30,7 @@ export const Horizontal: Story = {
   },
 }
 
+/** Between items in a row, such as toolbar groups. */
 export const Vertical: Story = {
   args: { orientation: 'vertical' },
   render: (args) => (
@@ -48,6 +50,7 @@ export const Decorative: Story = {
   },
 }
 
+/** Strong, for the one boundary on a surface that has to hold. */
 export const Strong: Story = {
   args: { strong: true },
 }

@@ -80,6 +80,7 @@ export const Invited: Story = {
   },
 }
 
+/** Suspended — still in the roster, with the action that brings them back. */
 export const Suspended: Story = {
   args: {
     name: 'Marcus Lee',
@@ -93,7 +94,9 @@ export const Suspended: Story = {
   },
 }
 
-/** The whole roster, active and pending in one list, as the seat count sees it. */
+/**
+ * The whole roster, active and pending in one list, as the seat count sees it.
+ */
 export const Roster: Story = {
   render: () => (
     <Card style={{ maxWidth: 620 }}>
