@@ -30,6 +30,10 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/**
+ * A day chosen. The selection is announced with its date and how many slots it
+ * has.
+ */
 export const Selected: Story = {
   args: { value: '2026-09-03' },
 }

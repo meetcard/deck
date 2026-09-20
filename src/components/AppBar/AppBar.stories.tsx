@@ -33,6 +33,10 @@ export const Default: Story = {
   },
 }
 
+/**
+ * With a page title, for a screen whose name is not already the biggest thing
+ * on it.
+ */
 export const WithTitle: Story = {
   args: { title: 'Connections' },
 }

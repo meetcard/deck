@@ -41,10 +41,14 @@ export const WithPlaceholder: Story = {
   args: { placeholder: 'Choose a type…', defaultValue: '' },
 }
 
+/**
+ * With a description, when the options need context the labels cannot carry.
+ */
 export const WithDescription: Story = {
   args: { description: 'Determines which details are shared by default.' },
 }
 
+/** In error. `aria-invalid` is set and the message is announced. */
 export const WithError: Story = {
   args: { error: 'Choose a card type to continue' },
   play: async ({ canvas }) => {
@@ -55,10 +59,12 @@ export const WithError: Story = {
   },
 }
 
+/** Disabled, with its value shown. */
 export const Disabled: Story = {
   args: { disabled: true },
 }
 
+/** One option unavailable, left in the list so it is clear it exists. */
 export const WithDisabledOption: Story = {
   args: {
     options: [...options, { value: 'team', label: 'Team (Pro only)', disabled: true }],

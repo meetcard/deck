@@ -1,5 +1,9 @@
 import { forwardRef } from 'react'
 import type { HTMLAttributes, ReactNode } from 'react'
+import {
+  useCardOrientation,
+  type CardOrientation,
+} from '../../lib/cardOrientation'
 import { cx } from '../../lib/cx'
 import { Avatar } from '../Avatar/Avatar'
 import { Heading, type HeadingLevel } from '../Heading/Heading'
@@ -43,6 +47,11 @@ export interface EventHeroProps
   facts?: EventHeroFact[]
   /** Anything below the facts — an RSVP, a share control, what's on next. */
   children?: ReactNode
+  /**
+   * Which way up the header sits. Default `responsive`: portrait on a phone,
+   * landscape from `sm` up — the same rule as every other card.
+   */
+  orientation?: CardOrientation
 }
 
 /**
@@ -62,11 +71,12 @@ export interface EventHeroProps
  * what makes `Text`, `Heading`, `Badge` and `Button` come out right in here
  * without any of them knowing they are on a photo.
  *
- * The frame is **landscape at every width**, 7:4, and the ratio is a floor
- * rather than a fixed height: content taller than the picture pushes the
- * hero down instead of being clipped. A portrait crop on a phone spends the
- * screen on blurred picture above the words, and the words are what a header
- * is for.
+ * The frame is a card, and holds the card rule: a fixed 1.75:1 box lying
+ * down and 1:1.75 stood up, portrait on a phone and landscape from `sm` up.
+ * The box never grows. The name clamps to three lines, the host's own title
+ * drops out below `sm`, and if what is left still runs past the edge the
+ * content scrolls inside the card rather than being cut off — this header
+ * can hold an RSVP, and a control nobody can reach is worse than a scroll.
  *
  * @example
  * <EventHero
@@ -89,13 +99,21 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
       host,
       facts,
       children,
+      orientation: preferredOrientation,
       className,
       ...props
     },
     ref,
   ) {
+    const orientation = useCardOrientation(preferredOrientation)
+
     return (
-      <header ref={ref} className={cx('deck-event-hero', className)} {...props}>
+      <header
+        ref={ref}
+        className={cx('deck-event-hero', className)}
+        data-card-orientation={orientation}
+        {...props}
+      >
         <div className="deck-event-hero__backdrop" aria-hidden="true">
           {coverSrc ? (
             <img className="deck-event-hero__image" src={coverSrc} alt="" />

@@ -17,6 +17,10 @@ type Story = StoryObj<typeof meta>
 /** Read-only: a label on a connection. */
 export const Default: Story = {}
 
+/**
+ * Removable. The tag's text is folded into the button's name, so a screen
+ * reader hears which one goes.
+ */
 export const Removable: Story = {
   args: { onRemove: fn() },
   play: async ({ canvas, userEvent, args }) => {
@@ -82,6 +86,7 @@ export const TagList: Story = {
   },
 }
 
+/** `sm` for inline and dense lists; `md` on its own. */
 export const Sizes: Story = {
   render: (args) => (
     <Stack direction="row" gap={8} align="center">

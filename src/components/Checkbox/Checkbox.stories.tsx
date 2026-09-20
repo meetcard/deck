@@ -22,6 +22,7 @@ export const Default: Story = {
   },
 }
 
+/** Checked by default — an option most people keep. */
 export const Checked: Story = {
   args: { defaultChecked: true },
 }
@@ -37,16 +38,22 @@ export const Indeterminate: Story = {
   },
 }
 
+/** With a description, when the label alone leaves the consequence unclear. */
 export const WithDescription: Story = {
   args: {
     description: 'Syncs this contact to your connected CRM within a minute.',
   },
 }
 
+/** In error. The message is announced, not only drawn in red. */
 export const WithError: Story = {
   args: { error: 'You must accept to continue', label: 'I agree to the terms' },
 }
 
+/**
+ * Disabled, unchecked and checked — a setting that exists but cannot be
+ * changed here.
+ */
 export const Disabled: Story = {
   render: (args) => (
     <Stack gap={12}>

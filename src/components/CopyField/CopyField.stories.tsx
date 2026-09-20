@@ -30,10 +30,12 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/** Label shown, for a field on a form rather than on its own in a sheet. */
 export const VisibleLabel: Story = {
   args: { showLabel: true },
 }
 
+/** No icon, where the surrounding copy already says what the value is. */
 export const WithoutIcon: Story = {
   args: { icon: undefined },
 }

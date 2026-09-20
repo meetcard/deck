@@ -4,6 +4,7 @@ import { expect, fn, waitFor, within } from 'storybook/test'
 import { Button } from '../Button/Button'
 import { CopyField } from '../CopyField/CopyField'
 import { QRCode } from '../QRCode/QRCode'
+import { Text } from '../Text/Text'
 import { findOpenDialog } from '../../test/dialog'
 import { Sheet } from './Sheet'
 
@@ -128,7 +129,7 @@ export const ClosesOnEscape: Story = {
         <Sheet {...args} open={open} onClose={() => setOpen(false)}>
           <Button fullWidth>Show my card</Button>
         </Sheet>
-        {!open ? <p>Sheet closed</p> : null}
+        {!open ? <Text>Sheet closed</Text> : null}
       </div>
     )
   },
@@ -143,7 +144,9 @@ export const ClosesOnEscape: Story = {
   },
 }
 
-/** Centered placement, for confirmations rather than thumb-reachable actions. */
+/**
+ * Centered placement, for confirmations rather than thumb-reachable actions.
+ */
 export const Centered: Story = {
   render: function Render(args) {
     const [open, setOpen] = useState(false)

@@ -85,7 +85,9 @@ export const Strip: Story = {
   },
 }
 
-/** A pile of one: the index has nothing to index, and says so by being one row. */
+/**
+ * A pile of one: the index has nothing to index, and says so by being one row.
+ */
 export const OneCard: Story = {
   args: { layout: 'rows', items: items.slice(0, 1) },
 }

@@ -230,7 +230,10 @@ export const OverflowBadge: Story = {
   },
 }
 
-/** A single card renders cleanly — no controls, since there's nothing to flip to. */
+/**
+ * A single card renders cleanly — no controls, since there's nothing to flip
+ * to.
+ */
 export const SingleCard: Story = {
   render: (args) => (
     <CardPile {...args}>

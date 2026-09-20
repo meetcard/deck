@@ -287,7 +287,7 @@ export type {
 } from './components/CardIndex'
 
 export { PersonCard } from './components/PersonCard'
-export type { PersonCardProps } from './components/PersonCard'
+export type { PersonCardProps, CardOrientation } from './components/PersonCard'
 
 export { CompanyCard } from './components/CompanyCard'
 export type { CompanyCardProps } from './components/CompanyCard'

@@ -24,6 +24,10 @@ export const Default: Story = {
   },
 }
 
+/**
+ * Several people. Each row stays one scannable line however long the role or
+ * company.
+ */
 export const MultipleAttendees: Story = {
   args: {
     attendees: [

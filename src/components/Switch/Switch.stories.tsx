@@ -22,6 +22,7 @@ export const Default: Story = {
   },
 }
 
+/** On. */
 export const On: Story = {
   args: { defaultChecked: true },
 }
@@ -37,10 +38,12 @@ export const WithDescription: Story = {
   },
 }
 
+/** Disabled while off. */
 export const Disabled: Story = {
   args: { disabled: true },
 }
 
+/** Disabled while on — the setting is in effect but managed elsewhere. */
 export const DisabledOn: Story = {
   args: { disabled: true, defaultChecked: true },
 }

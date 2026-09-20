@@ -48,6 +48,7 @@ export const Toggle: Story = {
   },
 }
 
+/** Off. */
 export const Off: Story = {
   args: { checked: false },
 }
@@ -65,7 +66,9 @@ export const WithAction: Story = {
   },
 }
 
-/** A read-only row: the state is reported, and changing it happens elsewhere. */
+/**
+ * A read-only row: the state is reported, and changing it happens elsewhere.
+ */
 export const WithStatus: Story = {
   args: {
     title: 'Browser push',
@@ -147,6 +150,7 @@ export const Group: Story = {
   },
 }
 
+/** Disabled — a setting that exists but cannot be changed from here. */
 export const Disabled: Story = {
   args: { checked: false, disabled: true },
 }

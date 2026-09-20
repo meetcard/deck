@@ -20,10 +20,12 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/** Answered yes. The count includes you. */
 export const Attending: Story = {
   args: { value: 'yes' },
 }
 
+/** Nobody has answered yet — the counts read zero rather than disappearing. */
 export const NoResponsesYet: Story = {
   args: { counts: { yes: 0, maybe: 0, no: 0 } },
 }

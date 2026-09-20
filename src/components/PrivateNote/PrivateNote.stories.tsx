@@ -32,7 +32,9 @@ export const Default: Story = {
   },
 }
 
-/** Filled in — a feeling picked and something worth remembering written down. */
+/**
+ * Filled in — a feeling picked and something worth remembering written down.
+ */
 export const Written: Story = {
   args: {
     feeling: 'hot',

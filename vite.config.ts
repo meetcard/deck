@@ -53,7 +53,6 @@ export default defineConfig({
         'src/test/**',
         'src/site/**',
         'src/docs/**',
-        'src/main.tsx',
         'src/vite-env.d.ts',
       ],
       reporter: ['text-summary', 'html', 'json-summary'],

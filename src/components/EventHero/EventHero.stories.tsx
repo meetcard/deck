@@ -141,10 +141,9 @@ export const Featured: Story = {
 }
 
 /**
- * Phone. The frame stays landscape here, deliberately: a portrait crop spends
- * most of a small screen on blurred picture above the words, and the words
- * are what a header is for. The ratio is a floor, so the content that does
- * not fit pushes the hero taller instead of being cut off.
+ * Phone. The header is a card, so it stands up here like every other card:
+ * a fixed 1:1.75 box. The host's own title drops out, the name clamps, and
+ * anything still too long scrolls inside the card rather than growing it.
  */
 export const Mobile: Story = {
   globals: { viewport: { value: 'mobileS' } },
@@ -160,22 +159,19 @@ export const Mobile: Story = {
   render: (args) => <EventHero {...args} />,
   play: async ({ canvasElement }) => {
     const hero = canvasElement.querySelector<HTMLElement>('.deck-event-hero')!
-    // Wider than it is tall, at 375px — and taller than 7:4 because the
-    // content asked for the room.
-    await expect(hero.offsetWidth).toBeGreaterThan(hero.offsetHeight)
-    await expect(hero.offsetHeight).toBeGreaterThan(
-      (hero.offsetWidth * 4) / 7 - 1,
-    )
-    /* Nothing clipped: the frame grew to hold the content exactly.
-       Measured on the content rather than the hero, because the hero's own
-       scrollable area includes the backdrop — which is scaled past the
-       frame on purpose, so the blur has pixels to reach for at the edges. */
     const content = canvasElement.querySelector<HTMLElement>(
       '.deck-event-hero__content',
     )!
-    await expect(content.scrollHeight).toBeLessThanOrEqual(
-      content.clientHeight + 1,
-    )
-    await expect(hero.clientHeight).toBe(content.offsetHeight)
+
+    // Stood up on a phone, like every other card.
+    await expect(hero).toHaveAttribute('data-card-orientation', 'portrait')
+
+    // Exactly 4:7 — a fixed box, not a floor the content can push past.
+    const ratio = hero.offsetWidth / hero.offsetHeight
+    await expect(ratio).toBeGreaterThan(0.56)
+    await expect(ratio).toBeLessThan(0.58)
+
+    // The content gives, the card does not: never taller than the box.
+    await expect(content.offsetHeight).toBeLessThanOrEqual(hero.clientHeight)
   },
 }

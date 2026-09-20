@@ -1,5 +1,9 @@
 import { forwardRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import {
+  useCardOrientation,
+  type CardOrientation,
+} from '../../lib/cardOrientation'
 import { cx } from '../../lib/cx'
 import { Avatar } from '../Avatar/Avatar'
 import { Card, type CardProps } from '../Card/Card'
@@ -73,15 +77,24 @@ export interface PersonCardProps
   /** Controlled flip state. Omit to let the card manage its own. */
   flipped?: boolean
   onFlippedChange?: (flipped: boolean) => void
+  /**
+   * Which way up the card sits. Default `responsive`: the surrounding
+   * `CardPile`'s orientation if there is one, otherwise portrait on a phone
+   * and landscape from `sm` up. Pin it only when the space around the card
+   * has already committed to a shape.
+   */
+  orientation?: CardOrientation
 }
 
 /**
  * The professional business card — the artifact you hand over, and the
  * canonical child of `CardPile`.
  *
- * Sized to roughly a physical business card's proportions. Height is
- * content-driven rather than a hard CSS `aspect-ratio`, so a long name or a
- * populated footer never gets clipped.
+ * A fixed box, the shape of a physical business card: 1.75:1 lying down and
+ * 1:1.75 stood up, portrait on a phone and landscape from `sm` up. The box
+ * never grows to fit — the name clamps to two lines and anything past the
+ * edge is clipped — because a card is a fixed-size object, and content that
+ * cannot fit on one is content that does not belong on one.
  *
  * @example
  * <PersonCard
@@ -116,11 +129,13 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
       back,
       flipped,
       onFlippedChange,
+      orientation: preferredOrientation,
       className,
       ...cardProps
     },
     ref,
   ) {
+    const orientation = useCardOrientation(preferredOrientation)
     const hasMetaRow = Boolean(tagline || privateNote)
     const hasDetailPill = Boolean(title || company || location)
 
@@ -140,6 +155,9 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
         surface="elevated"
         padding={20}
         className={cx('deck-person-card', className)}
+        /* What the CSS keys off. Before the spread, so a caller can still
+           pass its own. */
+        data-card-orientation={orientation}
         {...cardProps}
       >
         <div className="deck-person-card__header">
@@ -282,6 +300,7 @@ export const PersonCard = forwardRef<HTMLElement, PersonCardProps>(
           'deck-person-card-flip',
           isFlipped && 'deck-person-card-flip--flipped',
         )}
+        data-card-orientation={orientation}
       >
         <div className="deck-person-card-flip__inner">
           {/* Both faces occupy one grid cell, so the shell is as tall as the

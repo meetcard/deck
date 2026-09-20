@@ -27,6 +27,9 @@ export const Initials: Story = {
   },
 }
 
+/**
+ * With a photo. The initials remain the fallback if the image fails to load.
+ */
 export const WithPhoto: Story = {
   args: { src: photo },
 }
@@ -43,6 +46,10 @@ export const BrokenImageFallsBack: Story = {
   },
 }
 
+/**
+ * Every size. `lg` and `xl` are for a card's own face; `xs` and `sm` sit
+ * inline with text.
+ */
 export const Sizes: Story = {
   render: (args) => (
     <Stack direction="row" gap={12} align="center">

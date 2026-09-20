@@ -16,6 +16,10 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/**
+ * Every tone. `default` for navigation, `muted` for secondary routes, `brand`
+ * sparingly.
+ */
 export const Tones: Story = {
   render: (args) => (
     <Stack gap={8}>
@@ -46,6 +50,10 @@ export const Underline: Story = {
   ),
 }
 
+/**
+ * Inside a sentence, where it keeps its underline so it reads as a link
+ * without colour.
+ */
 export const InProse: Story = {
   render: (args) => (
     <Text style={{ maxWidth: 420 }}>

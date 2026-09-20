@@ -37,6 +37,7 @@ export const Default: Story = {
   },
 }
 
+/** Label shown, for a search that is one field of several. */
 export const WithVisibleLabel: Story = {
   args: { showLabel: true },
 }
@@ -101,6 +102,7 @@ export const FilteringRolodex: Story = {
   },
 }
 
+/** Every size, aligned with `Input`. */
 export const Sizes: Story = {
   render: (args) => (
     <Stack gap={12} style={{ maxWidth: 360 }}>

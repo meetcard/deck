@@ -24,8 +24,10 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/** Pills, the default: a handful of short, mutually exclusive answers. */
 export const Pills: Story = {}
 
+/** An answer chosen — shown filled and announced as checked. */
 export const Selected: Story = {
   args: { value: 'demo' },
 }
@@ -86,10 +88,15 @@ export const WithRoutingHint: Story = {
   },
 }
 
+/** In error, for a required choice left unanswered. */
 export const WithError: Story = {
   args: { required: true, error: 'Pick a topic to continue.' },
 }
 
+/**
+ * One option unavailable. It stays visible, so the choice does not look
+ * incomplete.
+ */
 export const WithDisabledOption: Story = {
   args: {
     options: [

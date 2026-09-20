@@ -111,6 +111,15 @@
   --deck-radius-3xl: 24px;
   --deck-radius-full: 9999px;
 
+  /* ---- Card shape --------------------------------------------------- */
+  /* One object, turned. Every card in Deck — a person's, a company's, an
+     event's header — is a physical business card: 3.5 × 2 in, so 1.75:1
+     lying down and 1:1.75 stood up. The box is fixed and the content gives;
+     nothing card-shaped grows taller to fit what is on it. Which way up a
+     card sits is decided by `useCardOrientation` (src/lib), never here. */
+  --deck-card-ratio-landscape: 7 / 4;
+  --deck-card-ratio-portrait: 4 / 7;
+
   /* ---- Elevation — applied per component, never page-level ----------- */
   /* xs — focus rings, text inputs */
   --deck-shadow-xs: 0 1px 2px 0 rgb(var(--deck-shadow-color) / 0.05);

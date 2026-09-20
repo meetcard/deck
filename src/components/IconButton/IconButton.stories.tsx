@@ -34,6 +34,7 @@ export const Default: Story = {
   },
 }
 
+/** Every variant, in order of emphasis. `ghost` is the default for toolbars. */
 export const Variants: Story = {
   render: (args) => (
     <Stack direction="row" gap={8} align="center">
@@ -45,6 +46,7 @@ export const Variants: Story = {
   ),
 }
 
+/** Every size, on the same 32/40/48px grid as `Button`. */
 export const Sizes: Story = {
   render: (args) => (
     <Stack direction="row" gap={8} align="center">
@@ -60,6 +62,7 @@ export const Round: Story = {
   args: { round: true, variant: 'secondary' },
 }
 
+/** Disabled. The label still names the action for a screen reader. */
 export const Disabled: Story = {
   args: { disabled: true },
 }

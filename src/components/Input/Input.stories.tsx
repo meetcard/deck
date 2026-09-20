@@ -71,14 +71,20 @@ export const WithError: Story = {
   },
 }
 
+/** Required. The field says so in text, not only with an asterisk. */
 export const Required: Story = {
   args: { required: true },
 }
 
+/**
+ * With a leading icon, for a field whose purpose is clearer as a glyph —
+ * search, mostly.
+ */
 export const WithIcon: Story = {
   args: { label: 'Search your deck', iconStart: <SearchIcon />, placeholder: 'Search' },
 }
 
+/** Disabled, with a value that cannot be changed here. */
 export const Disabled: Story = {
   args: { disabled: true, defaultValue: 'ada@meetcard.com' },
 }
@@ -91,6 +97,9 @@ export const HiddenLabel: Story = {
   },
 }
 
+/**
+ * Every size, aligned with `Button` so a field and its action sit in one row.
+ */
 export const Sizes: Story = {
   render: (args) => (
     <Stack gap={12} style={{ maxWidth: 320 }}>

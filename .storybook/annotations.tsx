@@ -3,15 +3,14 @@
  * import of their own.
  *
  * This is split out of `preview.tsx` because two consumers need it. Storybook
- * takes it through `preview.tsx`, which adds `src/index.css` on top; the docs
- * site (`src/site/`) takes it through `setProjectAnnotations` so that a story
- * rendered on a docs page gets the same `.deck-root` wrapper and the same
- * `layout: 'fullscreen'` padding rule it gets in Storybook.
+ * takes it through `preview.tsx`, which adds Deck's stylesheet on top; the
+ * docs site (`src/site/`) takes it through `setProjectAnnotations` so that a
+ * story rendered on a docs page gets the same `.deck-root` wrapper and the
+ * same `layout: 'fullscreen'` padding rule it gets in Storybook.
  *
- * The site must NOT pick up `src/index.css`: that file is the local Vite
- * playground's stylesheet, and it sets global `h1`, `p`, `code` and `#root`
- * rules that would restyle every page of the site. Keeping the CSS import in
- * `preview.tsx` and the annotations here is what holds those apart.
+ * The site loads the stylesheet itself, from its layout, so the import stays
+ * in `preview.tsx`: a CSS import here would reach the site through
+ * `setProjectAnnotations` a second time.
  */
 import type { Preview } from '@storybook/react-vite'
 
