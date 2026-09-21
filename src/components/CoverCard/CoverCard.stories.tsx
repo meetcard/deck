@@ -7,7 +7,7 @@ import { CoverCard } from './CoverCard'
 
 /*
  * A deliberately *pale* stand-in for a cover photo — the same one the
- * `EventHero` stories use. Drawn rather than fetched, so the story is
+ * `EventHeaderCard` stories use. Drawn rather than fetched, so the story is
  * deterministic in Chromatic and offline, and light because a bright
  * picture is the hard case for a scrim: if paper reads against this, it
  * reads against anything.
@@ -75,7 +75,7 @@ export const OnAPhone: Story = {
 }
 
 /**
- * Blurred, for a surface whose job is to be read. `EventHero` does this: a
+ * Blurred, for a surface whose job is to be read. `EventHeaderCard` does this: a
  * long name over a sharp picture is a name you have to work at.
  */
 export const BlurredCover: Story = {

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
 import { Badge } from '../Badge/Badge'
 import { Button } from '../Button/Button'
-import { EventHero } from './EventHero'
+import { EventHeaderCard } from './EventHeaderCard'
 
 /*
  * A deliberately *pale* stand-in for a cover photo. Drawn rather than
@@ -39,8 +39,8 @@ const PinIcon = () => (
 )
 
 const meta = {
-  component: EventHero,
-  title: 'Build/Organisms/EventHero',
+  component: EventHeaderCard,
+  title: 'Build/Organisms/EventHeaderCard',
   tags: ['organism'],
   args: {
     name: 'RevOps Summit',
@@ -49,10 +49,10 @@ const meta = {
   },
   render: (args) => (
     <div style={{ maxWidth: 720 }}>
-      <EventHero {...args} />
+      <EventHeaderCard {...args} />
     </div>
   ),
-} satisfies Meta<typeof EventHero>
+} satisfies Meta<typeof EventHeaderCard>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -91,10 +91,10 @@ export const Default: Story = {
 
     // The picture is a backdrop, not content — it says nothing a reader
     // needs, and the name beside it says everything.
-    const image = canvasElement.querySelector('.deck-event-hero__image')!
+    const image = canvasElement.querySelector('.deck-event-header-card__image')!
     await expect(image).toHaveAttribute('alt', '')
     await expect(
-      canvasElement.querySelector('.deck-event-hero__backdrop'),
+      canvasElement.querySelector('.deck-event-header-card__backdrop'),
     ).toHaveAttribute('aria-hidden', 'true')
   },
 }
@@ -156,11 +156,11 @@ export const Mobile: Story = {
       { icon: <PinIcon />, title: 'Austin Convention Center' },
     ],
   },
-  render: (args) => <EventHero {...args} />,
+  render: (args) => <EventHeaderCard {...args} />,
   play: async ({ canvasElement }) => {
-    const hero = canvasElement.querySelector<HTMLElement>('.deck-event-hero')!
+    const hero = canvasElement.querySelector<HTMLElement>('.deck-event-header-card')!
     const content = canvasElement.querySelector<HTMLElement>(
-      '.deck-event-hero__content',
+      '.deck-event-header-card__content',
     )!
 
     // Stood up on a phone, like every other card.

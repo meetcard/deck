@@ -285,12 +285,12 @@ export type { CoverCardProps } from './components/CoverCard'
 export { ShareCard } from './components/ShareCard'
 export type { ShareCardProps } from './components/ShareCard'
 
-export { FeaturedEventCard } from './components/FeaturedEventCard'
+export { FeaturedEventsHeaderCard } from './components/FeaturedEventsHeaderCard'
 export type {
-  FeaturedEventCardProps,
-  FeaturedEventFact,
-  FeaturedEventUpNext,
-} from './components/FeaturedEventCard'
+  FeaturedEventsHeaderCardProps,
+  FeaturedEventsHeaderCardFact,
+  FeaturedEventsHeaderCardUpNext,
+} from './components/FeaturedEventsHeaderCard'
 
 export { CardIndex } from './components/CardIndex'
 export type {
@@ -312,12 +312,12 @@ export { EventCard } from './components/EventCard'
 export type { EventCardProps } from './components/EventCard'
 
 /* ---- Events ------------------------------------------------------------ */
-export { EventHero } from './components/EventHero'
+export { EventHeaderCard } from './components/EventHeaderCard'
 export type {
-  EventHeroProps,
-  EventHeroFact,
-  EventHeroHost,
-} from './components/EventHero'
+  EventHeaderCardProps,
+  EventHeaderCardFact,
+  EventHeaderCardHost,
+} from './components/EventHeaderCard'
 
 export { EventSchedule } from './components/EventSchedule'
 export type {

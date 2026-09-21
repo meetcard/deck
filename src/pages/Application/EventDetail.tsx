@@ -12,7 +12,7 @@ import { Badge } from '../../components/Badge/Badge'
 import { Button } from '../../components/Button/Button'
 import { Card } from '../../components/Card/Card'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
-import { EventHero } from '../../components/EventHero/EventHero'
+import { EventHeaderCard } from '../../components/EventHeaderCard/EventHeaderCard'
 import { EventSchedule } from '../../components/EventSchedule/EventSchedule'
 import { Heading } from '../../components/Heading/Heading'
 import { Link } from '../../components/Link/Link'
@@ -149,7 +149,7 @@ export function EventDetail({
           ) : null}
         </div>
 
-        <EventHero
+        <EventHeaderCard
           level={1}
           name={event.name}
           coverSrc={event.coverSrc}
@@ -216,7 +216,7 @@ export function EventDetail({
               className="event-detail__rsvp"
             />
           ) : null}
-        </EventHero>
+        </EventHeaderCard>
 
         {event.about && event.about.length > 0 ? (
           <Card as="section" aria-labelledby="event-about">

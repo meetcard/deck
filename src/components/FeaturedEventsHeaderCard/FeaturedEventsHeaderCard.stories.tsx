@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
 import { Avatar } from '../Avatar/Avatar'
 import { Badge } from '../Badge/Badge'
-import { FeaturedEventCard } from './FeaturedEventCard'
+import { FeaturedEventsHeaderCard } from './FeaturedEventsHeaderCard'
 
 const COVER =
   'data:image/svg+xml;utf8,' +
@@ -30,8 +30,8 @@ const PinIcon = () => (
 )
 
 const meta = {
-  component: FeaturedEventCard,
-  title: 'Build/Organisms/FeaturedEventCard',
+  component: FeaturedEventsHeaderCard,
+  title: 'Build/Organisms/FeaturedEventsHeaderCard',
   tags: ['organism'],
   args: {
     name: 'RevOps Summit',
@@ -55,7 +55,7 @@ const meta = {
       trailing: <Avatar name="Hannah Davis" size="sm" decorative />,
     },
   },
-} satisfies Meta<typeof FeaturedEventCard>
+} satisfies Meta<typeof FeaturedEventsHeaderCard>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -71,7 +71,7 @@ export const Default: Story = {
     ).toBeVisible()
     await expect(canvas.getByText('Boulder Climate Happy Hour')).toBeVisible()
 
-    const card = canvasElement.querySelector<HTMLElement>('.deck-featured-event')!
+    const card = canvasElement.querySelector<HTMLElement>('.deck-featured-events-header-card')!
     const ratio = card.offsetWidth / card.offsetHeight
     await expect(ratio).toBeGreaterThan(1.72)
     await expect(ratio).toBeLessThan(1.78)
@@ -86,7 +86,7 @@ export const NothingAfterThis: Story = {
   args: { upNext: undefined },
   play: async ({ canvasElement }) => {
     await expect(
-      canvasElement.querySelector('.deck-featured-event__next'),
+      canvasElement.querySelector('.deck-featured-events-header-card__next'),
     ).toBeNull()
   },
 }
@@ -109,11 +109,11 @@ export const OnAPhone: Story = {
   globals: { viewport: { value: 'mobileS' } },
   parameters: { chromatic: { viewports: [375] } },
   play: async ({ canvasElement }) => {
-    const card = canvasElement.querySelector<HTMLElement>('.deck-featured-event')!
+    const card = canvasElement.querySelector<HTMLElement>('.deck-featured-events-header-card')!
     await expect(card).toHaveAttribute('data-card-orientation', 'portrait')
 
     const strip = canvasElement.querySelector<HTMLElement>(
-      '.deck-featured-event__next',
+      '.deck-featured-events-header-card__next',
     )!
     const cardBox = card.getBoundingClientRect()
     const stripBox = strip.getBoundingClientRect()

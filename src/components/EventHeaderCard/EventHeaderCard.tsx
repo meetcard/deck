@@ -8,9 +8,9 @@ import { cx } from '../../lib/cx'
 import { Avatar } from '../Avatar/Avatar'
 import { Heading, type HeadingLevel } from '../Heading/Heading'
 import { Text } from '../Text/Text'
-import './EventHero.css'
+import './EventHeaderCard.css'
 
-export interface EventHeroFact {
+export interface EventHeaderCardFact {
   /** Decorative — the fact itself carries the meaning. */
   icon?: ReactNode
   /** The fact, e.g. "Tuesday, May 18, 2027". */
@@ -19,14 +19,14 @@ export interface EventHeroFact {
   detail?: ReactNode
 }
 
-export interface EventHeroHost {
+export interface EventHeaderCardHost {
   name: string
   avatarSrc?: string
   /** Their line, e.g. "Community Lead, RevOps Collective". */
   detail?: ReactNode
 }
 
-export interface EventHeroProps
+export interface EventHeaderCardProps
   extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   name: string
   /**
@@ -42,9 +42,9 @@ export interface EventHeroProps
   /** Pills above the name: "Happening next", "Attending", "Soon". */
   badges?: ReactNode
   /** Who is putting it on. */
-  host?: EventHeroHost
+  host?: EventHeaderCardHost
   /** The facts of the thing: when, and where. */
-  facts?: EventHeroFact[]
+  facts?: EventHeaderCardFact[]
   /** Anything below the facts — an RSVP, a share control, what's on next. */
   children?: ReactNode
   /**
@@ -79,7 +79,7 @@ export interface EventHeroProps
  * can hold an RSVP, and a control nobody can reach is worse than a scroll.
  *
  * @example
- * <EventHero
+ * <EventHeaderCard
  *   name="RevOps Summit"
  *   level={1}
  *   coverSrc={cover}
@@ -88,8 +88,8 @@ export interface EventHeroProps
  *   facts={[{ icon: <CalendarDays />, title: 'Tuesday, May 18, 2027', detail: '9:00 AM – 4:30 PM' }]}
  * />
  */
-export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
-  function EventHero(
+export const EventHeaderCard = forwardRef<HTMLElement, EventHeaderCardProps>(
+  function EventHeaderCard(
     {
       name,
       level = 2,
@@ -110,15 +110,15 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
     return (
       <header
         ref={ref}
-        className={cx('deck-event-hero', className)}
+        className={cx('deck-event-header-card', className)}
         data-card-orientation={orientation}
         {...props}
       >
-        <div className="deck-event-hero__backdrop" aria-hidden="true">
+        <div className="deck-event-header-card__backdrop" aria-hidden="true">
           {coverSrc ? (
-            <img className="deck-event-hero__image" src={coverSrc} alt="" />
+            <img className="deck-event-header-card__image" src={coverSrc} alt="" />
           ) : null}
-          <span className="deck-event-hero__scrim" />
+          <span className="deck-event-header-card__scrim" />
         </div>
 
         {/*
@@ -126,9 +126,9 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
           class re-points every colour token a descendant reads, and the
           content layer above re-points the on-color it reads them from.
         */}
-        <div className="deck-event-hero__content deck-solid-surface">
+        <div className="deck-event-header-card__content deck-solid-surface">
           {badges ? (
-            <div className="deck-event-hero__badges">{badges}</div>
+            <div className="deck-event-header-card__badges">{badges}</div>
           ) : null}
 
           <Heading
@@ -137,10 +137,10 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
                among several and is sized to sit under a real page title. */
             size={level === 1 ? 'xl' : 'lg'}
             family="serif"
-            className="deck-event-hero__name"
+            className="deck-event-header-card__name"
           >
             {href ? (
-              <a href={href} className="deck-event-hero__link">
+              <a href={href} className="deck-event-header-card__link">
                 {name}
               </a>
             ) : (
@@ -149,7 +149,7 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
           </Heading>
 
           {host ? (
-            <Text size="sm" className="deck-event-hero__host">
+            <Text size="sm" className="deck-event-header-card__host">
               <Avatar
                 name={host.name}
                 src={host.avatarSrc}
@@ -161,7 +161,7 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
                 /* Dropped on a phone rather than wrapped: the host's own
                    title is the least of what this line is for, and it is
                    what turns one line into three. */
-                <span className="deck-event-hero__host-detail">
+                <span className="deck-event-header-card__host-detail">
                   {' · '}
                   {host.detail}
                 </span>
@@ -170,15 +170,15 @@ export const EventHero = forwardRef<HTMLElement, EventHeroProps>(
           ) : null}
 
           {facts && facts.length > 0 ? (
-            <ul className="deck-event-hero__facts">
+            <ul className="deck-event-header-card__facts">
               {facts.map((fact, index) => (
-                <li key={index} className="deck-event-hero__fact">
+                <li key={index} className="deck-event-header-card__fact">
                   {fact.icon ? (
-                    <span className="deck-event-hero__fact-icon" aria-hidden="true">
+                    <span className="deck-event-header-card__fact-icon" aria-hidden="true">
                       {fact.icon}
                     </span>
                   ) : null}
-                  <span className="deck-event-hero__fact-text">
+                  <span className="deck-event-header-card__fact-text">
                     {/* Weight, not colour: on this surface every token
                         resolves to the one on-color proven against the
                         scrim, so hierarchy has to be built from something

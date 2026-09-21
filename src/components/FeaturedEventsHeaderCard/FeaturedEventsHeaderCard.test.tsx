@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { FeaturedEventCard } from './FeaturedEventCard'
+import { FeaturedEventsHeaderCard } from './FeaturedEventsHeaderCard'
 
-describe('FeaturedEventCard', () => {
+describe('FeaturedEventsHeaderCard', () => {
   it('names the event at the level the page asks for', () => {
-    render(<FeaturedEventCard name="RevOps Summit" level={1} />)
+    render(<FeaturedEventsHeaderCard name="RevOps Summit" level={1} />)
     expect(
       screen.getByRole('heading', { level: 1, name: 'RevOps Summit' }),
     ).toBeInTheDocument()
@@ -12,7 +12,7 @@ describe('FeaturedEventCard', () => {
 
   it('lists when and where', () => {
     render(
-      <FeaturedEventCard
+      <FeaturedEventsHeaderCard
         name="RevOps Summit"
         facts={[{ text: 'Tuesday, May 18, 2027' }, { text: 'Austin, Texas' }]}
       />,
@@ -24,7 +24,7 @@ describe('FeaturedEventCard', () => {
   // What is on after this is the question a calendar answers.
   it('shows the event after this one', () => {
     render(
-      <FeaturedEventCard
+      <FeaturedEventsHeaderCard
         name="RevOps Summit"
         upNext={{ label: 'Up next · Jun 16', name: 'Boulder Climate Happy Hour' }}
       />,
@@ -34,12 +34,12 @@ describe('FeaturedEventCard', () => {
   })
 
   it('ends on its facts when there is nothing after this', () => {
-    const { container } = render(<FeaturedEventCard name="RevOps Summit" />)
-    expect(container.querySelector('.deck-featured-event__next')).toBeNull()
+    const { container } = render(<FeaturedEventsHeaderCard name="RevOps Summit" />)
+    expect(container.querySelector('.deck-featured-events-header-card__next')).toBeNull()
   })
 
   it('links the name when given a destination', () => {
-    render(<FeaturedEventCard name="RevOps Summit" href="/events/revops" />)
+    render(<FeaturedEventsHeaderCard name="RevOps Summit" href="/events/revops" />)
     expect(screen.getByRole('link', { name: 'RevOps Summit' })).toHaveAttribute(
       'href',
       '/events/revops',

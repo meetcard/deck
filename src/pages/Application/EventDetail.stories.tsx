@@ -98,10 +98,10 @@ export const WithoutACover: Story = {
   args: { slug: 'founders-dinner' },
   play: async ({ canvasElement }) => {
     await expect(
-      canvasElement.querySelector('.deck-event-hero__image'),
+      canvasElement.querySelector('.deck-event-header-card__image'),
     ).toBeNull()
     await expect(
-      canvasElement.querySelector('.deck-event-hero__scrim'),
+      canvasElement.querySelector('.deck-event-header-card__scrim'),
     ).not.toBeNull()
   },
 }
@@ -127,9 +127,9 @@ export const Mobile: Story = {
   globals: { viewport: { value: 'mobileS' } },
   parameters: { chromatic: { viewports: [375] } },
   play: async ({ canvasElement }) => {
-    const hero = canvasElement.querySelector<HTMLElement>('.deck-event-hero')!
+    const hero = canvasElement.querySelector<HTMLElement>('.deck-event-header-card')!
     const content = canvasElement.querySelector<HTMLElement>(
-      '.deck-event-hero__content',
+      '.deck-event-header-card__content',
     )!
 
     // The event's header is a card, and stands up on a phone like one.
