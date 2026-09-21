@@ -279,6 +279,19 @@ export type { MemberRowProps, MemberStatus } from './components/MemberRow'
 export { CardPile } from './components/CardPile'
 export type { CardPileProps, CardPileOrientation } from './components/CardPile'
 
+export { CoverCard } from './components/CoverCard'
+export type { CoverCardProps } from './components/CoverCard'
+
+export { ShareCard } from './components/ShareCard'
+export type { ShareCardProps } from './components/ShareCard'
+
+export { FeaturedEventCard } from './components/FeaturedEventCard'
+export type {
+  FeaturedEventCardProps,
+  FeaturedEventFact,
+  FeaturedEventUpNext,
+} from './components/FeaturedEventCard'
+
 export { CardIndex } from './components/CardIndex'
 export type {
   CardIndexProps,
