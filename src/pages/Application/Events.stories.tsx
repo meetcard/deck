@@ -25,7 +25,7 @@ export const Default: Story = {
       canvas.getByRole('heading', { level: 2, name: 'RevOps Summit' }),
     ).toBeVisible()
     await expect(
-      canvasElement.querySelector('.deck-event-hero__image'),
+      canvasElement.querySelector('.deck-event-header-card__image'),
     ).not.toBeNull()
 
     /* The featured event and the list are two regions, and they both talk

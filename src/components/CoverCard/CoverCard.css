@@ -1,0 +1,128 @@
+/* The card, and the photograph behind it. The fixed box comes first:
+   `overflow: hidden` is what makes the ratio a height rather than a floor,
+   since an aspect-ratio box with visible overflow lets its content set a
+   taller automatic minimum. */
+.deck-cover-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  inline-size: 100%;
+  aspect-ratio: var(--deck-card-ratio-landscape);
+  overflow: hidden;
+  border-radius: var(--deck-radius-2xl);
+  font-family: var(--deck-font-sans);
+  /* No width of its own. How big a card is depends on what kind it is: one
+     you hold out to be read is capped at a hand's width, and one that heads
+     a page fills its column. The shape is the same either way, which is all
+     this component owns. */
+  /* A stacking context of its own, so the backdrop sits under the content
+     without reaching the page behind the card. */
+  isolation: isolate;
+}
+
+.deck-cover-card[data-card-orientation='portrait'] {
+  aspect-ratio: var(--deck-card-ratio-portrait);
+}
+
+.deck-cover-card__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* Under the scrim with nothing behind it, the brand is the picture. */
+  background-color: var(--deck-color-background-brand);
+}
+
+.deck-cover-card__image {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+/* Scaled past the frame so the blur has pixels to reach for at the edges
+   instead of fading into the background. */
+.deck-cover-card__image--blurred {
+  filter: blur(4px);
+  transform: scale(1.06);
+}
+
+/*
+ * The scrim. Darkest at the foot, where the words are, and never lighter
+ * than the point at which paper-on-scrim stops clearing 4.5:1 over a *white*
+ * photo — a component cannot see the picture it is given, so the floor is
+ * set for the worst one rather than tuned for a good one.
+ */
+.deck-cover-card__scrim {
+  position: absolute;
+  inset: 0;
+}
+
+.deck-cover-card__scrim--bottom {
+  background-image: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--deck-color-cover-scrim) 90%, transparent) 0%,
+    color-mix(in srgb, var(--deck-color-cover-scrim) 78%, transparent) 55%,
+    color-mix(in srgb, var(--deck-color-cover-scrim) 66%, transparent) 100%
+  );
+}
+
+.deck-cover-card__scrim--top {
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--deck-color-cover-scrim) 90%, transparent) 0%,
+    color-mix(in srgb, var(--deck-color-cover-scrim) 78%, transparent) 55%,
+    color-mix(in srgb, var(--deck-color-cover-scrim) 66%, transparent) 100%
+  );
+}
+
+/* Heaviest at both ends and lightest across the middle, where the picture
+   is. Still never lighter than the 66% floor the other two hold to, because
+   the floor is what makes paper legible over a white photograph. */
+.deck-cover-card__scrim--edges {
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--deck-color-cover-scrim) 90%, transparent) 0%,
+    color-mix(in srgb, var(--deck-color-cover-scrim) 66%, transparent) 45%,
+    color-mix(in srgb, var(--deck-color-cover-scrim) 72%, transparent) 70%,
+    color-mix(in srgb, var(--deck-color-cover-scrim) 90%, transparent) 100%
+  );
+}
+
+.deck-cover-card__content {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
+  max-block-size: 100%;
+  box-sizing: border-box;
+  padding: var(--deck-space-20);
+
+  /* The on-color for everything inside. Set here rather than inherited so
+     `deck-solid-surface` — which reads it — resolves against the scrim
+     instead of against whichever solid fill the page scheme last defined. */
+  --deck-color-solid-on: var(--deck-color-cover-on);
+
+  /* The one surface token `deck-solid-surface` leaves alone, because most
+     solid fills sit *on* the page and an elevated thing above them is still
+     the page's white. Not here: there is no page under this, only the
+     photograph, so anything that lifts off the scrim lifts in the scrim's
+     own material. */
+  --deck-color-background-elevated: color-mix(
+    in srgb,
+    var(--deck-color-cover-on) 16%,
+    transparent
+  );
+
+  /* The faces in here sit on the scrim, not on the page. */
+  --deck-avatar-group-ring: color-mix(
+    in srgb,
+    var(--deck-color-cover-on) 40%,
+    transparent
+  );
+}
+
+/* Nothing inside shrinks: the layer scrolls when it is full, and a flex
+   child that shrinks instead absorbs that overflow itself — a clamped
+   heading squeezed to nothing rather than a card that scrolls. */
+.deck-cover-card__content > * {
+  flex-shrink: 0;
+}

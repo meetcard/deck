@@ -13,7 +13,7 @@ import { Card } from '../../components/Card/Card'
 import { ChoiceGroup } from '../../components/ChoiceGroup/ChoiceGroup'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
 import { EventCard } from '../../components/EventCard/EventCard'
-import { EventHero } from '../../components/EventHero/EventHero'
+import { EventHeaderCard } from '../../components/EventHeaderCard/EventHeaderCard'
 import { EventRow } from '../../components/EventRow/EventRow'
 import { Heading } from '../../components/Heading/Heading'
 import { SearchField } from '../../components/SearchField/SearchField'
@@ -133,7 +133,7 @@ export function Events({
               Featured
             </Text>
 
-            <EventHero
+            <EventHeaderCard
               /* The page's `h1` is "Events"; this is the heading of one
                  section within it. */
               level={2}
@@ -194,7 +194,7 @@ export function Events({
                   ) : null}
                 </a>
               ) : null}
-            </EventHero>
+            </EventHeaderCard>
           </section>
         ) : null}
 

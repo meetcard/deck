@@ -279,6 +279,19 @@ export type { MemberRowProps, MemberStatus } from './components/MemberRow'
 export { CardPile } from './components/CardPile'
 export type { CardPileProps, CardPileOrientation } from './components/CardPile'
 
+export { CoverCard } from './components/CoverCard'
+export type { CoverCardProps } from './components/CoverCard'
+
+export { ShareCard } from './components/ShareCard'
+export type { ShareCardProps } from './components/ShareCard'
+
+export { FeaturedEventsHeaderCard } from './components/FeaturedEventsHeaderCard'
+export type {
+  FeaturedEventsHeaderCardProps,
+  FeaturedEventsHeaderCardFact,
+  FeaturedEventsHeaderCardUpNext,
+} from './components/FeaturedEventsHeaderCard'
+
 export { CardIndex } from './components/CardIndex'
 export type {
   CardIndexProps,
@@ -292,6 +305,12 @@ export type { PersonCardProps, CardOrientation } from './components/PersonCard'
 export { CompanyCard } from './components/CompanyCard'
 export type { CompanyCardProps } from './components/CompanyCard'
 
+export { CompanyProfileCard } from './components/CompanyProfileCard'
+export type {
+  CompanyProfileCardProps,
+  CompanyProfileCardLink,
+} from './components/CompanyProfileCard'
+
 export { ContactCard } from './components/ContactCard'
 export type { ContactCardProps, ContactDetail } from './components/ContactCard'
 
@@ -299,12 +318,12 @@ export { EventCard } from './components/EventCard'
 export type { EventCardProps } from './components/EventCard'
 
 /* ---- Events ------------------------------------------------------------ */
-export { EventHero } from './components/EventHero'
+export { EventHeaderCard } from './components/EventHeaderCard'
 export type {
-  EventHeroProps,
-  EventHeroFact,
-  EventHeroHost,
-} from './components/EventHero'
+  EventHeaderCardProps,
+  EventHeaderCardFact,
+  EventHeaderCardHost,
+} from './components/EventHeaderCard'
 
 export { EventSchedule } from './components/EventSchedule'
 export type {
