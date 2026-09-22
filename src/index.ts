@@ -305,6 +305,12 @@ export type { PersonCardProps, CardOrientation } from './components/PersonCard'
 export { CompanyCard } from './components/CompanyCard'
 export type { CompanyCardProps } from './components/CompanyCard'
 
+export { CompanyProfileCard } from './components/CompanyProfileCard'
+export type {
+  CompanyProfileCardProps,
+  CompanyProfileCardLink,
+} from './components/CompanyProfileCard'
+
 export { ContactCard } from './components/ContactCard'
 export type { ContactCardProps, ContactDetail } from './components/ContactCard'
 
