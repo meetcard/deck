@@ -13,10 +13,9 @@ const meta = {
     items: [
       { label: 'QR', value: 631, meta: '37%' },
       { label: 'LinkedIn', value: 388, meta: '23%' },
-      { label: 'NFC', value: 244, meta: '14%' },
-      { label: 'Email', value: 196, meta: '12%' },
-      { label: 'Wallet', value: 137, meta: '8%' },
-      { label: 'Direct', value: 88, meta: '5%' },
+      { label: 'Link', value: 273, meta: '16%' },
+      { label: 'Email', value: 222, meta: '13%' },
+      { label: 'Direct', value: 191, meta: '11%' },
     ],
   },
   render: (args) => (
@@ -89,7 +88,7 @@ export const NothingMeasuredYet: Story = {
     items: [
       { label: 'QR', value: 0, meta: '0%' },
       { label: 'LinkedIn', value: 0, meta: '0%' },
-      { label: 'NFC', value: 0, meta: '0%' },
+      { label: 'Link', value: 0, meta: '0%' },
     ],
   },
 }
