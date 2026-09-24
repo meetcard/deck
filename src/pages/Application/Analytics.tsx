@@ -5,13 +5,12 @@ import {
   Download,
   Globe,
   Laptop,
+  Link2,
   Mail,
-  Nfc,
   Pin,
   QrCode,
   Smartphone,
   Tablet,
-  Wallet,
 } from 'lucide-react'
 import { BreakdownList } from '../../components/BreakdownList/BreakdownList'
 import type { BreakdownItem } from '../../components/BreakdownList/BreakdownList'
@@ -104,10 +103,9 @@ const MIX = {
   sources: [
     { label: 'QR', share: 0.37, icon: <QrCode /> },
     { label: 'LinkedIn', share: 0.23, icon: <Globe /> },
-    { label: 'NFC', share: 0.14, icon: <Nfc /> },
-    { label: 'Email', share: 0.12, icon: <Mail /> },
-    { label: 'Wallet', share: 0.08, icon: <Wallet /> },
-    { label: 'Direct', share: 0.06, icon: <Globe /> },
+    { label: 'Link', share: 0.16, icon: <Link2 /> },
+    { label: 'Email', share: 0.13, icon: <Mail /> },
+    { label: 'Direct', share: 0.11, icon: <Globe /> },
   ],
   locations: [
     { label: 'United States', share: 0.63 },
@@ -141,7 +139,7 @@ const CAMPAIGNS = [
   { channel: 'QR', slug: 'revops-summit', share: 0.214, meetings: 14 },
   { channel: 'LinkedIn', slug: 'linkedin-bio', share: 0.148, meetings: 11 },
   { channel: 'Email', slug: 'email-signature', share: 0.1, meetings: 6 },
-  { channel: 'NFC', slug: 'saastr-booth', share: 0.084, meetings: 7 },
+  { channel: 'Link', slug: 'saastr-booth', share: 0.084, meetings: 7 },
 ]
 
 const BEST_TIMES = [
