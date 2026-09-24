@@ -13,9 +13,37 @@
 #
 # Astro requires Node >=22.12; without NODE_VERSION Netlify's default may be
 # older and `astro build` refuses to run.
+#
+# The `rm -rf` at the end drops storybook-static/manifests/ from what ships.
+# `@storybook/addon-mcp` writes those three files (1.2 MB, most of it a 639 KB
+# components.html) for build-time and MCP consumption; the deployed Storybook
+# never fetches them, and src/site/lib/catalog.ts reads them from the local
+# storybook-static/ before this copy happens. Published, they were the one
+# place this site served its component documentation as flat files needing no
+# JavaScript — crawlable, and with no canonical pointing home.
+#
+# index.json stays. Storybook's manager fetches it at runtime to build its
+# sidebar, and without it the whole UI is an empty shell.
 [build]
-  command = "npm run build:site && mkdir -p dist/site/storybook && cp -R storybook-static/. dist/site/storybook/"
+  command = "npm run build:site && mkdir -p dist/site/storybook && cp -R storybook-static/. dist/site/storybook/ && rm -rf dist/site/storybook/manifests"
   publish = "dist/site"
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Storybook renders the same documentation as the Astro site — 86 of its 87
+# docs pages have a twin at a real URL — because both are generated from one
+# source. The site is the copy meant to be found: linkable, in the sitemap,
+# every page carrying a self-referencing canonical. This stops search engines
+# indexing the other one and ranking it instead.
+#
+# A header rather than a robots.txt `Disallow`, because the two do different
+# jobs: `Disallow` stops the crawl, which would leave the URL indexable from
+# its inbound links and the directive below unread. See public/robots.txt.
+#
+# `noindex` alone, not `noindex, nofollow` — Storybook's logo links back here
+# (`brandUrl` in .storybook/theme.ts), and that link is worth following.
+[[headers]]
+  for = "/storybook/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"

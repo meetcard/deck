@@ -1,0 +1,14 @@
+# Everything here is meant to be crawled, /storybook/ included.
+#
+# That is deliberate rather than an oversight. Storybook renders the same
+# documentation as the Astro pages and should not be indexed, but the way to
+# say so is the `X-Robots-Tag: noindex` header in netlify.toml, not a
+# `Disallow` here. A disallowed URL is never fetched, so the header would
+# never be read — and a URL that cannot be crawled can still be indexed from
+# the links pointing at it, which is the outcome this is trying to avoid.
+#
+# Crawl it, read the header, drop it. In that order.
+User-agent: *
+Allow: /
+
+Sitemap: https://deck.meetcard.io/sitemap-index.xml
